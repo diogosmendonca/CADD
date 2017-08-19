@@ -1,12 +1,10 @@
 # CADD
 
---------------------------------------
+Trabalho da disciplina Concep√ß√£o e Elabora√ß√£o de Projeto Final dos Cursos Superiores da Escola de Inform√°tica e Computa√ß√£o (EIC) do Centro Federal de Educa√ß√£o Tecnol√≥gica Celso Suckow da Fonseca (CEFET-RJ) - Unidade Maracan√£.
 
-Trabalho da disciplina ConcepÁ„o e ElaboraÁ„o de Projeto Final dos Cursos Superiores da Escola de Inform·tica e ComputaÁ„o (EIC) do Centro Federal de EducaÁ„o TecnolÛgica Celso Suckow da Fonseca (CEFET-RJ) - Unidade Maracan„.
+A finalidade deste trabalho √© o do desenvolvimento e implementa√ß√£o de uma solu√ß√£o para o controle das Comiss√µes de Avalia√ß√£o de Desenvolvimento Discente (CADD) do CEFET-RJ.
 
-A finalidade deste trabalho È o do desenvolvimento e implementaÁ„o de uma soluÁ„o para o controle das Comissıes de AvaliaÁ„o de Desenvolvimento Discente (CADD) do CEFET-RJ.
-
-Curso: Curso Superior Tecnologia de Sistemas para Internet (CST-SI)
-Discentes: JosÈ AmÈrico Rodrigues e Cristiano do Nascimento Cruz
-PerÌodo: 2017.2
-Prof Orientador: Diogo MendonÁa
+    Curso: Curso Superior Tecnologia de Sistemas para Internet (CST-SI)
+    Discentes: Jos√© Am√©rico Rodrigues e Cristiano do Nascimento Cruz
+    Per√≠odo: 2017.2
+    Prof. Orientador: Diogo Mendon√ßa
