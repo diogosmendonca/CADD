@@ -1,0 +1,25 @@
+*** Prof Bezerra ***
+1) Scripts em python para a exportação dos dados
+2) Planilhas exportadas do Sistema Acadêmico para carga inicial do sistema
+3) Criar relatórios de pré-requisitos por curso e grade curricular por curso
+4) Modelo do kit atual para convocação de alunos
+5) Modelos dos relatórios atuais (com gráficos ou não)
+
+
+
+
+*** Prof Diogo ***
+Próximos passos:
+1) Documentar
+2) Prototipar
+3) Diagramar
+
+
+
+*** Brainstorm ***
+
+alunos, disciplinas, grades curriculares, cursos, pré-requisitos
+
+Situação dos alunos: cursando/trancado/jubilado
+
+Faixas de criticidade: azul/laranja/vermelha/preta
