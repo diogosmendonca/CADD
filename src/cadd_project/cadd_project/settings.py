@@ -77,9 +77,29 @@ WSGI_APPLICATION = 'cadd_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cadddb',
+        'USER': 'root',                      # Not used with sqlite3.
+        'PASSWORD': 'root',                  # Not used with sqlite3.
+        'HOST': '172.20.10.2',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+
+#        'OPTIONS': {
+#            'read_default_file': os.path.join(BASE_DIR, 'connection.cnf') #'/vagrant/my.cnf',
+#        },
     }
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+    'scadb': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'scadb',
+        'USER': 'root',                      # Not used with sqlite3.
+        'PASSWORD': 'root',                  # Not used with sqlite3.
+        'HOST': '172.20.10.2',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3311',
+    }                      # Set to empty string for default. Not used with sqlite3.
 }
 
 
