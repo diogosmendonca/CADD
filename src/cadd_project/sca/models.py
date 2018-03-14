@@ -3,25 +3,38 @@
 #   * Rearrange models' order
 #   * Make sure each model has one field with primary_key=True
 #   * Make sure each ForeignKey has `on_delete` set to the desired behavior.
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
+#   * Remove `managed = False` lines if you wish to allow Django to create,
+#        modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
 
+class Alocacacaodisciplinasemdepartamento(models.Model):
+    """Classe importada da tabela alocacacaodisciplinasemdepartamento do banco de dados SCA"""
+
+    id = models.BigAutoField(primary_key=True)
+    departamento = models.ForeignKey('Departamento', models.DO_NOTHING,
+                        blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'alocacacaodisciplinasemdepartamento'
+
+
 class Aluno(models.Model):
+    """Classe importada da tabela aluno do banco de dados SCA"""
+    """TODO: Faltam os campos email, situacao, faixa e formaEvasao não contemplados no esquema"""
+
     id = models.BigAutoField(primary_key=True)
     matricula = models.CharField(max_length=255, blank=True, null=True)
     cpf = models.CharField(max_length=255, blank=True, null=True)
-    datanascimento = models.DateTimeField(db_column='dataNascimento', blank=True, null=True)  # Field name made lowercase.
-    endereco = models.CharField(max_length=255, blank=True, null=True)
-    uf = models.CharField(db_column='UF', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    bairro = models.CharField(max_length=255, blank=True, null=True)
-    cidade = models.CharField(max_length=255, blank=True, null=True)
-    numero = models.CharField(max_length=255, blank=True, null=True)
-    rua = models.CharField(max_length=255, blank=True, null=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
-    historico = models.ForeignKey('Historicoescolar', models.DO_NOTHING, blank=True, null=True)
-    versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING, db_column='versaoCurso_id', blank=True, null=True)  # Field name made lowercase.
+    datanascimento = models.DateTimeField(db_column='dataNascimento',
+                        blank=True, null=True)
+    historico = models.ForeignKey('Historicoescolar', models.DO_NOTHING,
+                    blank=True, null=True)
+    versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
+                    db_column='versaoCurso_id', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -29,6 +42,8 @@ class Aluno(models.Model):
 
 
 class Blocoequivalencia(models.Model):
+    """Classe importada da tabela blocoequivalencia do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
 
     class Meta:
@@ -37,11 +52,13 @@ class Blocoequivalencia(models.Model):
 
 
 class Curso(models.Model):
+    """Classe importada da tabela curso do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
     sigla = models.CharField(max_length=255, blank=True, null=True)
-    coordenador = models.ForeignKey('Professor', models.DO_NOTHING, blank=True, null=True)
-    coordenadoratividadescomplementares = models.ForeignKey('Professor', models.DO_NOTHING, db_column='coordenadorAtividadesComplementares_id', blank=True, null=True)  # Field name made lowercase.
+    coordenador = models.ForeignKey('Professor', models.DO_NOTHING,
+                        blank=True, null=True)
 
     class Meta:
         managed = False
@@ -49,6 +66,8 @@ class Curso(models.Model):
 
 
 class CursoDisciplina(models.Model):
+    """Classe importada da tabela curso_disciplina do banco de dados SCA"""
+
     curso = models.ForeignKey(Curso, models.DO_NOTHING)
     disciplinas = models.ForeignKey('Disciplina', models.DO_NOTHING, unique=True)
 
@@ -58,6 +77,8 @@ class CursoDisciplina(models.Model):
 
 
 class Departamento(models.Model):
+    """Classe importada da tabela departamento do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
     sigla = models.CharField(max_length=255, blank=True, null=True)
@@ -68,7 +89,10 @@ class Departamento(models.Model):
 
 
 class DepartamentoDisciplina(models.Model):
-    departamento = models.ForeignKey(Departamento, models.DO_NOTHING, primary_key=True)
+    """Classe importada da tabela departamento_disciplina do banco de dados SCA"""
+
+    departamento = models.ForeignKey(Departamento, models.DO_NOTHING,
+                        primary_key=True)
     disciplinas = models.ForeignKey('Disciplina', models.DO_NOTHING, unique=True)
 
     class Meta:
@@ -78,7 +102,10 @@ class DepartamentoDisciplina(models.Model):
 
 
 class DepartamentoProfessor(models.Model):
-    departamento = models.ForeignKey(Departamento, models.DO_NOTHING, primary_key=True)
+    """Classe importada da tabela departamento_professor do banco de dados SCA"""
+
+    departamento = models.ForeignKey(Departamento, models.DO_NOTHING,
+                        primary_key=True)
     professores = models.ForeignKey('Professor', models.DO_NOTHING, unique=True)
 
     class Meta:
@@ -88,32 +115,44 @@ class DepartamentoProfessor(models.Model):
 
 
 class Disciplina(models.Model):
+    """Classe importada da tabela disciplina do banco de dados SCA"""
+    """Incluído o campo ehoptativa diferentemente do diagrama de classes"""
+
     id = models.BigAutoField(primary_key=True)
-    cargahoraria = models.IntegerField(db_column='cargaHoraria')  # Field name made lowercase.
-    codigo = models.CharField(max_length=255, blank=True, null=True)
-    ehoptativa = models.TextField(db_column='ehOptativa', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
     nome = models.CharField(max_length=255, blank=True, null=True)
-    quantidadecreditos = models.IntegerField(db_column='quantidadeCreditos', blank=True, null=True)  # Field name made lowercase.
-    versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING, db_column='versaoCurso_id', blank=True, null=True)  # Field name made lowercase.
-    alocacao_depto = models.ForeignKey(Departamento, models.DO_NOTHING, blank=True, null=True)
+    codigo = models.CharField(max_length=255, blank=True, null=True)
+    quantidadecreditos = models.IntegerField(db_column='quantidadeCreditos',
+                            blank=True, null=True)
+    cargahoraria = models.IntegerField(db_column='cargaHoraria')
+    ehoptativa = models.TextField(db_column='ehOptativa', blank=True, null=True)
+    versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
+                            db_column='versaoCurso_id', blank=True, null=True)
+    alocacao_depto = models.ForeignKey(Departamento, models.DO_NOTHING,
+                            blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'disciplina'
 
 
-class DisciplinaPrereqs(models.Model):
-    grade = models.ForeignKey('Gradedisponibilidade', models.DO_NOTHING, primary_key=True)
-    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING)
+#class DisciplinaPrereqs(models.Model):
+#    """Classe importada da tabela disciplina_prereqs do banco de dados SCA"""
+#    """TODO: Não entendi o porquê de ser relacionado com gradedisponibilidade"""
 
-    class Meta:
-        managed = False
-        db_table = 'disciplina_prereqs'
-        unique_together = (('grade', 'disciplina'),)
+#    grade = models.ForeignKey('Gradedisponibilidade', models.DO_NOTHING, primary_key=True)
+#    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING)
+
+#    class Meta:
+#        managed = False
+#        db_table = 'disciplina_prereqs'
+#        unique_together = (('grade', 'disciplina'),)
 
 
 class DisciplinasEquivalentes(models.Model):
-    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING, primary_key=True)
+    """Classe importada da tabela disciplinas_equivalentes do banco de dados SCA"""
+
+    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
+                primary_key=True)
     disciplinasequivalentes = models.ForeignKey(Disciplina, models.DO_NOTHING)
 
     class Meta:
@@ -123,7 +162,10 @@ class DisciplinasEquivalentes(models.Model):
 
 
 class DisciplinasOriginais(models.Model):
-    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING, primary_key=True)
+    """Classe importada da tabela disciplinas_originais do banco de dados SCA"""
+
+    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
+                primary_key=True)
     disciplinasoriginais = models.ForeignKey(Disciplina, models.DO_NOTHING)
 
     class Meta:
@@ -133,8 +175,11 @@ class DisciplinasOriginais(models.Model):
 
 
 class Historicoescolar(models.Model):
+    """Classe importada da tabela historicoescolar do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
-    versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING, db_column='versaoCurso_id', blank=True, null=True)  # Field name made lowercase.
+    versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
+                        db_column='versaoCurso_id', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -142,12 +187,17 @@ class Historicoescolar(models.Model):
 
 
 class Itemhistoricoescolar(models.Model):
+    """Classe importada da tabela itemhistoricoescolar do banco de dados SCA"""
+    """TODO: Necessita dos campos mediaFinal e faltas não contemplados no esquema"""
+
     id = models.BigAutoField(primary_key=True)
     ano = models.IntegerField(blank=True, null=True)
     periodo = models.IntegerField(blank=True, null=True)
     situacao = models.IntegerField(blank=True, null=True)
-    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING, blank=True, null=True)
-    historico_escolar = models.ForeignKey(Historicoescolar, models.DO_NOTHING, blank=True, null=True)
+    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING,
+                                blank=True, null=True)
+    historico_escolar = models.ForeignKey(Historicoescolar, models.DO_NOTHING,
+                                blank=True, null=True)
 
     class Meta:
         managed = False
@@ -155,16 +205,11 @@ class Itemhistoricoescolar(models.Model):
 
 
 class Professor(models.Model):
+    """Classe importada da tabela professor do banco de dados SCA"""
+    """Retirados os campos desnecessários"""
+
     id = models.BigAutoField(primary_key=True)
     matricula = models.CharField(max_length=255, blank=True, null=True)
-    cpf = models.CharField(max_length=255, blank=True, null=True)
-    datanascimento = models.DateTimeField(db_column='dataNascimento', blank=True, null=True)  # Field name made lowercase.
-    endereco = models.CharField(max_length=255, blank=True, null=True)
-    uf = models.CharField(db_column='UF', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    bairro = models.CharField(max_length=255, blank=True, null=True)
-    cidade = models.CharField(max_length=255, blank=True, null=True)
-    numero = models.CharField(max_length=255, blank=True, null=True)
-    rua = models.CharField(max_length=255, blank=True, null=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -173,6 +218,8 @@ class Professor(models.Model):
 
 
 class ProfessorDisciplina(models.Model):
+    """Classe importada da tabela professor_disciplina do banco de dados SCA"""
+
     professor = models.ForeignKey(Professor, models.DO_NOTHING, primary_key=True)
     disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING)
 
@@ -183,8 +230,12 @@ class ProfessorDisciplina(models.Model):
 
 
 class Tabelaequivalencias(models.Model):
+    """Classe importada da tabela tabelaequivalencias do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
-    versaocursocorrespondente = models.ForeignKey('Versaocurso', models.DO_NOTHING, db_column='versaoCursoCorrespondente_id', blank=True, null=True)  # Field name made lowercase.
+    versaocursocorrespondente = models.ForeignKey('Versaocurso',
+            models.DO_NOTHING, db_column='versaoCursoCorrespondente_id',
+            blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -192,8 +243,12 @@ class Tabelaequivalencias(models.Model):
 
 
 class TabelaequivalenciasBlocoequivalencia(models.Model):
-    tabelaequivalencias = models.ForeignKey(Tabelaequivalencias, models.DO_NOTHING, primary_key=True)
-    blocosequivalencia = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING, unique=True)
+    """Classe importada da tabela tabelaequivalencias_blocoequivalencia do banco de dados SCA"""
+
+    tabelaequivalencias = models.ForeignKey(Tabelaequivalencias,
+                                models.DO_NOTHING, primary_key=True)
+    blocosequivalencia = models.ForeignKey(Blocoequivalencia,
+                                models.DO_NOTHING, unique=True)
 
     class Meta:
         managed = False
@@ -202,13 +257,16 @@ class TabelaequivalenciasBlocoequivalencia(models.Model):
 
 
 class Turma(models.Model):
+    """Classe importada da tabela turma do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
-    capacidademaxima = models.IntegerField(db_column='capacidadeMaxima')  # Field name made lowercase.
     codigo = models.CharField(max_length=255, blank=True, null=True)
     ano = models.IntegerField(blank=True, null=True)
     periodo = models.IntegerField(blank=True, null=True)
-    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING, blank=True, null=True)
-    professor = models.ForeignKey(Professor, models.DO_NOTHING, blank=True, null=True)
+    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING, blank=True,
+                        null=True)
+    professor = models.ForeignKey(Professor, models.DO_NOTHING, blank=True,
+                        null=True)
 
     class Meta:
         managed = False
@@ -216,13 +274,15 @@ class Turma(models.Model):
 
 
 class Versaocurso(models.Model):
+    """Classe importada da tabela versaocurso do banco de dados SCA"""
+
     id = models.BigAutoField(primary_key=True)
-    cargahorariaminaitvcomp = models.TextField(db_column='cargaHorariaMinAitvComp', blank=True, null=True)  # Field name made lowercase.
-    cargahorariaminoptativas = models.TextField(db_column='cargaHorariaMinOptativas', blank=True, null=True)  # Field name made lowercase.
+    cargahorariaminoptativas = models.TextField(db_column='cargaHorariaMinOptativas',
+                                    blank=True, null=True)
     numero = models.CharField(max_length=255, blank=True, null=True)
-    qtdperiodominimo = models.IntegerField(db_column='qtdPeriodoMinimo', blank=True, null=True)  # Field name made lowercase.
+    qtdperiodominimo = models.IntegerField(db_column='qtdPeriodoMinimo',
+                                    blank=True, null=True)
     situacao = models.IntegerField(blank=True, null=True)
-    atividades = models.ForeignKey(Atividadecomplementar, models.DO_NOTHING, blank=True, null=True)
     curso = models.ForeignKey(Curso, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -231,8 +291,13 @@ class Versaocurso(models.Model):
 
 
 class VersaocursoTabelaequivalencias(models.Model):
-    versaocurso = models.ForeignKey(Versaocurso, models.DO_NOTHING, primary_key=True)
-    tabelasequivalencias = models.ForeignKey(Tabelaequivalencias, models.DO_NOTHING, db_column='tabelasEquivalencias_id', unique=True)  # Field name made lowercase.
+    """Classe importada da tabela versaocurso_tabelaequivalencias do banco de dados SCA"""
+
+    versaocurso = models.ForeignKey(Versaocurso, models.DO_NOTHING,
+                            primary_key=True)
+    tabelasequivalencias = models.ForeignKey(Tabelaequivalencias,
+                            models.DO_NOTHING,
+                            db_column='tabelasEquivalencias_id', unique=True)
 
     class Meta:
         managed = False

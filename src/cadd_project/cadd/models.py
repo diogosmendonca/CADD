@@ -3,24 +3,36 @@ from django.db import models
 # Create your models here.
 
 class Comissao(models.Model):
-    descricao = models.CharField(u'Descrição', max_length=50, blank=False, null=False)
+    """Classe de uso do sistema para o cadastro das comissões"""
+
+    descricao = models.CharField(u'Descrição', max_length=50, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
+        db_table = 'comissao'
 
 
 class Membro(models.Model):
-    ativo = models.IntegerField(u'Ativo')
-    presidente = models.IntegerField(u'Presidente')
-    portaria = models.CharField(u'Portaria', max_length=50, blank=False, null=True)
-    comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False, null=True)
-    professor = models.ForeignKey('Professor', models.DO_NOTHING, blank=False, null=True)
+    """Classe de uso do sistema para o cadastro dos membros das CADDs"""
+
+    ativo = models.BooleanField(u'Ativo')
+    presidente = models.BooleanField(u'Presidente')
+    portaria = models.CharField(u'Portaria', max_length=50, blank=False,
+                        null=False)
+    comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False,
+                        null=False)
+    professor = models.ForeignKey('sca.Professor', models.DO_NOTHING,
+                        blank=False, null=False)
 
     class Meta:
         managed = True
+        db_table = 'membro'
 
 
 class Reuniao(models.Model):
+    """Classe de uso do sistema para o agendamento das reuniões"""
+
     SITUACAO_CHOICES = (
         ('A', 'Agendada'),
         ('C', 'Cancelada'),
@@ -32,99 +44,149 @@ class Reuniao(models.Model):
     )
 
     data = models.DateField(u'Data', blank=False, null=False)
-    inicio = models.DateTimeField(u'Início', blank=False, null=False)
+    inicio = models.TimeField(u'Início', blank=False, null=False)
     local = models.CharField(u'Local', max_length=50, blank=False, null=False)
-    situacao = models.CharField(u'Situação', max_length=1, choices=SITUACAO_CHOICES, blank=False, default='A')
-    tipo = models.CharField(u'Tipo', max_length=1, choices=TIPO_CHOICES, blank=False, default='I')
-    anotacao = models.TextField(u'Anotação', blank=True)
-    comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False, null=True)
+    situacao = models.CharField(u'Situação', max_length=1,
+                    choices=SITUACAO_CHOICES, blank=False, default='A')
+    tipo = models.CharField(u'Tipo', max_length=1, choices=TIPO_CHOICES,
+                    blank=False, default='I')
+    anotacao = models.TextField(u'Anotação', blank=True, null=True)
+    comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
+        db_table = 'reuniao'
 
 
 class Convocacao(models.Model):
-    envioemail = models.IntegerField(u'Email')
-    presente = models.IntegerField(u'Presente')
-    anotacao = models.TextField(u'Anotação', blank=True)
-    reuniao = models.ForeignKey('Reuniao', models.DO_NOTHING, blank=False, null=False)
-    aluno = models.ForeignKey('Aluno', models.DO_NOTHING, blank=False, null=False)
+    """Classe de uso do sistema para a guarda dos alunos convocados às reuniões"""
+
+    envioemail = models.BooleanField(u'Email')
+    presente = models.BooleanField(u'Presente')
+    anotacao = models.TextField(u'Anotação', blank=True, null=True)
+    reuniao = models.ForeignKey('Reuniao', models.DO_NOTHING, blank=False,
+                    null=False)
+    aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
+        db_table = 'convocacao'
 
 
 class Documento(models.Model):
-    ano = models.IntegerField(u'Ano')
-    semestre = models.IntegerField(u'Semestre')
-    descricao = models.CharField(u'Descrição', max_length=50, blank=False, null=False)
-    indice = models.CharField(u'Índice', max_length=50, blank=False, null=False)
-    aluno = models.ForeignKey('Aluno', models.DO_NOTHING, blank=False, null=False)
+    """Classe de uso do sistema para a guarda dos documentos escaneados dos alunos"""
+
+    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
+                    null=False)
+    descricao = models.CharField(u'Descrição', max_length=50, blank=False,
+                    null=False)
+    indice = models.FileField(u'Índice', max_length=50, blank=False, null=False)
+    aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
+        db_table = 'documento'
 
 
 class Horario(models.Model):
-    ano = models.IntegerField(u'Ano')
-    semestre = models.IntegerField(u'Semestre')
-    curso = models.ForeignKey('Curso', models.DO_NOTHING, blank=False, null=True)
+    """Classe de uso do sistema para a guarda da prévia do horário do semestre subsequente"""
+
+    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
+                null=False)
+    curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
+                null=False)
 
     class Meta:
         managed = True
+        db_table = 'horario'
 
 
 class ItemHorario(models.Model):
-    periodo = models.IntegerField(u'Período')
-    diasemana = models.IntegerField()
-    inicio = models.DateTimeField(u'Início', blank=False, null=False)
-    fim = models.DateTimeField(u'Início', blank=False, null=False)
-    horario = models.ForeignKey('Horario', models.DO_NOTHING, blank=False, null=False)
-    professor = models.ForeignKey('Professor', models.DO_NOTHING, blank=False, null=False)
-    departamento = models.ForeignKey('Departamento', models.DO_NOTHING, blank=False, null=False)
-    disciplina = models.ForeignKey('Disciplina', models.DO_NOTHING, blank=False, null=False)
-    turma = models.ForeignKey('Turma', models.DO_NOTHING, blank=False, null=False)
+    """Classe de uso do sistema para a guarda dos itens da prévia do horário"""
+
+#    periodo = models.PositiveSmallIntegerField(u'Período')
+    diasemana = models.PositiveSmallIntegerField(u'Dia da semana', blank=False,
+                        null=False)
+    inicio = models.TimeField(u'Início', blank=False, null=False)
+    fim = models.TimeField(u'Início', blank=False, null=False)
+    horario = models.ForeignKey('Horario', models.DO_NOTHING, blank=False,
+                        null=False)
+    professor = models.ForeignKey('sca.Professor', models.DO_NOTHING,
+                        blank=False, null=False)
+    departamento = models.ForeignKey('sca.Departamento', models.DO_NOTHING,
+                        blank=False, null=False)
+    disciplina = models.ForeignKey('sca.Disciplina', models.DO_NOTHING,
+                        blank=False, null=False)
+    turma = models.ForeignKey('sca.Turma', models.DO_NOTHING, blank=False,
+                        null=False)
 
     class Meta:
         managed = True
+        db_table = 'item_horario'
 
 
 class Plano(models.Model):
+    """Classe de uso do sistema para a guarda dos planos de estudo dos alunos"""
+
     SITUACAO_CHOICES = (
         ('M', 'Montado'),
         ('A', 'Avaliado'),
         ('E', 'Encerrado'),
     )
-    ano = models.IntegerField(u'Ano')
-    semestre = models.IntegerField(u'Semestre')
-    situacao = models.CharField(u'Situação', max_length=1, choices=SITUACAO_CHOICES, blank=False, default='M')
-    avaliacao = models.TextField(u'Anotação', blank=True)
-    aluno = models.ForeignKey('Aluno', models.DO_NOTHING, blank=False, null=False)
+    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
+                    null=False)
+    situacao = models.CharField(u'Situação', max_length=1,
+                    choices=SITUACAO_CHOICES, blank=False, default='M')
+    avaliacao = models.TextField(u'Anotação', blank=True, null=True)
+    aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
+        db_table = 'plano'
 
 
 class ItemPlanoAtual(models.Model):
-    plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False, null=False)
-    itemhorario = models.ForeignKey('ItemHorario', models.DO_NOTHING, blank=False, null=False)
+    """Classe de uso do sistema para a guarda dos itens atuais do plano de estudo dos alunos"""
+
+    plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False,
+                    null=False)
+    itemhorario = models.ForeignKey('ItemHorario', models.DO_NOTHING,
+                    blank=False, null=False)
 
     class Meta:
         managed = True
+        db_table = 'item_plano_atual'
 
 
 class PlanoFuturo(models.Model):
-    ano = models.IntegerField(u'Ano')
-    periodo = models.IntegerField(u'Período')
-    plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False, null=False)
+    """Classe de uso do sistema para a guarda do plano de estudo futuro dos alunos"""
+
+    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
+                    null=False)
+    plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
+        db_table = 'plano_futuro'
 
 
 class ItemPlanoFuturo(models.Model):
-    planofuturo = models.ForeignKey('PlanoFuturo', models.DO_NOTHING, blank=False, null=False)
-    disciplina = models.ForeignKey('Disciplina', models.DO_NOTHING, blank=False, null=False)
+    """Classe de uso do sistema para a guarda dos itens do futuro do plano de estudo dos alunos"""
+
+    planofuturo = models.ForeignKey('PlanoFuturo', models.DO_NOTHING,
+                        blank=False, null=False)
+    disciplina = models.ForeignKey('sca.Disciplina', models.DO_NOTHING,
+                        blank=False, null=False)
 
     class Meta:
         managed = True
+        db_table = 'item_plano_futuro'
