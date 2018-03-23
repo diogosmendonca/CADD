@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -31,14 +30,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'sca.apps.ScaConfig',
-    'cadd.apps.CaddConfig',
+    'django.contrib.admindocs',     # Admin Docs
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Aplicações de terceiros
+    'widget_tweaks',
+    # Minhas Aplicações
+    'accounts.apps.AccountsConfig',
+    'cadd.apps.CaddConfig',
+    'sca.apps.ScaConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,8 +60,8 @@ ROOT_URLCONF = 'cadd_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': ['static/templates/'],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -75,28 +79,32 @@ WSGI_APPLICATION = 'cadd_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+#DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cadddb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.2',
-#        'HOST': '192.168.1.4',
+#        'HOST': '172.20.10.2', # celular
+        'HOST': '192.168.1.4', # wifi
+#        'HOST': '192.168.1.25', # cefet
         'PORT': '3311',
     },
-    'scadb': {
-#    'default': {
+    'sca': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'scadb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.2',
-#        'HOST': '192.168.1.4',
+#        'HOST': '172.20.10.2', # celular
+        'HOST': '192.168.1.4', # wifi
+#        'HOST': '192.168.1.25', # cefet
         'PORT': '3311',
     }
 }
 
+DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -120,9 +128,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -134,4 +142,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+LOGIN_URL = '/accounts/login/'

@@ -1,16 +1,26 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
+
+PERIODO_CHOICES = (
+    (1, '1º semestre'),
+    (2, '2º semestre'),
+)
+
 
 class Comissao(models.Model):
     """Classe de uso do sistema para o cadastro das comissões"""
 
     descricao = models.CharField(u'Descrição', max_length=50, blank=False,
                     null=False)
+    curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
+                    null=False)
 
     class Meta:
         managed = True
         db_table = 'comissao'
+        app_label = 'cadd'
 
 
 class Membro(models.Model):
@@ -28,6 +38,7 @@ class Membro(models.Model):
     class Meta:
         managed = True
         db_table = 'membro'
+        app_label = 'cadd'
 
 
 class Reuniao(models.Model):
@@ -57,6 +68,7 @@ class Reuniao(models.Model):
     class Meta:
         managed = True
         db_table = 'reuniao'
+        app_label = 'cadd'
 
 
 class Convocacao(models.Model):
@@ -73,14 +85,15 @@ class Convocacao(models.Model):
     class Meta:
         managed = True
         db_table = 'convocacao'
+        app_label = 'cadd'
 
 
 class Documento(models.Model):
     """Classe de uso do sistema para a guarda dos documentos escaneados dos alunos"""
 
     ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
-                    null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
+                    blank=False, default=1, null=False)
     descricao = models.CharField(u'Descrição', max_length=50, blank=False,
                     null=False)
     indice = models.FileField(u'Índice', max_length=50, blank=False, null=False)
@@ -90,20 +103,22 @@ class Documento(models.Model):
     class Meta:
         managed = True
         db_table = 'documento'
+        app_label = 'cadd'
 
 
 class Horario(models.Model):
     """Classe de uso do sistema para a guarda da prévia do horário do semestre subsequente"""
 
     ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
-                null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
+                    blank=False, default=1, null=False)
     curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
                 null=False)
 
     class Meta:
         managed = True
         db_table = 'horario'
+        app_label = 'cadd'
 
 
 class ItemHorario(models.Model):
@@ -128,6 +143,7 @@ class ItemHorario(models.Model):
     class Meta:
         managed = True
         db_table = 'item_horario'
+        app_label = 'cadd'
 
 
 class Plano(models.Model):
@@ -139,8 +155,8 @@ class Plano(models.Model):
         ('E', 'Encerrado'),
     )
     ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
-                    null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
+                    blank=False, default=1, null=False)
     situacao = models.CharField(u'Situação', max_length=1,
                     choices=SITUACAO_CHOICES, blank=False, default='M')
     avaliacao = models.TextField(u'Anotação', blank=True, null=True)
@@ -150,6 +166,7 @@ class Plano(models.Model):
     class Meta:
         managed = True
         db_table = 'plano'
+        app_label = 'cadd'
 
 
 class ItemPlanoAtual(models.Model):
@@ -163,20 +180,22 @@ class ItemPlanoAtual(models.Model):
     class Meta:
         managed = True
         db_table = 'item_plano_atual'
+        app_label = 'cadd'
 
 
 class PlanoFuturo(models.Model):
     """Classe de uso do sistema para a guarda do plano de estudo futuro dos alunos"""
 
     ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', blank=False,
-                    null=False)
+    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
+                    blank=False, default=1, null=False)
     plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False,
                     null=False)
 
     class Meta:
         managed = True
         db_table = 'plano_futuro'
+        app_label = 'cadd'
 
 
 class ItemPlanoFuturo(models.Model):
@@ -190,3 +209,4 @@ class ItemPlanoFuturo(models.Model):
     class Meta:
         managed = True
         db_table = 'item_plano_futuro'
+        app_label = 'cadd'

@@ -19,6 +19,7 @@ class Alocacacaodisciplinasemdepartamento(models.Model):
     class Meta:
         managed = False
         db_table = 'alocacacaodisciplinasemdepartamento'
+        app_label = 'sca'
 
 
 class Aluno(models.Model):
@@ -39,6 +40,7 @@ class Aluno(models.Model):
     class Meta:
         managed = False
         db_table = 'aluno'
+        app_label = 'sca'
 
 
 class Blocoequivalencia(models.Model):
@@ -49,6 +51,7 @@ class Blocoequivalencia(models.Model):
     class Meta:
         managed = False
         db_table = 'blocoequivalencia'
+        app_label = 'sca'
 
 
 class Curso(models.Model):
@@ -60,9 +63,13 @@ class Curso(models.Model):
     coordenador = models.ForeignKey('Professor', models.DO_NOTHING,
                         blank=True, null=True)
 
+    def __str__(self):
+        return self.nome
+
     class Meta:
         managed = False
         db_table = 'curso'
+        app_label = 'sca'
 
 
 class CursoDisciplina(models.Model):
@@ -74,6 +81,7 @@ class CursoDisciplina(models.Model):
     class Meta:
         managed = False
         db_table = 'curso_disciplina'
+        app_label = 'sca'
 
 
 class Departamento(models.Model):
@@ -86,6 +94,7 @@ class Departamento(models.Model):
     class Meta:
         managed = False
         db_table = 'departamento'
+        app_label = 'sca'
 
 
 class DepartamentoDisciplina(models.Model):
@@ -99,6 +108,7 @@ class DepartamentoDisciplina(models.Model):
         managed = False
         db_table = 'departamento_disciplina'
         unique_together = (('departamento', 'disciplinas'),)
+        app_label = 'sca'
 
 
 class DepartamentoProfessor(models.Model):
@@ -112,6 +122,7 @@ class DepartamentoProfessor(models.Model):
         managed = False
         db_table = 'departamento_professor'
         unique_together = (('departamento', 'professores'),)
+        app_label = 'sca'
 
 
 class Disciplina(models.Model):
@@ -133,6 +144,7 @@ class Disciplina(models.Model):
     class Meta:
         managed = False
         db_table = 'disciplina'
+        app_label = 'sca'
 
 
 #class DisciplinaPrereqs(models.Model):
@@ -159,6 +171,7 @@ class DisciplinasEquivalentes(models.Model):
         managed = False
         db_table = 'disciplinas_equivalentes'
         unique_together = (('bloco', 'disciplinasequivalentes'),)
+        app_label = 'sca'
 
 
 class DisciplinasOriginais(models.Model):
@@ -172,6 +185,7 @@ class DisciplinasOriginais(models.Model):
         managed = False
         db_table = 'disciplinas_originais'
         unique_together = (('bloco', 'disciplinasoriginais'),)
+        app_label = 'sca'
 
 
 class Historicoescolar(models.Model):
@@ -184,11 +198,12 @@ class Historicoescolar(models.Model):
     class Meta:
         managed = False
         db_table = 'historicoescolar'
+        app_label = 'sca'
 
 
 class Itemhistoricoescolar(models.Model):
     """Classe importada da tabela itemhistoricoescolar do banco de dados SCA"""
-    """TODO: Necessita dos campos mediaFinal e faltas não contemplados no esquema"""
+    """TODO: Faltam os campos mediaFinal e faltas não contemplados no esquema"""
 
     id = models.BigAutoField(primary_key=True)
     ano = models.IntegerField(blank=True, null=True)
@@ -202,11 +217,11 @@ class Itemhistoricoescolar(models.Model):
     class Meta:
         managed = False
         db_table = 'itemhistoricoescolar'
+        app_label = 'sca'
 
 
 class Professor(models.Model):
     """Classe importada da tabela professor do banco de dados SCA"""
-    """Retirados os campos desnecessários"""
 
     id = models.BigAutoField(primary_key=True)
     matricula = models.CharField(max_length=255, blank=True, null=True)
@@ -215,6 +230,7 @@ class Professor(models.Model):
     class Meta:
         managed = False
         db_table = 'professor'
+        app_label = 'sca'
 
 
 class ProfessorDisciplina(models.Model):
@@ -227,6 +243,7 @@ class ProfessorDisciplina(models.Model):
         managed = False
         db_table = 'professor_disciplina'
         unique_together = (('professor', 'disciplina'),)
+        app_label = 'sca'
 
 
 class Tabelaequivalencias(models.Model):
@@ -240,6 +257,7 @@ class Tabelaequivalencias(models.Model):
     class Meta:
         managed = False
         db_table = 'tabelaequivalencias'
+        app_label = 'sca'
 
 
 class TabelaequivalenciasBlocoequivalencia(models.Model):
@@ -254,6 +272,7 @@ class TabelaequivalenciasBlocoequivalencia(models.Model):
         managed = False
         db_table = 'tabelaequivalencias_blocoequivalencia'
         unique_together = (('tabelaequivalencias', 'blocosequivalencia'),)
+        app_label = 'sca'
 
 
 class Turma(models.Model):
@@ -271,6 +290,7 @@ class Turma(models.Model):
     class Meta:
         managed = False
         db_table = 'turma'
+        app_label = 'sca'
 
 
 class Versaocurso(models.Model):
@@ -288,6 +308,7 @@ class Versaocurso(models.Model):
     class Meta:
         managed = False
         db_table = 'versaocurso'
+        app_label = 'sca'
 
 
 class VersaocursoTabelaequivalencias(models.Model):
@@ -303,3 +324,4 @@ class VersaocursoTabelaequivalencias(models.Model):
         managed = False
         db_table = 'versaocurso_tabelaequivalencias'
         unique_together = (('versaocurso', 'tabelasequivalencias'),)
+        app_label = 'sca'
