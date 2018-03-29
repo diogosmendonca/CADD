@@ -18,5 +18,5 @@ alunos, disciplinas, grades curriculares, cursos, pré-requisitos
 
 Situação dos alunos: cursando/trancado/jubilado
 
->>>>>>> e9e1de340a626e8a8f7b5ce79485fdd2cabe5b74
+
 Faixas de criticidade: azul/laranja/vermelha/preta

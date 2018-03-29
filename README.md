@@ -6,5 +6,5 @@ A finalidade deste trabalho é o do desenvolvimento e implementação de uma sol
 
     Curso: Curso Superior Tecnologia de Sistemas para Internet (CST-SI)
     Discentes: Cristiano do Nascimento Cruz e José Américo Rodrigues 
-    Período: 2017.2
+    Período: 2017.2/2018.1
     Prof. Orientador: Diogo Silveira Mendonça
