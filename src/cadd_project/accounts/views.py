@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .forms import UsuarioForm
+from sca import models
 
 # Create your views here.
 
@@ -21,7 +22,11 @@ def usuario_login(request):
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            return redirect(request.GET.get('next', '/'))
+#            if sca.Aluno.matricula.filter(matricula=username):
+#                request.session['perfil'] = 0
+#            if sca.Professor.matricula.filter(matricula=username):
+#                request.session['perfil'] = 1
+#            return redirect(request.GET.get('next', '/'))
         else:
             messages.error(request, 'Usuário ou senha inválidos!')
     return render(request, 'accounts/usuario_login.html')
