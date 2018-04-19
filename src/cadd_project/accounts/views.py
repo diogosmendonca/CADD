@@ -21,11 +21,16 @@ def usuario_login(request):
 
         user = authenticate(username=username, password=password)
         if user:
-            login(request, user)
-#            if sca.Aluno.matricula.filter(matricula=username):
-#                request.session['perfil'] = 0
-#            if sca.Professor.matricula.filter(matricula=username):
-#                request.session['perfil'] = 1
+#            if scadb.Users.login.filter(login=username):
+#                tipoUsuario = sca.UserProfile.type.filter(id=sca.Useruserprofile.id)
+#                if tipoUsuario == 'ROLE ALUNO':
+#                    request.session['perfil'] = 0
+#                if tipoUsuario == 'ROLE PROFESSOR':
+#                    request.session['perfil'] = 1
+#
+                login(request, user)
+#            else:
+#                messages.error(request, 'Usuário não cadastrado no sistema SCA!')
 #            return redirect(request.GET.get('next', '/'))
         else:
             messages.error(request, 'Usuário ou senha inválidos!')

@@ -14,7 +14,7 @@ class Alocacacaodisciplinasemdepartamento(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     departamento = models.ForeignKey('Departamento', models.DO_NOTHING,
-                        blank=True, null=True)
+                    blank=True, null=True)
 
     class Meta:
         managed = False
@@ -24,14 +24,15 @@ class Alocacacaodisciplinasemdepartamento(models.Model):
 
 class Aluno(models.Model):
     """Classe importada da tabela aluno do banco de dados SCA"""
-    """TODO: Faltam os campos email, situacao, faixa e formaEvasao não contemplados no esquema"""
+    """TODO: Faltam os campos situacao, faixa e formaEvasao nao contemplados no esquema"""
 
     id = models.BigAutoField(primary_key=True)
     matricula = models.CharField(max_length=255, blank=True, null=True)
     cpf = models.CharField(max_length=255, blank=True, null=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
     datanascimento = models.DateTimeField(db_column='dataNascimento',
-                        blank=True, null=True)
+                    blank=True, null=True)
     historico = models.ForeignKey('Historicoescolar', models.DO_NOTHING,
                     blank=True, null=True)
     versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
@@ -40,6 +41,24 @@ class Aluno(models.Model):
     class Meta:
         managed = False
         db_table = 'aluno'
+        app_label = 'sca'
+
+
+class Atividadecomplementar(models.Model):
+    """Classe importada da tabela atividadecomplementar do banco de dados SCA"""
+    """TODO: Ainda não se sabe se será utilizada"""
+
+    id = models.BigAutoField(primary_key=True)
+    cargahorariamax = models.TextField(db_column='cargaHorariaMax', blank=True,
+                    null=True)
+    cargahorariamin = models.TextField(db_column='cargaHorariaMin', blank=True,
+                    null=True)
+    tipo = models.ForeignKey('Tipoatividadecomplementar', models.DO_NOTHING,
+                    blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'atividadecomplementar'
         app_label = 'sca'
 
 
@@ -61,7 +80,11 @@ class Curso(models.Model):
     nome = models.CharField(max_length=255, blank=True, null=True)
     sigla = models.CharField(max_length=255, blank=True, null=True)
     coordenador = models.ForeignKey('Professor', models.DO_NOTHING,
-                        blank=True, null=True)
+                    db_column='coordenador', blank=True, null=True, related_name='coordenador')
+    coordenadoratividadescomplementares = models.ForeignKey('Professor',
+                    models.DO_NOTHING,
+                    db_column='coordenadorAtividadesComplementares_id',
+                    blank=True, null=True, related_name='coordenadoratividades')
 
     def __str__(self):
         return self.nome
@@ -72,11 +95,13 @@ class Curso(models.Model):
         app_label = 'sca'
 
 
-class CursoDisciplina(models.Model):
+class Cursodisciplina(models.Model):
     """Classe importada da tabela curso_disciplina do banco de dados SCA"""
 
-    curso = models.ForeignKey(Curso, models.DO_NOTHING)
-    disciplinas = models.ForeignKey('Disciplina', models.DO_NOTHING, unique=True)
+    curso = models.ForeignKey(Curso, models.DO_NOTHING, db_column='Curso_id')
+#    disciplinas = models.ForeignKey('Disciplina', models.DO_NOTHING, unique=True)
+    disciplinas = models.OneToOneField('Disciplina', models.DO_NOTHING, unique=True)
+
 
     class Meta:
         managed = False
@@ -97,12 +122,15 @@ class Departamento(models.Model):
         app_label = 'sca'
 
 
-class DepartamentoDisciplina(models.Model):
+class Departamentodisciplina(models.Model):
     """Classe importada da tabela departamento_disciplina do banco de dados SCA"""
 
-    departamento = models.ForeignKey(Departamento, models.DO_NOTHING,
-                        primary_key=True)
-    disciplinas = models.ForeignKey('Disciplina', models.DO_NOTHING, unique=True)
+#    departamento = models.ForeignKey(Departamento, models.DO_NOTHING,
+#                    db_column='Departamento_id', primary_key=True)
+    departamento = models.OneToOneField(Departamento, models.DO_NOTHING,
+                    db_column='Departamento_id', primary_key=True)
+#    disciplinas = models.ForeignKey('Disciplina', models.DO_NOTHING, unique=True)
+    disciplinas = models.OneToOneField('Disciplina', models.DO_NOTHING, unique=True)
 
     class Meta:
         managed = False
@@ -111,12 +139,15 @@ class DepartamentoDisciplina(models.Model):
         app_label = 'sca'
 
 
-class DepartamentoProfessor(models.Model):
+class Departamentoprofessor(models.Model):
     """Classe importada da tabela departamento_professor do banco de dados SCA"""
 
-    departamento = models.ForeignKey(Departamento, models.DO_NOTHING,
-                        primary_key=True)
-    professores = models.ForeignKey('Professor', models.DO_NOTHING, unique=True)
+#    departamento = models.ForeignKey(Departamento, models.DO_NOTHING,
+#                    db_column='Departamento_id', primary_key=True)
+    departamento = models.OneToOneField(Departamento, models.DO_NOTHING,
+                    db_column='Departamento_id', primary_key=True)
+#    professores = models.ForeignKey('Professor', models.DO_NOTHING, unique=True)
+    professores = models.OneToOneField('Professor', models.DO_NOTHING, unique=True)
 
     class Meta:
         managed = False
@@ -133,13 +164,14 @@ class Disciplina(models.Model):
     nome = models.CharField(max_length=255, blank=True, null=True)
     codigo = models.CharField(max_length=255, blank=True, null=True)
     quantidadecreditos = models.IntegerField(db_column='quantidadeCreditos',
-                            blank=True, null=True)
+                    blank=True, null=True)
     cargahoraria = models.IntegerField(db_column='cargaHoraria')
     ehoptativa = models.TextField(db_column='ehOptativa', blank=True, null=True)
     versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
-                            db_column='versaoCurso_id', blank=True, null=True)
-    alocacao_depto = models.ForeignKey(Departamento, models.DO_NOTHING,
-                            blank=True, null=True)
+                    db_column='versaoCurso_id', blank=True, null=True)
+    alocacao_depto = models.ForeignKey(Alocacacaodisciplinasemdepartamento,
+                    models.DO_NOTHING, db_column='ALOCACAO_DEPTO_ID',
+                    blank=True, null=True)
 
     class Meta:
         managed = False
@@ -147,25 +179,36 @@ class Disciplina(models.Model):
         app_label = 'sca'
 
 
-#class DisciplinaPrereqs(models.Model):
-#    """Classe importada da tabela disciplina_prereqs do banco de dados SCA"""
-#    """TODO: Não entendi o porquê de ser relacionado com gradedisponibilidade"""
+class DisciplinaPrereqs(models.Model):
+    """Classe importada da tabela disciplina_prereqs do banco de dados SCA"""
 
-#    grade = models.ForeignKey('Gradedisponibilidade', models.DO_NOTHING, primary_key=True)
-#    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING)
+#    grade = models.ForeignKey(Disciplina, models.DO_NOTHING,
+#                    db_column='GRADE_ID', primary_key=True)
+    grade = models.OneToOneField(Disciplina, models.DO_NOTHING,
+                    db_column='GRADE_ID', primary_key=True, related_name='grade')
+#    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING,
+#                    db_column='DISCIPLINA_ID')
+    disciplina = models.OneToOneField(Disciplina, models.DO_NOTHING,
+                    db_column='DISCIPLINA_ID', related_name='disciplina')
 
-#    class Meta:
-#        managed = False
-#        db_table = 'disciplina_prereqs'
-#        unique_together = (('grade', 'disciplina'),)
+    class Meta:
+        managed = False
+        db_table = 'disciplina_prereqs'
+        unique_together = (('grade', 'disciplina'),)
+        app_label = 'sca'
 
 
-class DisciplinasEquivalentes(models.Model):
+class Disciplinasequivalentes(models.Model):
     """Classe importada da tabela disciplinas_equivalentes do banco de dados SCA"""
 
-    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
-                primary_key=True)
-    disciplinasequivalentes = models.ForeignKey(Disciplina, models.DO_NOTHING)
+#    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
+#                    db_column='BLOCO_ID', primary_key=True)
+    bloco = models.OneToOneField(Blocoequivalencia, models.DO_NOTHING,
+                    db_column='BLOCO_ID', primary_key=True)
+#    disciplinasequivalentes = models.ForeignKey(Disciplina, models.DO_NOTHING,
+#                    db_column='DISCIPLINASEQUIVALENTES_ID')
+    disciplinasequivalentes = models.OneToOneField(Disciplina, models.DO_NOTHING,
+                    db_column='DISCIPLINASEQUIVALENTES_ID')
 
     class Meta:
         managed = False
@@ -174,12 +217,17 @@ class DisciplinasEquivalentes(models.Model):
         app_label = 'sca'
 
 
-class DisciplinasOriginais(models.Model):
+class Disciplinasoriginais(models.Model):
     """Classe importada da tabela disciplinas_originais do banco de dados SCA"""
 
-    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
-                primary_key=True)
-    disciplinasoriginais = models.ForeignKey(Disciplina, models.DO_NOTHING)
+#    bloco = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
+#                    db_column='BLOCO_ID', primary_key=True)
+    bloco = models.OneToOneField(Blocoequivalencia, models.DO_NOTHING,
+                    db_column='BLOCO_ID', primary_key=True)
+#    disciplinasoriginais = models.ForeignKey(Disciplina, models.DO_NOTHING,
+#                    db_column='DISCIPLINASORIGINAIS_ID')
+    disciplinasoriginais = models.OneToOneField(Disciplina, models.DO_NOTHING,
+                    db_column='DISCIPLINASORIGINAIS_ID')
 
     class Meta:
         managed = False
@@ -193,7 +241,7 @@ class Historicoescolar(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
-                        db_column='versaoCurso_id', blank=True, null=True)
+                    db_column='versaoCurso_id', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -201,22 +249,56 @@ class Historicoescolar(models.Model):
         app_label = 'sca'
 
 
+class Inscricao(models.Model):
+    """Classe importada da tabela inscricao do banco de dados SCA"""
+
+    id = models.BigAutoField(primary_key=True)
+    aluno = models.ForeignKey(Aluno, models.DO_NOTHING, blank=True, null=True)
+    avaliacao = models.ForeignKey('Notafinal', models.DO_NOTHING, blank=True,
+                    null=True)
+    turma = models.ForeignKey('Turma', models.DO_NOTHING, db_column='TURMA_ID',
+                    blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'inscricao'
+        app_label = 'sca'
+
+
 class Itemhistoricoescolar(models.Model):
     """Classe importada da tabela itemhistoricoescolar do banco de dados SCA"""
-    """TODO: Faltam os campos mediaFinal e faltas não contemplados no esquema"""
 
     id = models.BigAutoField(primary_key=True)
     ano = models.IntegerField(blank=True, null=True)
     periodo = models.IntegerField(blank=True, null=True)
     situacao = models.IntegerField(blank=True, null=True)
-    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING,
-                                blank=True, null=True)
+    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING, blank=True,
+                    null=True)
     historico_escolar = models.ForeignKey(Historicoescolar, models.DO_NOTHING,
-                                blank=True, null=True)
+                    db_column='HISTORICO_ESCOLAR_ID', blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'itemhistoricoescolar'
+        app_label = 'sca'
+
+
+class Notafinal(models.Model):
+    """Classe importada da tabela notafinal do banco de dados SCA"""
+
+    id = models.BigAutoField(primary_key=True)
+    frequencia = models.DecimalField(max_digits=19, decimal_places=2,
+                    blank=True, null=True)
+    notap1 = models.DecimalField(db_column='notaP1', max_digits=19,
+                    decimal_places=2, blank=True, null=True)
+    notap2 = models.DecimalField(db_column='notaP2', max_digits=19,
+                    decimal_places=2, blank=True, null=True)
+    notap3 = models.DecimalField(db_column='notaP3', max_digits=19,
+                    decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'notafinal'
         app_label = 'sca'
 
 
@@ -225,6 +307,10 @@ class Professor(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     matricula = models.CharField(max_length=255, blank=True, null=True)
+    cpf = models.CharField(max_length=255, blank=True, null=True)
+    datanascimento = models.DateTimeField(db_column='dataNascimento',
+                    blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -233,16 +319,70 @@ class Professor(models.Model):
         app_label = 'sca'
 
 
-class ProfessorDisciplina(models.Model):
+class Professordisciplina(models.Model):
     """Classe importada da tabela professor_disciplina do banco de dados SCA"""
 
-    professor = models.ForeignKey(Professor, models.DO_NOTHING, primary_key=True)
-    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING)
+#    professor = models.ForeignKey(Professor, models.DO_NOTHING,
+#                    db_column='PROFESSOR_ID', primary_key=True)
+    professor = models.OneToOneField(Professor, models.DO_NOTHING,
+                    db_column='PROFESSOR_ID', primary_key=True)
+#    disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING,
+#                    db_column='DISCIPLINA_ID')
+    disciplina = models.OneToOneField(Disciplina, models.DO_NOTHING,
+                    db_column='DISCIPLINA_ID')
 
     class Meta:
         managed = False
         db_table = 'professor_disciplina'
         unique_together = (('professor', 'disciplina'),)
+        app_label = 'sca'
+
+
+class Registroatividadecomplementar(models.Model):
+    """Classe importada da tabela registroatividadecomplementar do banco de dados SCA"""
+
+    id = models.BigAutoField(primary_key=True)
+    cargahoraria = models.TextField(db_column='cargaHoraria', blank=True,
+                    null=True)
+    dataanalise = models.DateTimeField(db_column='dataAnalise', blank=True,
+                    null=True)
+    descricao = models.CharField(max_length=255, blank=True, null=True)
+    estado = models.IntegerField(blank=True, null=True)
+    atividade = models.ForeignKey(Atividadecomplementar, models.DO_NOTHING,
+                    blank=True, null=True)
+    aluno = models.ForeignKey(Aluno, models.DO_NOTHING, db_column='ALUNO_ID',
+                    blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'registroatividadecomplementar'
+        app_label = 'sca'
+
+
+class Tabelaatividadescomplementares(models.Model):
+    """Classe importada da tabela tabelaatividadescomplementares do banco de dados SCA"""
+
+    id = models.BigAutoField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tabelaatividadescomplementares'
+        app_label = 'sca'
+
+
+class TabelaatividadescomplementaresAtividadecomplementar(models.Model):
+    """Classe importada da tabela tabelaatividadescomplementares_atividadecomplementar do banco de dados SCA"""
+
+    tabelaatividadescomplementares = models.ForeignKey(Tabelaatividadescomplementares,
+                    models.DO_NOTHING, db_column='TabelaAtividadesComplementares_id')
+#    atividades = models.ForeignKey(Atividadecomplementar, models.DO_NOTHING,
+#                    unique=True)
+    atividades = models.OneToOneField(Atividadecomplementar, models.DO_NOTHING,
+                    unique=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tabelaatividadescomplementares_atividadecomplementar'
         app_label = 'sca'
 
 
@@ -252,7 +392,7 @@ class Tabelaequivalencias(models.Model):
     id = models.BigAutoField(primary_key=True)
     versaocursocorrespondente = models.ForeignKey('Versaocurso',
             models.DO_NOTHING, db_column='versaoCursoCorrespondente_id',
-            blank=True, null=True)  # Field name made lowercase.
+            blank=True, null=True)
 
     class Meta:
         managed = False
@@ -263,15 +403,32 @@ class Tabelaequivalencias(models.Model):
 class TabelaequivalenciasBlocoequivalencia(models.Model):
     """Classe importada da tabela tabelaequivalencias_blocoequivalencia do banco de dados SCA"""
 
-    tabelaequivalencias = models.ForeignKey(Tabelaequivalencias,
-                                models.DO_NOTHING, primary_key=True)
-    blocosequivalencia = models.ForeignKey(Blocoequivalencia,
-                                models.DO_NOTHING, unique=True)
+#    tabelaequivalencias = models.ForeignKey(Tabelaequivalencias, models.DO_NOTHING,
+#                    db_column='TabelaEquivalencias_id', primary_key=True)
+    tabelaequivalencias = models.OneToOneField(Tabelaequivalencias, models.DO_NOTHING,
+                    db_column='TabelaEquivalencias_id', primary_key=True)
+#    blocosequivalencia = models.ForeignKey(Blocoequivalencia, models.DO_NOTHING,
+#                    db_column='blocosEquivalencia_id', unique=True)
+    blocosequivalencia = models.OneToOneField(Blocoequivalencia, models.DO_NOTHING,
+                    db_column='blocosEquivalencia_id', unique=True)
 
     class Meta:
         managed = False
         db_table = 'tabelaequivalencias_blocoequivalencia'
         unique_together = (('tabelaequivalencias', 'blocosequivalencia'),)
+        app_label = 'sca'
+
+
+class Tipoatividadecomplementar(models.Model):
+    """Classe importada da tabela tipoatividadecomplementar do banco de dados SCA"""
+
+    id = models.BigAutoField(primary_key=True)
+    categoria = models.IntegerField(blank=True, null=True)
+    descricao = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tipoatividadecomplementar'
         app_label = 'sca'
 
 
@@ -283,9 +440,9 @@ class Turma(models.Model):
     ano = models.IntegerField(blank=True, null=True)
     periodo = models.IntegerField(blank=True, null=True)
     disciplina = models.ForeignKey(Disciplina, models.DO_NOTHING, blank=True,
-                        null=True)
+                    null=True)
     professor = models.ForeignKey(Professor, models.DO_NOTHING, blank=True,
-                        null=True)
+                    null=True)
 
     class Meta:
         managed = False
@@ -293,16 +450,65 @@ class Turma(models.Model):
         app_label = 'sca'
 
 
+class UserProfile(models.Model):
+    """Classe importada da tabela user_profile do banco de dados SCA"""
+
+    type = models.CharField(db_column='TYPE', unique=True, max_length=30)
+
+    class Meta:
+        managed = False
+        db_table = 'user_profile'
+        app_label = 'sca'
+
+
+class Useruserprofile(models.Model):
+    """Classe importada da tabela user_user_profile do banco de dados SCA"""
+
+#    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='USER_ID',
+#                    primary_key=True)
+    user = models.OneToOneField('Users', models.DO_NOTHING, db_column='USER_ID',
+                    primary_key=True)
+#    user_profile = models.ForeignKey(UserProfile, models.DO_NOTHING,
+#                    db_column='USER_PROFILE_ID')
+    user_profile = models.OneToOneField(UserProfile, models.DO_NOTHING,
+                    db_column='USER_PROFILE_ID')
+
+    class Meta:
+        managed = False
+        db_table = 'user_user_profile'
+        unique_together = (('user', 'user_profile'),)
+        app_label = 'sca'
+
+
+class Users(models.Model):
+    """Classe importada da tabela users do banco de dados SCA"""
+
+    dob = models.DateTimeField(blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    login = models.CharField(unique=True, max_length=255)
+    matricula = models.CharField(max_length=255, blank=True, null=True)
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'users'
+        app_label = 'sca'
+
+
 class Versaocurso(models.Model):
     """Classe importada da tabela versaocurso do banco de dados SCA"""
 
     id = models.BigAutoField(primary_key=True)
+    cargahorariaminaitvcomp = models.TextField(db_column='cargaHorariaMinAitvComp',
+                    blank=True, null=True)
     cargahorariaminoptativas = models.TextField(db_column='cargaHorariaMinOptativas',
-                                    blank=True, null=True)
+                    blank=True, null=True)
     numero = models.CharField(max_length=255, blank=True, null=True)
     qtdperiodominimo = models.IntegerField(db_column='qtdPeriodoMinimo',
-                                    blank=True, null=True)
+                    blank=True, null=True)
     situacao = models.IntegerField(blank=True, null=True)
+    atividades = models.ForeignKey(Tabelaatividadescomplementares,
+                    models.DO_NOTHING, blank=True, null=True)
     curso = models.ForeignKey(Curso, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -314,11 +520,14 @@ class Versaocurso(models.Model):
 class VersaocursoTabelaequivalencias(models.Model):
     """Classe importada da tabela versaocurso_tabelaequivalencias do banco de dados SCA"""
 
-    versaocurso = models.ForeignKey(Versaocurso, models.DO_NOTHING,
-                            primary_key=True)
-    tabelasequivalencias = models.ForeignKey(Tabelaequivalencias,
-                            models.DO_NOTHING,
-                            db_column='tabelasEquivalencias_id', unique=True)
+#    versaocurso = models.ForeignKey(Versaocurso, models.DO_NOTHING,
+#                    db_column='VersaoCurso_id', primary_key=True)
+    versaocurso = models.OneToOneField(Versaocurso, models.DO_NOTHING,
+                    db_column='VersaoCurso_id', primary_key=True)
+#    tabelasequivalencias = models.ForeignKey(Tabelaequivalencias, models.DO_NOTHING,
+#                    db_column='tabelasEquivalencias_id', unique=True)
+    tabelasequivalencias = models.OneToOneField(Tabelaequivalencias, models.DO_NOTHING,
+                    db_column='tabelasEquivalencias_id', unique=True)
 
     class Meta:
         managed = False

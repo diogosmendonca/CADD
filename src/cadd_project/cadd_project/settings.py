@@ -87,18 +87,18 @@ DATABASES = {
         'NAME': 'cadddb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.2', # celular
-#        'HOST': '192.168.1.4', # wifi
+#        'HOST': '172.20.10.2', # celular
+        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
         'PORT': '3311',
     },
-    'sca': {
+    'scadb': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'scadb',
         'USER': 'root',
         'PASSWORD': 'root',
-       'HOST': '172.20.10.2', # celular
-#        'HOST': '192.168.1.4', # wifi
+#        'HOST': '172.20.10.2', # celular
+        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
         'PORT': '3311',
     }
