@@ -40,9 +40,12 @@ INSTALLED_APPS = [
     # Aplicações de terceiros
     'widget_tweaks',
     # Minhas Aplicações
-    'accounts.apps.AccountsConfig',
-    'cadd.apps.CaddConfig',
-    'sca.apps.ScaConfig',
+#    'accounts.apps.AccountsConfig',
+#    'cadd.apps.CaddConfig',
+#    'sca.apps.ScaConfig',
+    'accounts',
+    'cadd',
+    'sca',
 ]
 
 MIDDLEWARE = [
@@ -60,8 +63,8 @@ ROOT_URLCONF = 'cadd_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['static/templates/'],
-        'APP_DIRS': False,
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -79,7 +82,7 @@ WSGI_APPLICATION = 'cadd_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-#DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
+DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
 
 DATABASES = {
     'default': {
@@ -91,8 +94,11 @@ DATABASES = {
         'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
         'PORT': '3311',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
     },
-    'scadb': {
+    'sca': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'scadb',
         'USER': 'root',
@@ -101,10 +107,11 @@ DATABASES = {
         'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
         'PORT': '3311',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
     }
 }
-
-DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -142,7 +149,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),

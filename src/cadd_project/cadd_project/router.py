@@ -1,44 +1,45 @@
 
 class DatabaseRouter(object):
-    """
-    Determine how to route database calls for an app's models (in this case, for an app named Example).
-    All other models will be routed to the next router in the DATABASE_ROUTERS setting if applicable,
-    or otherwise to the default database.
-    """
+    """Determina como rotear chamadas de banco de dados para os modelos"""
 
-#    def db_for_read(self, model, **hints):
-#        """Send all read operations on Example app models to `example_db`."""
-#        if model._meta.app_label == 'example':
-#            return 'example_db'
-#        return None
+    def db_for_read(self, model, **hints):
 
-#    def db_for_write(self, model, **hints):
-#        """Send all write operations on Example app models to `example_db`."""
-#        if model._meta.app_label == 'example':
-#            return 'example_db'
-#        return None
+        """Todas as operações de leitura do app accounts são enviadas ao modelo `cadd`"""
+        if model._meta.app_label == 'accounts':
+            return 'cadd'
+        """Todas as operações de leitura do app cadd são enviadas ao modelo `cadd`"""
+        if model._meta.app_label == 'cadd':
+            return 'cadd'
+        """Todas as operações de leitura do app sca são enviadas ao modelo `sca`"""
+        if model._meta.app_label == 'sca':
+            return 'sca'
+        return None
+
+    def db_for_write(self, model, **hints):
+
+        """Todas as operações de escrita do app accounts são enviadas ao modelo `cadd`"""
+        if model._meta.app_label == 'accounts':
+            return 'cadd'
+        """Todas as operações de escrita do app cadd são enviadas ao modelo `cadd`"""
+        if model._meta.app_label == 'cadd':
+            return 'cadd'
+        return None
 
     def allow_relation(self, obj1, obj2, **hints):
-        """Determine if relationship is allowed between two objects."""
+        """Determina se relacionamentos são permitidos entre dois objetos"""
 
-        # Allow any relation between two models that are both in the Example app.
+        # Permite qualquer relacionamento entre os dois modelos de banco de dados
         if obj1._meta.app_label == 'cadd' and obj2._meta.app_label == 'sca':
             return True
-        # No opinion if neither object is in the Example app (defer to default or other routers).
-#        elif 'example' not in [obj1._meta.app_label, obj2._meta.app_label]:
-#            return None
 
-        # Block relationship if one object is in the Example app and the other isn't.
-#            return False
+        return False
 
-#    def allow_migrate(self, db, app_label, model_name=None, **hints):
-#        """Ensure that the Example app's models get created on the right database."""
-#        if app_label == 'example':
-#            # The Example app should be migrated only on the example_db database.
-#            return db == 'example_db'
-#        elif db == 'example_db':
-#            # Ensure that all other apps don't get migrated on the example_db database.
-#            return False
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        """Determina que os modelos sejam criados no banco de dados correto"""
 
-        # No opinion for all other scenarios
+        if app_label == 'sca':
+            return db == 'sca'
+        elif db == 'cadd':
+            return False
+
         return None

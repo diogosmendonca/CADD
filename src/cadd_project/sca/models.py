@@ -8,7 +8,6 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-
 class Alocacacaodisciplinasemdepartamento(models.Model):
     """Classe importada da tabela alocacacaodisciplinasemdepartamento do banco de dados SCA"""
 
@@ -460,6 +459,9 @@ class UserProfile(models.Model):
         db_table = 'user_profile'
         app_label = 'sca'
 
+    def __str__(self):
+        return self.type
+
 
 class Useruserprofile(models.Model):
     """Classe importada da tabela user_user_profile do banco de dados SCA"""
@@ -470,14 +472,17 @@ class Useruserprofile(models.Model):
                     primary_key=True)
 #    user_profile = models.ForeignKey(UserProfile, models.DO_NOTHING,
 #                    db_column='USER_PROFILE_ID')
-    user_profile = models.OneToOneField(UserProfile, models.DO_NOTHING,
+    userprofile = models.OneToOneField(UserProfile, models.DO_NOTHING,
                     db_column='USER_PROFILE_ID')
 
     class Meta:
         managed = False
         db_table = 'user_user_profile'
-        unique_together = (('user', 'user_profile'),)
+        unique_together = (('user', 'userprofile'),)
         app_label = 'sca'
+
+    def __str__(self):
+        return self.user
 
 
 class Users(models.Model):
