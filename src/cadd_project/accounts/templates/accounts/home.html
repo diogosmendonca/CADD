@@ -3,9 +3,7 @@
 {% block body %}
   <p>Seja bem vindo {% if user.is_authenticated %}{{ user.username }}{% else %}usuário anônimo{% endif %}</p>
 
-  {% if user.is_authenticated %}
-    <p><a href="{% url 'accounts:usuario_logout' %}">Logout</a>.</p>
-  {% else %}
+  {% if user.is_authenticated == "False" %}
     <p><a href="{% url 'accounts:usuario_registrar' %}">Registre-se</a>.</p>
     <p><a href="{% url 'accounts:usuario_login' %}">Login</a>.</p>
   {% endif %}
