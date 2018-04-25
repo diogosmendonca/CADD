@@ -22,7 +22,7 @@ from accounts import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('cadd/', include(cadd_urls, namespace='cadd')),
+    path('cadd/', include(cadd_urls, namespace='sistema')),
     path('accounts/', include(accounts_urls, namespace='accounts')),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),

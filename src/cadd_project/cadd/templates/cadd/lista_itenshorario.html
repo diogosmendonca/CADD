@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <h1 class="h3 mb-2 font-weight-normal">Lista de Itens de horário {{ horario }}</h1>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+    {% endif %}
+    {% if itenshorario %}
+    <div class="form-group">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Dia da semana</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Departamento</th>
+                <th>Turma</th>
+                <th>Disciplina</th>
+                <th>Professor</th>
+                <th colspan="2" style="textalign:center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in itenshorario %}
+            <tr>
+                <td>{{ i.periodo }}</td>
+                <td>{{ i.diasemana }}</td>
+                <td>{{ i.inicio }}</td>
+                <td>{{ i.fim }}</td>
+                <td>{{ i.departamento }}</td>
+                <td>{{ i.turma }}</td>
+                <td>{{ i.disciplina }}</td>
+                <td>{{ i.professor }}</td>
+                <td><a href="{% url 'cadd:editar_itemhorario' i.id id_horario %}" class="btn btn-info btn-sm">Editar</a></td>
+                <td><a href="{% url 'cadd:excluir_itemhorario' i.id id_horario %}" class="btn btn-danger btn-sm">Excluir</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p> </p>
+    <div class="form-group">
+        <div class="alert alert-info" role="alert">
+          <p>Não há nenhum item de horário cadastrado!</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <a href="{% url 'cadd:novo_itemhorario' id_horario %}" class="btn btn-primary" role="button">Adicionar item</a><br>
+      <a href="{% url 'cadd:lista_horarios' %}">Voltar</a>
+    </div>
+</div>
+{% endblock body %}

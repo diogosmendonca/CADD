@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <h1 class="h3 mb-2 font-weight-normal">Lista de Comissões</h1>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+    {% endif %}
+    {% if comissoes %}
+    <div class="form-group">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Descrição</th>
+                <th colspan="3" style="textalign:center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in comissoes %}
+            <tr>
+                <td>{{ c.curso }}</td>
+                <td>{{ c.descricao }}</td>
+                <td><a href="{% url 'cadd:editar_comissao' c.id %}" class="btn btn-info btn-sm">Editar</a></td>
+                <td><a href="{% url 'cadd:excluir_comissao' c.id %}" class="btn btn-danger btn-sm">Excluir</a></td>
+                <td><a href="{% url 'cadd:lista_membros' c.id %}" class="btn btn-info btn-sm">Editar Membros</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p> </p>
+    <div class="form-group">
+        <div class="alert alert-info" role="alert">
+          <p>Não há nenhuma comissão cadastrada!</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <a href="{% url 'cadd:nova_comissao' %}" class="btn btn-primary" role="button">Adicionar comissão</a>
+      <a href="{% url 'home' %}">Voltar</a>
+  </div>
+</div>
+{% endblock body %}

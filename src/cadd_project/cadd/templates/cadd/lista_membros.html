@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <h1 class="h3 mb-2 font-weight-normal">Lista de Membros da {{ comissao }}</h1>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+    {% endif %}
+    {% if membros %}
+    <div class="form-group">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Professor</th>
+                <th>Portaria</th>
+                <th>Presidente</th>
+                <th>Ativo</th>
+                <th colspan="2" style="textalign:center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in membros %}
+            <tr>
+                <td>{{ m.professor }}</td>
+                <td>{{ m.portaria }}</td>
+                <td>{{ m.presidente }}</td>
+                <td>{{ m.ativo }}</td>
+                <td><a href="{% url 'cadd:editar_membro' m.id id_comissao %}" class="btn btn-info btn-sm">Editar</a></td>
+                <td><a href="{% url 'cadd:excluir_membro' m.id id_comissao %}" class="btn btn-danger btn-sm">Excluir</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p> </p>
+    <div class="form-group">
+        <div class="alert alert-info" role="alert">
+          <p>Não há nenhum membro cadastrado!</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <a href="{% url 'cadd:novo_membro' id_comissao %}" class="btn btn-primary" role="button">Adicionar membro</a>
+      <a href="{% url 'cadd:lista_comissoes' %}">Voltar</a>
+    </div>
+</div>
+{% endblock body %}

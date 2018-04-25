@@ -40,12 +40,12 @@ INSTALLED_APPS = [
     # Aplicações de terceiros
     'widget_tweaks',
     # Minhas Aplicações
-#    'accounts.apps.AccountsConfig',
-#    'cadd.apps.CaddConfig',
-#    'sca.apps.ScaConfig',
-    'accounts',
-    'cadd',
-    'sca',
+    'accounts.apps.AccountsConfig',
+    'cadd.apps.CaddConfig',
+    'sca.apps.ScaConfig',
+#    'accounts',
+#    'cadd',
+#    'sca',
 ]
 
 MIDDLEWARE = [
@@ -91,8 +91,9 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'root',
 #        'HOST': '172.20.10.2', # celular
-        'HOST': '192.168.1.4', # wifi
+#        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
+        'HOST': '192.168.1.115', # educandus
         'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
@@ -104,8 +105,9 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'root',
 #        'HOST': '172.20.10.2', # celular
-        'HOST': '192.168.1.4', # wifi
+#        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
+        'HOST': '192.168.1.115', # educandus
         'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',

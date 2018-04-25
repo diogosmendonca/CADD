@@ -17,6 +17,9 @@ class Comissao(models.Model):
     curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
                     null=False)
 
+    def __str__(self):
+        return self.descricao
+
     class Meta:
         managed = True
         db_table = 'comissao'
@@ -115,6 +118,9 @@ class Horario(models.Model):
     curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
                 null=False)
 
+    def __str__(self):
+        return str(self.ano) + '.' + str(self.periodo) + '-' + self.curso.sigla
+
     class Meta:
         managed = True
         db_table = 'horario'
@@ -124,9 +130,20 @@ class Horario(models.Model):
 class ItemHorario(models.Model):
     """Classe de uso do sistema para a guarda dos itens da prévia do horário"""
 
-#    periodo = models.PositiveSmallIntegerField(u'Período')
-    diasemana = models.PositiveSmallIntegerField(u'Dia da semana', blank=False,
+    DIASEMANA_CHOICES = (
+        (0, 'Domingo'),
+        (1, 'Segunda-feira'),
+        (2, 'Terça-feira'),
+        (3, 'Quarta-feira'),
+        (4, 'Quinta-feira'),
+        (5, 'Sexta-feira'),
+        (6, 'Sábado'),
+    )
+
+    periodo = models.CharField(u'Período', max_length=3, blank=False,
                         null=False)
+    diasemana = models.PositiveSmallIntegerField(u'Dia da semana', blank=False,
+                        null=False, choices=DIASEMANA_CHOICES)
     inicio = models.TimeField(u'Início', blank=False, null=False)
     fim = models.TimeField(u'Início', blank=False, null=False)
     horario = models.ForeignKey('Horario', models.DO_NOTHING, blank=False,

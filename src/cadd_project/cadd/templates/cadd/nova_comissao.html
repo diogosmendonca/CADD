@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block body %}
+<h1>Comissão</h1>
+<div class="row">
+    <form class="" action="" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.curso.id_for_label }}">Curso</label>
+            {{ form.curso }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.descricao.id_for_label }}">Descrição</label>
+            {{ form.descricao }}
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+    </form>
+</div>
+{% endblock body %}

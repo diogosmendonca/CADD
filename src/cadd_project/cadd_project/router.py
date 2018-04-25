@@ -4,12 +4,12 @@ class DatabaseRouter(object):
 
     def db_for_read(self, model, **hints):
 
-        """Todas as operações de leitura do app accounts são enviadas ao modelo `cadd`"""
+        """Todas as operações de leitura do app accounts são enviadas ao modelo `default`"""
         if model._meta.app_label == 'accounts':
-            return 'cadd'
-        """Todas as operações de leitura do app cadd são enviadas ao modelo `cadd`"""
+            return 'default'
+        """Todas as operações de leitura do app cadd são enviadas ao modelo `default`"""
         if model._meta.app_label == 'cadd':
-            return 'cadd'
+            return 'default'
         """Todas as operações de leitura do app sca são enviadas ao modelo `sca`"""
         if model._meta.app_label == 'sca':
             return 'sca'
@@ -17,12 +17,12 @@ class DatabaseRouter(object):
 
     def db_for_write(self, model, **hints):
 
-        """Todas as operações de escrita do app accounts são enviadas ao modelo `cadd`"""
+        """Todas as operações de escrita do app accounts são enviadas ao modelo `default`"""
         if model._meta.app_label == 'accounts':
-            return 'cadd'
-        """Todas as operações de escrita do app cadd são enviadas ao modelo `cadd`"""
+            return 'default'
+        """Todas as operações de escrita do app cadd são enviadas ao modelo `default`"""
         if model._meta.app_label == 'cadd':
-            return 'cadd'
+            return 'default'
         return None
 
     def allow_relation(self, obj1, obj2, **hints):
@@ -32,7 +32,7 @@ class DatabaseRouter(object):
         if obj1._meta.app_label == 'cadd' and obj2._meta.app_label == 'sca':
             return True
 
-        return False
+        return True
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         """Determina que os modelos sejam criados no banco de dados correto"""

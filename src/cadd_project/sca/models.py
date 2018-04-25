@@ -79,8 +79,8 @@ class Curso(models.Model):
     nome = models.CharField(max_length=255, blank=True, null=True)
     sigla = models.CharField(max_length=255, blank=True, null=True)
     coordenador = models.ForeignKey('Professor', models.DO_NOTHING,
-                    db_column='coordenador', blank=True, null=True, related_name='coordenador')
-    coordenadoratividadescomplementares = models.ForeignKey('Professor',
+                    db_column='coordenador_id', blank=True, null=True, related_name='coordenador')
+    coordenadoratividades = models.ForeignKey('Professor',
                     models.DO_NOTHING,
                     db_column='coordenadorAtividadesComplementares_id',
                     blank=True, null=True, related_name='coordenadoratividades')
@@ -114,6 +114,9 @@ class Departamento(models.Model):
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
     sigla = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
 
     class Meta:
         managed = False
@@ -171,6 +174,9 @@ class Disciplina(models.Model):
     alocacao_depto = models.ForeignKey(Alocacacaodisciplinasemdepartamento,
                     models.DO_NOTHING, db_column='ALOCACAO_DEPTO_ID',
                     blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
 
     class Meta:
         managed = False
@@ -312,6 +318,9 @@ class Professor(models.Model):
     endereco = models.CharField(max_length=255, blank=True, null=True)
     nome = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return self.nome
+
     class Meta:
         managed = False
         db_table = 'professor'
@@ -442,6 +451,9 @@ class Turma(models.Model):
                     null=True)
     professor = models.ForeignKey(Professor, models.DO_NOTHING, blank=True,
                     null=True)
+
+    def __str__(self):
+        return self.codigo
 
     class Meta:
         managed = False

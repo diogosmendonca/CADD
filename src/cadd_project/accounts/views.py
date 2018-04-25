@@ -54,13 +54,21 @@ def usuario_registrar(request):
             # Caso seja realizado um get na tabela N:N o resultado já sai para a tabela apropriada
             # Nesse caso, necessitou saber quais são as ids das roles do SCA
             idAlunoProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_ALUNO')
-            idProfessorProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_PROFESSOR')
-            # Caso exista um usuário de role Aluno
+            idProfProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_PROFESSOR')
+            idAdminProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_SECAD')
+            tipoUsuario = ''
+            # Caso seu perfil no SCA seja de role SECAD
+            if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAdminProfile).exists():
+                tipoUsuario = 'Administrador'
+            # Caso seu perfil no SCA seja de role Professor
+            if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idProfProfile).exists():
+                if tipoUsuario != '':
+                    tipoUsuario += '/Professor'
+                else:
+                    tipoUsuario = 'Professor'
+            # Caso seu perfil no SCA seja de role Aluno
             if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAlunoProfile).exists():
                 tipoUsuario = 'Aluno'
-            # Caso exista um usuário de role Professor
-            if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idProfessorProfile).exists():
-                tipoUsuario = 'Professor'
             u = form.save()
             u.set_password(u.password)
             u.first_name = tipoUsuario

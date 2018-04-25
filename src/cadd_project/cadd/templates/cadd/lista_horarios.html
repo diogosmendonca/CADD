@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <h1 class="h3 mb-2 font-weight-normal">Lista de Horários</h1>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+    {% endif %}
+    {% if horarios %}
+    <div class="form-group">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Ano</th>
+                <th>Período</th>
+                <th colspan="3" style="textalign:center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in horarios %}
+            <tr>
+                <td>{{ h.curso }}</td>
+                <td>{{ h.ano }}</td>
+                <td>{{ h.periodo }}</td>
+                <td><a href="{% url 'cadd:editar_horario' h.id %}" class="btn btn-info btn-sm">Editar</a></td>
+                <td><a href="{% url 'cadd:excluir_horario' h.id %}" class="btn btn-danger btn-sm">Excluir</a></td>
+                <td><a href="{% url 'cadd:lista_itenshorario' h.id %}" class="btn btn-info btn-sm">Editar Itens</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p> </p>
+    <div class="form-group">
+        <div class="alert alert-info" role="alert">
+          <p>Não há nenhum horário cadastrado!</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <a href="{% url 'cadd:novo_horario' %}" class="btn btn-primary" role="button">Adicionar horario</a>
+      <a href="{% url 'home' %}">Voltar</a>
+  </div>
+</div>
+{% endblock body %}

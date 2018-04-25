@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block body %}
+<h1>Membro</h1>
+<div class="row">
+    <form class="" action="" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.professor.id_for_label }}">Professor</label>
+            {{ form.professor }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.portaria.id_for_label }}">Portaria</label>
+            {{ form.portaria }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.presidente.id_for_label }}">Presidente</label>
+            {{ form.presidente }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.ativo.id_for_label }}">Ativo</label>
+            {{ form.ativo }}
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+    </form>
+</div>
+{% endblock body %}
