@@ -2,16 +2,16 @@
 {% load widget_tweaks %}
 
 {% block body %}
-<h1>Membro</h1>
+<h1 class="h3 mb-2 font-weight-normal">Membro</h1>
 <div class="row">
     <form class="" action="" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <label for="{{ form.professor.id_for_label }}">Professor</label>
+<!--            <label for="{{ form.professor.id_for_label }}">Professor</label> -->
             {{ form.professor }}
         </div>
         <div class="form-group">
-            <label for="{{ form.portaria.id_for_label }}">Portaria</label>
+<!--            <label for="{{ form.portaria.id_for_label }}">Portaria</label> -->
             {{ form.portaria }}
         </div>
         <div class="form-group">
@@ -24,6 +24,7 @@
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{% url 'cadd:lista_membros' id_comissao %}" class="btn btn-info">Voltar</a>
         </div>
     </form>
 </div>

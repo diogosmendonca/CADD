@@ -12,16 +12,17 @@
     {% endif %}
     {% if itenshorario %}
     <div class="form-group">
-    <table class="table">
+    <table class="table-striped table-condensed">
         <thead>
             <tr>
+                <th>Período</th>
+                <th>Turma</th>
+                <th>Disciplina</th>
+                <th>Professor</th>
                 <th>Dia da semana</th>
                 <th>Início</th>
                 <th>Fim</th>
                 <th>Departamento</th>
-                <th>Turma</th>
-                <th>Disciplina</th>
-                <th>Professor</th>
                 <th colspan="2" style="textalign:center">Ações</th>
             </tr>
         </thead>
@@ -29,13 +30,13 @@
             {% for i in itenshorario %}
             <tr>
                 <td>{{ i.periodo }}</td>
-                <td>{{ i.diasemana }}</td>
-                <td>{{ i.inicio }}</td>
-                <td>{{ i.fim }}</td>
-                <td>{{ i.departamento }}</td>
                 <td>{{ i.turma }}</td>
                 <td>{{ i.disciplina }}</td>
                 <td>{{ i.professor }}</td>
+                <td>{{ i.get_diasemana_display }}</td>
+                <td>{{ i.inicio }}</td>
+                <td>{{ i.fim }}</td>
+                <td>{{ i.departamento }}</td>
                 <td><a href="{% url 'cadd:editar_itemhorario' i.id id_horario %}" class="btn btn-info btn-sm">Editar</a></td>
                 <td><a href="{% url 'cadd:excluir_itemhorario' i.id id_horario %}" class="btn btn-danger btn-sm">Excluir</a></td>
             </tr>
@@ -52,8 +53,8 @@
     </div>
     {% endif %}
     <div class="form-group">
-      <a href="{% url 'cadd:novo_itemhorario' id_horario %}" class="btn btn-primary" role="button">Adicionar item</a><br>
-      <a href="{% url 'cadd:lista_horarios' %}">Voltar</a>
+      <a href="{% url 'cadd:novo_itemhorario' id_horario %}" class="btn btn-primary" role="button">Adicionar item</a>
+      <a href="{% url 'cadd:lista_horarios' %}" class="btn btn-info">Voltar</a>
     </div>
 </div>
 {% endblock body %}

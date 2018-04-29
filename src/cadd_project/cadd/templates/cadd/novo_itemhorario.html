@@ -2,44 +2,45 @@
 {% load widget_tweaks %}
 
 {% block body %}
-<h1>Item de Horário</h1>
+<h1 class="h3 mb-2 font-weight-normal">Item de Horário</h1>
 <div class="row">
     <form class="" action="" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <label for="{{ form.periodo.id_for_label }}">Período</label>
-            {{ form.periodo }}
+<!--            <label for="{{ form.periodo.id_for_label }}">Período</label> -->
+            {{ form.periodo|attr:"autofocus" }}
         </div>
         <div class="form-group">
-            <label for="{{ form.diasemana.id_for_label }}">Dia da semana</label>
-            {{ form.diasemana }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.inicio.id_for_label }}">Início</label>
-            {{ form.inicio }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.fim.id_for_label }}">Fim</label>
-            {{ form.fim }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.departamento.id_for_label }}">Departamento</label>
-            {{ form.departamento }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.turma.id_for_label }}">Turma</label>
+<!--            <label for="{{ form.turma.id_for_label }}">Turma</label> -->
             {{ form.turma }}
         </div>
         <div class="form-group">
-            <label for="{{ form.disciplina.id_for_label }}">Disciplina</label>
+<!--            <label for="{{ form.disciplina.id_for_label }}">Disciplina</label> -->
             {{ form.disciplina }}
         </div>
         <div class="form-group">
-            <label for="{{ form.professor.id_for_label }}">Professor</label>
+<!--            <label for="{{ form.professor.id_for_label }}">Professor</label> -->
             {{ form.professor }}
         </div>
         <div class="form-group">
+<!--            <label for="{{ form.diasemana.id_for_label }}">Dia da semana</label> -->
+            {{ form.diasemana }}
+        </div>
+        <div class="form-group">
+<!--            <label for="{{ form.inicio.id_for_label }}">Início</label> -->
+            {{ form.inicio }}
+        </div>
+        <div class="form-group">
+<!--            <label for="{{ form.fim.id_for_label }}">Fim</label> -->
+            {{ form.fim }}
+        </div>
+        <div class="form-group">
+<!--            <label for="{{ form.departamento.id_for_label }}">Departamento</label> -->
+            {{ form.departamento }}
+        </div>
+        <div class="form-group">
             <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{% url 'cadd:lista_itenshorario' id_horario %}" class="btn btn-info">Voltar</a>
         </div>
     </form>
 </div>

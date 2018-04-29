@@ -59,11 +59,11 @@ def usuario_registrar(request):
             tipoUsuario = ''
             # Caso seu perfil no SCA seja de role SECAD
             if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAdminProfile).exists():
-                tipoUsuario = 'Administrador'
+                tipoUsuario = 'Admin'
             # Caso seu perfil no SCA seja de role Professor
             if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idProfProfile).exists():
                 if tipoUsuario != '':
-                    tipoUsuario += '/Professor'
+                    tipoUsuario += '/Prof'
                 else:
                     tipoUsuario = 'Professor'
             # Caso seu perfil no SCA seja de role Aluno

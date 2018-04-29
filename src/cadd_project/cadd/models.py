@@ -4,10 +4,10 @@ from django.utils import timezone
 # Create your models here.
 
 PERIODO_CHOICES = (
+    (None, 'Selecione o período'),
     (1, '1º semestre'),
     (2, '2º semestre'),
 )
-
 
 class Comissao(models.Model):
     """Classe de uso do sistema para o cadastro das comissões"""
@@ -48,11 +48,13 @@ class Reuniao(models.Model):
     """Classe de uso do sistema para o agendamento das reuniões"""
 
     SITUACAO_CHOICES = (
+        (None, 'Selecione a situação'),
         ('A', 'Agendada'),
         ('C', 'Cancelada'),
         ('E', 'Encerrada'),
     )
     TIPO_CHOICES = (
+        (None, 'Selecione o tipo'),
         ('I', 'Informação'),
         ('C', 'Convocação'),
     )
@@ -114,7 +116,7 @@ class Horario(models.Model):
 
     ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
     periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
-                    blank=False, default=1, null=False)
+                    blank=False, null=False)
     curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
                 null=False)
 
@@ -131,6 +133,7 @@ class ItemHorario(models.Model):
     """Classe de uso do sistema para a guarda dos itens da prévia do horário"""
 
     DIASEMANA_CHOICES = (
+        (None, 'Selecione o dia da semana'),
         (0, 'Domingo'),
         (1, 'Segunda-feira'),
         (2, 'Terça-feira'),
@@ -138,14 +141,16 @@ class ItemHorario(models.Model):
         (4, 'Quinta-feira'),
         (5, 'Sexta-feira'),
         (6, 'Sábado'),
+        (7, 'Semipresencial'),
+        (8, 'Horário variável'),
     )
 
     periodo = models.CharField(u'Período', max_length=3, blank=False,
                         null=False)
     diasemana = models.PositiveSmallIntegerField(u'Dia da semana', blank=False,
                         null=False, choices=DIASEMANA_CHOICES)
-    inicio = models.TimeField(u'Início', blank=False, null=False)
-    fim = models.TimeField(u'Início', blank=False, null=False)
+    inicio = models.TimeField(u'Início', blank=True, null=True)
+    fim = models.TimeField(u'Início', blank=True, null=True)
     horario = models.ForeignKey('Horario', models.DO_NOTHING, blank=False,
                         null=False)
     professor = models.ForeignKey('sca.Professor', models.DO_NOTHING,
@@ -167,6 +172,7 @@ class Plano(models.Model):
     """Classe de uso do sistema para a guarda dos planos de estudo dos alunos"""
 
     SITUACAO_CHOICES = (
+        (None, 'Selecione a situação'),
         ('M', 'Montado'),
         ('A', 'Avaliado'),
         ('E', 'Encerrado'),

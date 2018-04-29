@@ -176,7 +176,7 @@ class Disciplina(models.Model):
                     blank=True, null=True)
 
     def __str__(self):
-        return self.nome
+        return self.codigo + "-" + self.nome # + " (" + self.versaocurso.numero + ")"
 
     class Meta:
         managed = False

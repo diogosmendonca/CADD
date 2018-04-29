@@ -114,7 +114,6 @@ def editar_horario(request, id_horario):
         form = HorarioForm(request.POST, instance=horario)
         if form.is_valid():
             form.save()
-#            return redirect('core')
     else:
         form = HorarioForm(instance=horario)
     return render(request, 'cadd/novo_horario.html', {'form': form})
@@ -137,7 +136,7 @@ def novo_itemhorario(request, id_horario):
 
 @login_required
 def lista_itenshorario(request, id_horario):
-    itenshorario = ItemHorario.objects.all().filter(horario=id_horario)
+    itenshorario = ItemHorario.objects.all().filter(horario=id_horario).order_by('periodo', 'disciplina', 'turma')
     horario = Horario.objects.get(id__exact=id_horario)
     return render(request, 'cadd/lista_itenshorario.html', {'itenshorario': itenshorario, 'id_horario': id_horario, 'horario': horario})
 
