@@ -6,11 +6,37 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
-from .forms import ComissaoForm, MembroForm, HorarioForm, ItemHorarioForm
-from .models import Comissao, Membro, Horario, ItemHorario
-from sca.models import Curso
+from .forms import ParametrosForm, ComissaoForm, MembroForm, HorarioForm, ItemHorarioForm
+from .models import Parametros, Comissao, Membro, Horario, ItemHorario
+from .utils import linhas_por_pagina # Funções gerais
+#from sca.models import Curso
 
 # Create your views here.
+
+#Parâmetros do sistema
+@login_required
+def editar_parametros(request):
+    """Função para a edição dos parâmetros do sistema"""
+
+    registros = Parametros.objects.filter(id=1).count()
+    if request.method == 'POST':
+        if registros != 0:
+            parametros = get_object_or_404(Parametros, id=1)
+            form = ParametrosForm(request.POST, instance=parametros)
+        else:
+            form = ParametrosForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        if registros != 0:
+            parametros = get_object_or_404(Parametros, id=1)
+            form = ParametrosForm(instance=parametros)
+        else:
+            form = ParametrosForm()
+#    return render(request, 'accounts/home.html')
+    return render(request, 'cadd/edita_parametros.html', {'form': form})
+
 
 # Comissões de apoio
 @login_required
@@ -30,8 +56,9 @@ def nova_comissao(request):
 def lista_comissoes(request):
     """Função para a listagem das comissões de apoio cadastradas"""
 
+    linhas = linhas_por_pagina()
     comissoes_list = Comissao.objects.all()
-    paginator = Paginator(comissoes_list, 5) # Paginação. Exibe 5 itens por vez
+    paginator = Paginator(comissoes_list, linhas) # Paginação
     page = request.GET.get('page')
     comissoes = paginator.get_page(page)
     return render(request, 'cadd/lista_comissoes.html', {'comissoes': comissoes})
@@ -79,8 +106,9 @@ def novo_membro(request, id_comissao):
 def lista_membros(request, id_comissao):
     """Função para a listagem dos membros cadastrados de uma comissões de apoio"""
 
+    linhas = linhas_por_pagina()
     membros_list = Membro.objects.all().filter(comissao=id_comissao)
-    paginator = Paginator(membros_list, 5) # Paginação. Exibe 5 itens por vez
+    paginator = Paginator(membros_list, linhas) # Paginação
     page = request.GET.get('page')
     membros = paginator.get_page(page)
     comissao = Comissao.objects.get(id__exact=id_comissao) # objeto comissão anteriormente requisitado
@@ -126,8 +154,9 @@ def novo_horario(request):
 def lista_horarios(request):
     """Função para a listagem das previsões de horário"""
 
+    linhas = linhas_por_pagina()
     horarios_list = Horario.objects.all()
-    paginator = Paginator(horarios_list, 5) # Paginação. Exibe 5 itens por vez
+    paginator = Paginator(horarios_list, linhas) # Paginação
     page = request.GET.get('page')
     horarios = paginator.get_page(page)
     return render(request, 'cadd/lista_horarios.html', {'horarios': horarios})
@@ -175,8 +204,9 @@ def novo_itemhorario(request, id_horario):
 def lista_itenshorario(request, id_horario):
     """Função para a listagem dos itens cadastrados em uma previsão de horário"""
 
+    linhas = linhas_por_pagina()
     itenshorario_list = ItemHorario.objects.all().filter(horario=id_horario).order_by('periodo', 'disciplina', 'turma')
-    paginator = Paginator(itenshorario_list, 5) # Paginação. Exibe 5 itens por vez
+    paginator = Paginator(itenshorario_list, linhas) # Paginação
     page = request.GET.get('page')
     itenshorario = paginator.get_page(page)
     horario = Horario.objects.get(id__exact=id_horario) # objeto horário anteriormente requisitado

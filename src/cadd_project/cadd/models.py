@@ -177,6 +177,7 @@ class Plano(models.Model):
         ('A', 'Avaliado'),
         ('E', 'Encerrado'),
     )
+
     ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
     periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
                     blank=False, default=1, null=False)
@@ -232,4 +233,44 @@ class ItemPlanoFuturo(models.Model):
     class Meta:
         managed = True
         db_table = 'item_plano_futuro'
+        app_label = 'cadd'
+
+
+class Parametros(models.Model):
+    """Classe de uso do sistema para a guarda dos parâmetros do sistema"""
+
+    ITENSPAGINA_CHOICES = (
+        (None, 'Selecione o total de itens por página'),
+        (5, 5),
+        (10, 10),
+        (15, 15),
+        (20, 20),
+        (25, 25),
+        (30, 30),
+        (35, 35),
+        (40, 40),
+        (45, 45),
+        (50, 50),
+    )
+
+    reprovacurso8periodoslaranja = models.PositiveSmallIntegerField(blank=False,
+                        null=False)
+    reprovademaiscursoslaranja = models.PositiveSmallIntegerField(blank=False,
+                        null=False)
+    reprovacurso8periodosvermelha = models.PositiveSmallIntegerField(blank=False,
+                        null=False)
+    reprovademaiscursosvermelha = models.PositiveSmallIntegerField(blank=False,
+                        null=False)
+    qtdperiodoslaranja = models.CharField(max_length=10, blank=False,
+                        null=False)
+    qtdperiodosvermelha = models.CharField(max_length=10, blank=False,
+                        null=False)
+    maxcreditosporperiodopreta = models.PositiveSmallIntegerField(blank=False,
+                        null=False)
+    defaultitensporpagina = models.PositiveSmallIntegerField(choices=ITENSPAGINA_CHOICES,
+                        blank=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'parametros'
         app_label = 'cadd'

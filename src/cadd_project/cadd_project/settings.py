@@ -90,8 +90,8 @@ DATABASES = {
         'NAME': 'cadddb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.5', # celular
-#        'HOST': '192.168.1.4', # wifi
+#        'HOST': '172.20.10.5', # celular
+        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
 #        'HOST': '192.168.1.115', # educandus
         'PORT': '3311',
@@ -104,8 +104,8 @@ DATABASES = {
         'NAME': 'scadb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.5', # celular
-#        'HOST': '192.168.1.4', # wifi
+#        'HOST': '172.20.10.5', # celular
+        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
 #        'HOST': '192.168.1.115', # educandus
         'PORT': '3311',

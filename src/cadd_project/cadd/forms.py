@@ -2,11 +2,50 @@ from django import forms
 from django.forms import TextInput, Textarea, Select, CheckboxInput, HiddenInput, \
                             NumberInput, TimeInput
 
-from .models import Comissao, Membro, Horario, ItemHorario
+from .models import Parametros, Comissao, Membro, Horario, ItemHorario
 from sca.models import Curso, Professor, Turma, Disciplina
 
+class ParametrosForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de parâmetros do sistema"""
+
+    class Meta:
+        model = Parametros
+        exclude = (id, )
+        widgets = {
+            'reprovacurso8periodoslaranja': NumberInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'min': 1, 'max': 10, 'step': 1,
+                                         'empty_label': 'Selecione a quantidade de reprovações'}),
+            'reprovademaiscursoslaranja': NumberInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'min': 1, 'max': 10, 'step': 1,
+                                         'empty_label': 'Selecione a quantidade de reprovações'}),
+            'reprovacurso8periodosvermelha': NumberInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'min': 1, 'max': 10, 'step': 1,
+                                         'empty_label': 'Selecione a quantidade de reprovações'}),
+            'reprovademaiscursosvermelha': NumberInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'min': 1, 'max': 10, 'step': 1,
+                                         'empty_label': 'Selecione a quantidade de reprovações'}),
+            'qtdperiodoslaranja': TextInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'placeholder': 'Informe a fórmula para cálculo da faixa de criticidade Laranja'}),
+            'qtdperiodosvermelha': TextInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'placeholder': 'Informe a fórmula para cálculo da faixa de criticidade Vermelha'}),
+            'maxcreditosporperiodopreta': NumberInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'min': 1, 'max': 50, 'step': 1,
+                                         'empty_label': 'Selecione o máximo de créditos por período'}),
+            'defaultitensporpagina': Select(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'empty_label': 'Selecione o total de itens por página'}),
+        }
+
+
 class ComissaoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de comissões"""
+    """Classe de uso do sistema para o formulário de comissões de apoio"""
 
     def __init__(self,*args,**kwargs):
         super (ComissaoForm,self ).__init__(*args,**kwargs) # populates the post
@@ -24,8 +63,9 @@ class ComissaoForm(forms.ModelForm):
                                          'placeholder': 'Informe a descrição'})
         }
 
+
 class MembroForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de membros"""
+    """Classe de uso do sistema para o formulário de membros de uma comissão de apoio"""
 
     def __init__(self,*args,**kwargs):
         super (MembroForm,self ).__init__(*args,**kwargs) # populates the post
@@ -47,7 +87,7 @@ class MembroForm(forms.ModelForm):
 
 
 class HorarioForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de horários"""
+    """Classe de uso do sistema para o formulário de previsão de horários"""
 
     def __init__(self,*args,**kwargs):
         super (HorarioForm,self ).__init__(*args,**kwargs) # populates the post
@@ -71,7 +111,7 @@ class HorarioForm(forms.ModelForm):
 
 
 class ItemHorarioForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de itens de horário"""
+    """Classe de uso do sistema para o formulário de itens de previsão de horário"""
 
     def __init__(self,*args,**kwargs):
         super (ItemHorarioForm,self ).__init__(*args,**kwargs) # populates the post

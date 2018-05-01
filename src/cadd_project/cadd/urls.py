@@ -4,6 +4,8 @@ from . import views
 
 app_name = 'cadd'
 urlpatterns = [
+    path('editar-parametros/', views.editar_parametros, name='editar_parametros'),
+
     path('lista-comissoes/', views.lista_comissoes, name='lista_comissoes'),
     path('nova-comissao/', views.nova_comissao, name='nova_comissao'),
     path('editar-comissao/?<id_comissao>', views.editar_comissao, name='editar_comissao'),
