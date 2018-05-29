@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <h1 class="h3 mb-2 font-weight-normal">
+      {{ doc.descricao }} do aluno {{ doc.aluno }} no semestre {{ doc.ano }}.{{ doc.periodo }}
+    </h1>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+    {% endif %}
+    {% if documento %}
+    <div class="form-group">
+      <div>
+        <iframe name="interno" width="800" height="400" src="/media/{{ doc.indice }}">
+        </iframe>
+      </div>
+    </div>
+    {% else %}
+    <br><br>
+    <div class="form-group">
+        <div class="alert alert-info" role="alert">
+          <p>O documento não se encontra no local especificado!</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <br><br>
+      <a href="{% url 'cadd:lista_documentos' %}" class="btn btn-info">Voltar</a>
+  </div>
+</div>
+{% endblock body %}

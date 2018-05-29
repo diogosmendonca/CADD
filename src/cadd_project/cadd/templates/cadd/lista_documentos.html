@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <h1 class="h3 mb-2 font-weight-normal">Lista de Documentos</h1>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+    {% endif %}
+    {% if documentos %}
+    <div class="form-group">
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Aluno</th>
+                <th>Descrição</th>
+                <th>Semestre</th>
+                <th colspan="2" style="textalign:center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in documentos %}
+            <tr>
+                <td>{{ d.aluno }}</td>
+                <td>{{ d.descricao }}</td>
+                <td>{{ d.ano }}.{{ d.periodo }}</td>
+                <td><a href="{% url 'cadd:visualizar_documento' d.id %}" class="btn btn-info btn-sm">Visualizar</a></td>
+                <td><a href="{% url 'cadd:excluir_documento' d.id %}" class="btn btn-danger btn-sm">Excluir</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if documentos.has_previous %}
+                <a href="?page=1" class="btn btn-info">Primeiro</a>
+                <a href="?page={{ documentos.previous_page_number }}" class="btn btn-info">Anterior</a>
+            {% endif %}
+
+            <span class="current">
+                Página {{ documentos.number }} de {{ documentos.paginator.num_pages }}
+            </span>
+
+            {% if documentos.has_next %}
+                <a href="?page={{ documentos.next_page_number }}" class="btn btn-info">Próximo</a>
+                <a href="?page={{ documentos.paginator.num_pages }}" class="btn btn-info">Último</a>
+            {% endif %}
+        </span>
+    </div>
+    {% else %}
+    <br><br>
+    <div class="form-group">
+        <div class="alert alert-info" role="alert">
+          <p>Não há nenhum documento cadastrado!</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <br><br>
+      <a href="{% url 'cadd:novo_documento' %}" class="btn btn-primary" role="button">Adicionar documento</a>
+      <a href="{% url 'home' %}" class="btn btn-info">Voltar</a>
+  </div>
+</div>
+{% endblock body %}

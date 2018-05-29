@@ -34,8 +34,8 @@
                 <td>{{ i.disciplina }}</td>
                 <td>{{ i.professor }}</td>
                 <td>{{ i.get_diasemana_display }}</td>
-                <td>{{ i.inicio }}</td>
-                <td>{{ i.fim }}</td>
+                <td>{{ i.inicio }}h</td>
+                <td>{{ i.fim }}h</td>
                 <td>{{ i.departamento }}</td>
                 <td><a href="{% url 'cadd:editar_itemhorario' i.id id_horario %}" class="btn btn-info btn-sm">Editar</a></td>
                 <td><a href="{% url 'cadd:excluir_itemhorario' i.id id_horario %}" class="btn btn-danger btn-sm">Excluir</a></td>

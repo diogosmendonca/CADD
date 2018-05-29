@@ -27,8 +27,8 @@
             <tr>
                 <td>{{ m.professor }}</td>
                 <td>{{ m.portaria }}</td>
-                <td>{{ m.presidente }}</td>
-                <td>{{ m.ativo }}</td>
+                <td>{{ m.presidente|yesno }}</td>
+                <td>{{ m.ativo|yesno }}</td>
                 <td><a href="{% url 'cadd:editar_membro' m.id id_comissao %}" class="btn btn-info btn-sm">Editar</a></td>
                 <td><a href="{% url 'cadd:excluir_membro' m.id id_comissao %}" class="btn btn-danger btn-sm">Excluir</a></td>
             </tr>

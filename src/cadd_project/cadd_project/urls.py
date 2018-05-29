@@ -20,6 +20,9 @@ from accounts import urls as accounts_urls
 from cadd import urls as cadd_urls
 from accounts import views
 
+from . import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('cadd/', include(cadd_urls, namespace='sistema')),
@@ -27,3 +30,7 @@ urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += static(
+    settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

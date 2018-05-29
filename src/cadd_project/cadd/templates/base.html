@@ -1,6 +1,6 @@
 {% load staticfiles %}
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-br">
   <head>
     <meta charset="utf-8">
@@ -8,138 +8,110 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CADD</title>
+    <title>Sistema de Apoio às CADDs</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/signin.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="{% static 'css/starter-template.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sacadd.css' %}" rel="stylesheet">
+
+    <!-- Custom scripts for this template -->
+    <script src="{% static 'js/sacadd.js' %}"></script>
+
   </head>
-
   <body>
-
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">Apoio às CADDs</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
-          </li>
-
-          {% if user.is_authenticated %}
-          {% if 'Admin' in user.first_name %}
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comissões</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item" href="{% url 'cadd:lista_comissoes' %}">Gerenciar</a>
+    <!-- Header section -->
+    <section class="header">
+      <div class="header-content">
+        <div class="row justify-content-between">
+          <div class="col-5">
+            <h1 class="Titulo-Sistema">Sistema de Apoio às CADDs</h1>
+          </div>
+          <div class="col-5">
+            <div class="row">
+              <div class="col-">
+                <h3 class="Usuario_Autenticado">{% if user.is_authenticated %}{{ tipo }} {{ user.last_name }}{% endif %}</h3>
               </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Configurações</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown02">
-                <a class="dropdown-item" href="{% url 'cadd:editar_parametros' %}">Editar Parâmetros</a>
+              <div class="col-">
+                <ul class="Usuario_Opcoes">
+                  <!-- <li><a href="#"> Meu Perfil </a></li> -->
+                  <li><a href="{% url 'accounts:alterar_senha' %}"> Alterar senha </a></li>
+                  <li><a href="{% url 'accounts:usuario_logout' %}"> Sair </a></li>
+                </ul>
               </div>
-            </li>
-          </ul>
-          {% endif %}
-
-          {% if 'Prof' in user.first_name %}
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reuniões</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown03">
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Agendar</a>
-              </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Horários</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
-                <a class="dropdown-item" href="{% url 'cadd:lista_horarios' %}">Montar previsão</a>
-              </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Planos</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown05">
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Avaliar plano de estudo</a>
-              </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentos</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown06">
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Anexar</a>
-              </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav navbar-right">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Relatórios</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown07">
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Conflitos de horários</a>
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Situação dos alunos</a>
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Acompanhamentos</a>
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Memorando de continuidade de estudos</a>
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Ausências às reuniões</a>
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Casos excepcionais</a>
-                <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Atas das reuniões</a>
-              </div>
-            </li>
-          </ul>
-          {% endif %}
-
-          {% if 'Aluno' in user.first_name %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:usuario_registrar' %}">Montar Plano de Estudo</a>
-          </li>
-          {% endif %}
-          {% endif %}
-          <li></li>
-<!--      <li>
-            <form class="form-inline my-2 my-sm-0" action="{% url 'accounts:usuario_logout' %}">
-              <input class="form-control mr-sm-2" type="text" placeholder="Busca" aria-label="Search" name="search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
-            </form>
-          </li> -->
-        </ul>
-        <ul class="navbar-nav navbar-right">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown08" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown08">
-              <a class="dropdown-item" href="{% url 'accounts:alterar_senha' %}">Alterar a senha</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="{% url 'accounts:usuario_logout' %}">Sair</a>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
-    </nav>
+    </section>
 
-    <div class="container">
+    <!-- Navbar section -->
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link{% if ativoInicio %} active{% endif %}" href="{% url 'home' %}">Início</a>
+      </li>
+      {% if user.is_authenticated %}
+
+      {% if 'Admin' in tipo %}
+      <li class="nav-item">
+        <a class="nav-link{% if ativoComissoes %} active{% endif %}" href="{% url 'cadd:lista_comissoes' %}">Comissões</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{% if ativoConfiguracoes %} active{% endif %}" href="{% url 'cadd:editar_parametros' %}">Configurações</a>
+      </li>
+      {% endif %}
+
+      {% if 'Prof' in tipo and membro %}
+      <li class="nav-item">
+        <a class="nav-link{% if ativoReunioes %} active{% endif %}" href="{% url 'cadd:lista_reunioes' %}">Reuniões</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{% if ativoHorarios %} active{% endif %}" href="{% url 'cadd:lista_horarios' %}">Horários</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{% if ativoPlanos %} active{% endif %}" href="#">Plano de Estudos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{% if ativoDocumentos %} active{% endif %}" href="{% url 'cadd:lista_documentos' %}">Documentos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{% if ativoRelatorios %} active{% endif %}" href="#">Relatórios</a>
+      </li>
+      {% endif %}
+
+      {% if 'Aluno' in tipo %}
+      <li class="nav-item">
+        <a class="nav-link{% if ativoReunioes %} active{% endif %}" href="#">Reuniões</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link{% if ativoPlanos %} active{% endif %}" href="{% url 'cadd:lista_planos' %}">Plano de Estudos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disable" href="#">Estatísticas</a>
+      </li>
+      {% endif %}
+
+      {% endif %}
+    </ul>
+
+    <!-- Content section -->
+    <section class="content">
     {% block body %}
 
     {% endblock body %}
-    </div><!-- /.container -->
+    </section>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="{% static 'js/jquery-slim.min.js' %}"><\/script>')</script>
-    <script src="{% static 'js/popper.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <p class="m-0 text-center text-white">Sistema de Apoio às CADDs &copy; CEFET-RJ 2018</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
   </body>
 </html>

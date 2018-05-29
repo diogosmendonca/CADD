@@ -1,9 +1,12 @@
+from django.forms import BaseFormSet
+
 from django import forms
 from django.forms import TextInput, Textarea, Select, CheckboxInput, HiddenInput, \
-                            NumberInput, TimeInput
+                            NumberInput, TimeInput, DateInput
 
-from .models import Parametros, Comissao, Membro, Horario, ItemHorario
-from sca.models import Curso, Professor, Turma, Disciplina
+from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
+                            ItemPlanoAtual, Reuniao, Convocacao, Documento
+from sca.models import Curso, Professor, Turma, Disciplina, Aluno
 
 class ParametrosForm(forms.ModelForm):
     """Classe de uso do sistema para o formulário de parâmetros do sistema"""
@@ -146,3 +149,106 @@ class ItemHorarioForm(forms.ModelForm):
             'departamento': Select(attrs={'class': 'form-control',
                                          'data-rules': 'required'})
         }
+
+
+class PlanoFormSet(BaseFormSet):
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        form.fields["disciplinas"] = forms.CharField()
+
+
+class PlanoForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de plano de estudos"""
+
+    class Meta:
+        model = Plano
+#        exclude = (id, )
+        exclude = '__all__'
+        widgets = {
+#            'ano': HiddenInput(attrs={data-rules': 'required'}),
+#            'periodo': HiddenInput(attrs={data-rules': 'required'}),
+#            'situacao': HiddenInput(attrs={data-rules': 'required'}),
+#            'aluno': HiddenInput(attrs={data-rules': 'required'}),
+        }
+
+
+class PlanoAtualForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de plano de estudos para o próximo semestre"""
+
+    class Meta:
+        model = ItemPlanoAtual
+#        exclude = (id, )
+        exclude = '__all__'
+        widgets = {
+#            'plano': HiddenInput(attrs={data-rules': 'required'}),
+#            'itemhorario': CheckboxSelectMultiple()
+        }
+
+
+class ReuniaoForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de reuniões"""
+
+    def __init__(self,*args,**kwargs):
+        super (ReuniaoForm,self ).__init__(*args,**kwargs) # populates the post
+        self.fields['comissao'].queryset = Comissao.objects.distinct().order_by('descricao')
+        self.fields['comissao'].empty_label = 'Selecione a comissão de apoio'
+
+    class Meta:
+        model = Reuniao
+        exclude = (id, 'situacao')
+        widgets = {
+            'data': DateInput(attrs={'class': 'form-control',
+                                         'placeholder': 'Informe a data'}),
+            'inicio': TimeInput(attrs={'class': 'form-control',
+                                         'placeholder': 'Informe a hora de início'}),
+            'local': TextInput(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'placeholder': 'Informe o local'}),
+#            'situacao': Select(attrs={'class': 'form-control',
+#                                         'data-rules': 'required'}),
+            'tipo': Select(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'empty_label': 'Selecione o tipo'}),
+            'anotacao': Textarea(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'placeholder': 'Informe a anotação'}),
+            'comissao': Select(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'empty_label': 'Selecione a comissão'}),
+        }
+
+
+class ConvocadoForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de convocados"""
+
+    def __init__(self,*args,**kwargs):
+        super (ConvocadoForm,self ).__init__(*args,**kwargs) # populates the post
+        self.fields['aluno'].queryset = Aluno.objects.using('sca').distinct().order_by('nome')
+        self.fields['aluno'].empty_label = 'Selecione o aluno'
+
+    class Meta:
+        model = Convocacao
+        exclude = (id, 'reuniao')
+        widgets = {
+            'envioemail': CheckboxInput(attrs={'class': 'form-control'}),
+            'presente': CheckboxInput(attrs={'class': 'form-control'}),
+            'anotacao': Textarea(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'placeholder': 'Informe a anotação'}),
+            'aluno': Select(attrs={'class': 'form-control',
+                                         'data-rules': 'required',
+                                         'empty_label': 'Selecione o aluno'}),
+        }
+
+
+class DocumentoForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de documentos"""
+
+    def __init__(self,*args,**kwargs):
+        super (DocumentoForm,self ).__init__(*args,**kwargs) # populates the post
+        self.fields['aluno'].queryset = Aluno.objects.using('sca').distinct().order_by('nome')
+        self.fields['aluno'].empty_label = 'Selecione o aluno'
+
+    class Meta:
+        model = Documento
+        exclude = (id, )

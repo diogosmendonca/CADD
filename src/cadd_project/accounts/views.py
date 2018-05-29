@@ -3,12 +3,13 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+#from django.core.cache import cache     # para uso do cached table
 
 from .forms import UsuarioForm
-from sca.models import Users, Useruserprofile, UserProfile
+from sca.models import Users, Professor, Aluno
+from cadd.models import Membro, Comissao
+from cadd.utils import tipo_usuario
 
-#from MySQLdb import IntegrityError
-#from django.db import transaction
 from django.contrib.auth.models import User
 
 # Create your views here.
@@ -27,8 +28,8 @@ def usuario_login(request):
         if user:
             if Users.objects.using('sca').get(login__iexact=username):
                 login(request, user)
-#            else:
-#                messages.error(request, 'Usuário não cadastrado no sistema SCA!')
+                tipo = tipo_usuario(user.username, 0)
+
             return redirect(request.GET.get('next', '/'))
         else:
             messages.error(request, 'Usuário não cadastrado ou senha inválida!')
@@ -48,39 +49,24 @@ def usuario_registrar(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
-#            try:
-            # Pesquisa na tabela de usuários do SCA o usuário a ser registrado
-            usuario = Users.objects.using('sca').get(login__iexact=request.POST.get('username'))
-            # Caso seja realizado um get na tabela N:N o resultado já sai para a tabela apropriada
-            # Nesse caso, necessitou saber quais são as ids das roles do SCA
-            idAlunoProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_ALUNO')
-            idProfProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_PROFESSOR')
-            idAdminProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_SECAD')
-            tipoUsuario = ''
-            # Caso seu perfil no SCA seja de role SECAD
-            if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAdminProfile).exists():
-                tipoUsuario = 'Admin'
-            # Caso seu perfil no SCA seja de role Professor
-            if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idProfProfile).exists():
-                if tipoUsuario != '':
-                    tipoUsuario += '/Prof'
+            try:
+                # Pesquisa na tabela de usuários do SCA se o usuário é registrado
+                usuario_login = Users.objects.using('sca').get(login__iexact=request.POST.get('username'))
+                if 'Prof' in tipo_usuario(request.POST.get('username'), 0):
+                    usuario = Professor.objects.using('sca').get(matricula__iexact=usuario_login.matricula)
                 else:
-                    tipoUsuario = 'Professor'
-            # Caso seu perfil no SCA seja de role Aluno
-            if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAlunoProfile).exists():
-                tipoUsuario = 'Aluno'
-            u = form.save()
-            u.set_password(u.password)
-            u.first_name = tipoUsuario
-            u.last_name = usuario.nome
-            u.email = usuario.email
-            u.save()
-            messages.success(request, 'Usuário registrado com sucesso! Utilize o formulário abaixo para fazer login.')
-            return redirect('accounts:usuario_login')
-#            except IntegrityError:
-#                messages.error(request, "Matrícula já cadastrada!")
-#                form.rollback()
-
+                    usuario = Aluno.objects.using('sca').get(matricula__iexact=usuario_login.matricula)
+                u = form.save(commit=False)
+                u.set_password(u.password)
+#                u.first_name = tipo_usuario(request.POST.get('username'), 1)
+                u.first_name = usuario.id
+                u.last_name = usuario_login.nome
+                u.email = usuario_login.email
+                u.save()
+                messages.success(request, 'Usuário registrado com sucesso! Utilize o formulário abaixo para fazer login.')
+                return redirect('accounts:usuario_login')
+            except:
+                messages.error(request, 'Usuário não cadastrado no sistema SCA!')
         else:
             if User.objects.filter(username=request.POST.get('username')):
                 messages.error(request, 'Matrícula já registrada!')
@@ -114,4 +100,12 @@ def alterar_senha(request):
 def home(request):
     """Função de saída para a tela inicial do sistema"""
 
-    return render(request, 'accounts/home.html', {'home': home})
+    membro = ""
+    comissoes = ""
+    if 'Prof' in tipo_usuario(request.user.username, 0):
+        membro = Membro.objects.filter(professor=request.user.first_name).values_list('comissao')
+        comissoes = Comissao.objects.filter(id__in=membro)
+        if not membro:
+            messages.error(request, 'Professor(a), o Sr(a) não está cadastrado(a) em nenhuma comissão de apoio!')
+
+    return render(request, 'accounts/home.html', {'home': home, 'ativoInicio': True, 'membro': membro, 'comissoes': comissoes})  #, 'tipo': tipo_usuario(request.user.username, 0)})

@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <p>Seja bem vindo {% if user.is_authenticated %}{{ user.username }}{% else %}usuário anônimo{% endif %}</p>
+  {% if messages %}
+    <div class="alert alert-danger" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  {% endif %}
+  <p>Seja bem vindo, {% if user.is_authenticated %}{{ user.last_name }}{% else %}usuário anônimo{% endif %}!</p>
+
+  {% if 'Prof' in tipo %}
+  Membro da(s) comissão(ões):<br>
+  {% for comissao in comissoes %}
+    {{ comissao.descricao }}<br>
+  {% endfor %}
+  {% endif %}
 
   {% if user.is_authenticated == "False" %}
     <p><a href="{% url 'accounts:usuario_registrar' %}">Registre-se</a>.</p>

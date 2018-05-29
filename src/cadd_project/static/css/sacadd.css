@@ -1,0 +1,564 @@
+/*
+ *Folha de Estilos Principal do Sistema de Apoio às CADDs
+ *Versão 1.0
+ */
+
+/**********************/
+/* Seção de Cabeçalho */
+/**********************/
+
+.header
+{
+	margin: 30px 0px 0px 0px;
+	padding: 30px 10px;
+	background-color: #36f;
+}
+
+.header-content
+{
+	width: 90%;
+	margin:0px auto;
+}
+.Titulo-Sistema
+{
+	font-size: 26pt;
+	font-weight: bold;
+	color: #fff;
+}
+.Usuario_Autenticado
+{
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 14pt;
+}
+.Usuario_Opcoes
+{
+	margin: 0px 0px 0px 20px;
+}
+.Usuario_Opcoes li
+{
+	list-style-type: none;
+}
+.Usuario_Opcoes li a
+{
+	color: #fff;
+	font-size: 12pt;
+}
+
+/**********************/
+/* Seção de Navegação */
+/**********************/
+.nav
+{
+	width: 90%;
+	margin: 5px auto;
+}
+.Titulo-Pagina
+{
+	font-weight: bold;
+	font-size: 20pt;
+	text-decoration: underline;;
+	margin: 10px 5px 20px 15px;
+	color: #283e3e;
+}
+
+.main-content
+{
+	width: 90%;
+	margin: 0px auto;
+}
+
+/*BOTÕES*/
+
+.botao-padrao
+{
+	width: 150px;
+	height: 45px;
+	border: none;
+	margin: 0px 5px 10px 0px;
+	border-radius: 5px;
+	border: 1px solid #000;
+}
+.botao-azul
+{
+	background-color: #36f;
+	color: #fff;
+}
+.botao-cinza
+{
+	background-color: #666;
+	color: #fff;
+}
+.botao-vermelho
+{
+	background-color: #f33;
+	color: #fff;
+}
+.botao-desabilitado
+{
+	background-color: #ccc;
+	color: #666;
+	border: 1px solid #666;
+}
+
+/* Texto de Status do Plano de Estudos*/
+
+.status_plano_titulo
+{
+	font-weight: bold;
+	margin: 5px;
+}
+.status_plano_nao_cadastrado
+{
+	color: #f00;
+}
+.status_plano_cadastrado
+{
+	color: #0f0;
+}
+
+/****************************************************************/
+/************************** QUADROS *****************************/
+/****************************************************************/
+
+.cabecalho-disciplinas
+{
+	background-color: #283e3e;
+	color: #fff;
+	text-align: center;
+	font-weight: bold;
+	font-size: 12pt;
+	margin: 0px 5px;
+	padding: 10px 17%;
+}
+.cabecalho-quadros
+{
+	background-color: #283e3e;
+	color: #fff;
+	text-align: center;
+	font-weight: bold;
+	font-size: 12pt;
+	margin: 0px 0px;
+	padding: 10px 17%;
+}
+.quadro li
+{
+	list-style: none;
+}
+.quadro-disciplinas
+{
+	border: 1px solid #ccc;
+	background-color:;
+	color: #000;
+	font-weight: bold;
+	margin: 0px 5px;
+	padding: 5px;
+}
+.tipo_disciplina
+{
+	text-transform: uppercase;
+	text-align: center;
+	font-weight: bold;
+	font-size: 10pt;
+	margin: 0px auto 10px;
+	color: #00F;
+}
+.item_disc_periodo
+{
+	background-color:#ebf0fa;
+	padding: 0px 20px;
+	margin: 3px 30px 0px 0px;
+}
+.item_disc_periodo_concluido
+{
+	border: 1px dotted #ccc;
+	color: #ccc;
+}
+.item_disc_periodo_pendencia
+{
+	border: 1px dotted #000;
+	color: #000;
+}
+.item_disc_disciplinas
+{
+	padding: 0px 5px;
+	margin:3px 30px 0px 0px;
+	font-size: 10pt;
+	text-align: center;
+}
+.item_disc_disciplinas_faixa_preta
+{
+	background-color:#555;
+	color: #fff;
+	border: 1px dotted #000;
+}
+.item_disc_disciplinas_faixa_vermelha
+{
+	background-color:#f99;
+	color: #000;
+	border: 1px dotted #000;
+}
+.item_disc_disciplinas_faixa_laranja
+{
+	background-color:#f99;
+	color: #000;
+	border: 1px dotted #000;
+}
+.item_disc_disciplinas_faixa_azul
+{
+	background-color:#00f;
+	color: #fff;
+	border: 1px dotted #000;
+}
+.quadro
+{
+	border: 1px solid #ccc;
+	color: #000;
+}
+.col-11p
+{
+  	position: relative;
+  	width: 100%;
+  	min-height: 1px;
+  	padding-right: 0px;
+  	padding-left: 0px;
+  	-webkit-box-flex: 0;
+  	-ms-flex: 0 0 91.666667%;
+  	flex: 0 0 91.666667%;
+  	max-width: 91.666667%;
+}
+footer
+{
+	margin: 10px 0px;
+	padding: 10px;
+	background-color: #3366ff;
+}
+.collapseList
+{
+	padding: 0px 10px;
+	width: 100%;
+	height: 200px;
+}
+.collapseList li
+{
+	margin: 2px auto;
+	width: 100%;
+	text-align: center;
+	padding: 5px;
+}
+
+/****************************************************************/
+/************* QUADRO DA PRÉVIA DE HORÁRIOS *********************/
+/****************************************************************/
+
+.disciplina-previa
+{
+	background-color: #000;
+	border-radius: 1px;
+	margin: 1px;
+	padding: 1px;
+}
+
+
+
+.disciplina-previa-detalhes
+{
+	padding: 5px 5px;
+	background-color: #FFF;
+}
+.disciplina-previa-label-codigo
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-codigo
+{
+	color: #000;
+	font-weight:normal;
+	font-size: 9pt;
+}
+.disciplina-previa-label-nome
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-nome
+{
+	font-weight: normal;
+	font-size: 9pt;
+}
+.disciplina-previa-label-professor
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-professor
+{
+	font-weight: normal;
+	font-size: 9pt;
+}
+.disciplina-previa-label-inicio
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-horario-inicio
+{
+	font-weight: normal;
+	font-size: 9pt;
+}
+.disciplina-previa-label-termino
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-horario-termino
+{
+	font-weight: normal;
+	font-size: 9pt;
+}
+.disciplina-previa-label-desc
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-desc
+{
+	font-weight: normal;
+	font-size: 9pt;
+}
+.disciplina-previa-label-creditos
+{
+	color: #0056B3;
+	font-weight:bold;
+	font-size: 9pt;
+}
+.disciplina-previa-creditos
+{
+	font-weight: normal;
+	font-size: 9pt;
+}
+.card-body .disciplina-previa .detalhes-nao-exibir-quadro-previa
+{
+	display: none;
+}
+
+/******************/
+
+.disciplina-previa-add
+{
+	background-color: #00E676;
+	border-left: 1px solid #000;
+	cursor: pointer;
+}
+
+/************************/
+
+.disciplina-previa-codigo-tb
+{
+	color: #000;
+	font-weight: bold;
+	font-size: 11pt;
+}
+.disciplina-previa-nome-tb
+{
+	font-weight: normal;
+	font-size: 10pt;
+}
+.disciplina-previa-rem-tb
+{
+	background-color: #f00;
+	border: 1px solid #f00;
+	font-weight: normal;
+	font-size: 14px;
+	cursor: pointer;
+}
+.disciplina-previa-rem-txt-tb
+{
+	color: #fff;
+	font-weight: bold;
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+/****************************************************************/
+/************************ TABELA DA PRÉVIA **********************/
+/******************* Plano com Base na Prévia *******************/
+/****************************************************************/
+
+
+.disciplina-previa-tabela
+{
+	background-color: #cfc;
+	margin: 1px;
+	padding: 1px;
+}
+
+.disciplina-previa-tabela .disciplina-previa-label-nome
+{
+	display: none;
+}
+
+.card-body .disciplina-previa-rem-tb
+{
+	display: none;
+}
+
+
+table tbody tr td .disciplina-previa-detalhes
+{
+	background-color: #cfc;
+	border: none;
+	-webkit-box-flex: 0;
+  	-ms-flex: 0 0 100%;
+  	flex: 0 0 100%;
+  	max-width: 100%;
+
+}
+
+table tbody tr td .disciplina-previa-add
+{
+	display: none;
+  	max-width: 100%;
+
+}
+table tbody tr td .disciplina-previa-rem-tb
+{
+  	-webkit-box-flex: 0;
+  	-ms-flex: 0 0 100%;
+  	flex: 0 0 100%;
+  	max-width: 100%
+
+}
+table tbody tr td .detalhes-nao-exibir-calendario-plano
+{
+	display: none;
+}
+
+
+
+
+
+
+
+
+/****************************************************************/
+/*********************** CALENDÁRIO *****************************/
+/****************************************************************/
+
+table
+{
+	font-family:sans-serif;
+	width: 100%;
+	border-spacing: 0;
+	border-collapse: separate;
+	table-layout: fixed;
+	margin-bottom: 50px;
+}
+
+table thead tr th
+{
+	text-align: center;
+	background-color: #CFD8DC;
+	color: #1565C0;
+	padding: 0.5em;
+	overflow: hidden;
+	border-top: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+table thead tr th:first-child
+{
+	border-left: 1px solid #ccc;
+}
+
+table thead tr th:last-child
+{
+}
+
+table thead tr th .short
+{
+	display: block;
+}
+
+
+
+table tbody .hour span
+{
+	font-size: 1.0em;
+}
+
+table tbody tr:first-child
+{
+
+}
+
+table tbody tr td
+{
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	margin: 5px;
+	text-align: center;
+	font-weight: normal;
+	font-size: 12pt;
+}
+table tbody tr td:first-child
+{
+	background-color: #CFD8DC;
+	border-left: 1px solid #ccc;
+	text-align: center;
+	font-weight: bold;
+	font-size: 12pt;
+}
+
+#disciplinas-sem-horario-cell{
+	border: none;
+	padding: 5px 50px;
+	height: 30px;
+	background-color: #FFF;
+	text-align: left;
+}
+
+#texto-disciplinas-sem-horario{
+	font-family: sans-serif;
+	font-size: 11pt;
+	color: #1565C0;
+	text-decoration: underline;
+	cursor: pointer;
+}
+#numero-disciplinas-sem-horario{
+	font-family: sans-serif;
+	font-size: 11pt;
+	color: #F00;
+}
+
+#disciplinas-sem-horario{
+	display: none;
+}
+
+.disciplina-previa-sem-horario{
+	margin-bottom: 2px;
+	background-color: #cfc;
+	border: 1px solid green;
+	width: 50%;
+}
+#disciplinas-sem-horario-cell .disciplina-previa-detalhes{
+	background-color: #cfc;
+}
+.disciplina-previa-sem-horario .detalhes-completos{
+	background-color: #cfc;
+}
+#salvar-previa{
+	margin: 20px 0px;
+	padding: 0px;
+}
+#salvar-previa button{
+	font-weight: bold;
+}

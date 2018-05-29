@@ -25,4 +25,22 @@ urlpatterns = [
     path('novo-itemhorario/?<id_horario>', views.novo_itemhorario, name='novo_itemhorario'),
     path('editar-itemhorario/?<id_itemhorario>&<id_horario>', views.editar_itemhorario, name='editar_itemhorario'),
     path('excluir-itemhorario/?<id_itemhorario>&<id_horario>', views.excluir_itemhorario, name='excluir_itemhorario'),
+
+    path('lista-planos/', views.lista_planos, name='lista_planos'),
+    path('novo-plano-previa/', views.novo_plano_previa, name='novo_plano_previa'),
+
+    path('lista-reunioes/', views.lista_reunioes, name='lista_reunioes'),
+    path('nova-reuniao/', views.nova_reuniao, name='nova_reuniao'),
+    path('editar-reuniao/?<id_reuniao>', views.editar_reuniao, name='editar_reuniao'),
+    path('excluir-reuniao/?<id_reuniao>', views.excluir_reuniao, name='excluir_reuniao'),
+
+    path('lista-convocados/?<id_reuniao>', views.lista_convocados, name='lista_convocados'),
+    path('novo-convocado/?<id_reuniao>', views.novo_convocado, name='novo_convocado'),
+    path('editar-convocado/?<id_convocado>&<id_reuniao>', views.editar_convocado, name='editar_convocado'),
+    path('excluir-convocado/?<id_convocado>&<id_reuniao>', views.excluir_convocado, name='excluir_convocado'),
+
+    path('lista-documentos/', views.lista_documentos, name='lista_documentos'),
+    path('novo-documento/', views.novo_documento, name='novo_documento'),
+    path('visualizar-documento/?<id_documento>', views.visualizar_documento, name='visualizar_documento'),
+    path('excluir-documento/?<id_documento>', views.excluir_documento, name='excluir_documento'),
 ]

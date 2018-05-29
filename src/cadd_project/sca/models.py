@@ -37,6 +37,9 @@ class Aluno(models.Model):
     versaocurso = models.ForeignKey('Versaocurso', models.DO_NOTHING,
                     db_column='versaoCurso_id', blank=True, null=True)
 
+    def __str__(self):
+        return self.nome
+
     class Meta:
         managed = False
         db_table = 'aluno'
@@ -516,10 +519,10 @@ class Versaocurso(models.Model):
     """Classe importada da tabela versaocurso do banco de dados SCA"""
 
     id = models.BigAutoField(primary_key=True)
-    cargahorariaminaitvcomp = models.TextField(db_column='cargaHorariaMinAitvComp',
-                    blank=True, null=True)
-    cargahorariaminoptativas = models.TextField(db_column='cargaHorariaMinOptativas',
-                    blank=True, null=True)
+#    cargahorariaminaitvcomp = models.TextField(db_column='cargaHorariaMinAitvComp',
+#                    blank=True, null=True)
+#    cargahorariaminoptativas = models.TextField(db_column='cargaHorariaMinOptativas',
+#                    blank=True, null=True)
     numero = models.CharField(max_length=255, blank=True, null=True)
     qtdperiodominimo = models.IntegerField(db_column='qtdPeriodoMinimo',
                     blank=True, null=True)

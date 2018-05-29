@@ -70,6 +70,10 @@ class Reuniao(models.Model):
     comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False,
                     null=False)
 
+    def __str__(self):
+        return self.local + " em " + str(self.data.strftime('%d/%m/%Y')) + \
+                    " às " + str(self.inicio.strftime('%H:%M')) + "h"
+
     class Meta:
         managed = True
         db_table = 'reuniao'
@@ -101,10 +105,14 @@ class Documento(models.Model):
                     blank=False, default=1, null=False)
     descricao = models.CharField(u'Descrição', max_length=50, blank=False,
                     null=False)
-    indice = models.FileField(u'Índice', max_length=50, blank=False, null=False)
+    indice = models.FileField(u'Índice', max_length=50, blank=False, null=False, upload_to='documentos/')
     aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
                     null=False)
+#    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+
+    def __str__(self):
+        return self.descricao
     class Meta:
         managed = True
         db_table = 'documento'
