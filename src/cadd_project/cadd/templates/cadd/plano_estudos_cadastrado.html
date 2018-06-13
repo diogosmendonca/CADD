@@ -13,13 +13,15 @@
       <button type="button" class="botao-padrao botao-desabilitado">Cadastrar Plano</button><br>
       <button type="button" class="botao-padrao botao-azul">Editar Plano</button><br>
       <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_previa' %}'">Cadastrar Prévia</button><br>
+      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_futuro' %}'">Cadastrar Futuro</button><br>
       <span class="status_plano_titulo">Status:</span>
-      <span class="status_plano_nao_cadastrado">Não Cadastrado</span><br>
+      <span class="status_plano_nao_cadastrado">{% if planoAtual %}{{ planoAtual.get_situacao_display }}{% else %}Não Cadastrado{% endif %}</span><br>
       <button type="button" class="botao-padrao botao-desabilitado">Download PDF</button><br>
       <button type="button" class="botao-padrao botao-desabilitado">Enviar por E-mail</button><br>
       <button type="button" class="botao-padrao botao-desabilitado">Imprimir</button><br>
     </div>
     <div class="col-8">
+      {% if planoAtual %}
       <div class="row">
         <div class="col-11 cabecalho-quadros">
           <span>Plano de Estudos Cadastrado</span>
@@ -30,65 +32,57 @@
           <div class="card">
             <div class="card-header" id="headingOne">
                 <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <span class="card-header-text"> 2018.1 </span>
+                <span class="card-header-text"> {{ planoAtual.ano }}.{{ planoAtual.periodo }} </span>
                 </button>
             </div>
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
               <div class="card-body">
                 <ul id="collapseOneList" class="collapseList">
-                  <li id="BCC201535" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    (BCC201535) Administração de Banco de Dados
+                  {% for i in itensAtual %}
+                  <li id="{{ i.itemhorario.disciplina.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
+                    ({{ i.itemhorario.disciplina.codigo }}) {{ i.itemhorario.disciplina.nome }}
                   </li>
-                  <li id="BCC201536" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    (BCC201536) Interação Humano Computador
-                  </li>
+                  {% endfor %}
                 </ul>
               </div>
             </div>
           </div>
+          {% if planosFuturos %}
+          {% for a in planosFuturos %}
           <div class="card">
-            <div class="card-header" id="headingTwo">
+            <div class="card-header" id="heading{{ a.ano }}{{ a.periodo }}">
               <h5 class="mb-0">
-                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  <span class="card-header-text"> 2018.2 </span>
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{ a.ano }}{{ a.periodo }}" aria-expanded="false" aria-controls="collapse{{ a.ano }}{{ a.periodo }}">
+                  <span class="card-header-text"> {{ a.ano }}.{{ a.periodo }} </span>
                 </button>
               </h5>
             </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+            <div id="collapse{{ a.ano }}{{ a.periodo }}" class="collapse" aria-labelledby="heading{{ a.ano }}{{ a.periodo }}" data-parent="#accordion">
               <div class="card-body">
-                <ul id="collapseTwoList" class="collapseList">
-                  <li id="BCC201535" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    (BCC201535) Administração de Banco de Dados
+                <ul id="collapse{{ a.ano }}{{ a.periodo }}List" class="collapseList">
+                  {% for j in itensFuturos %}
+                  {% if j.planofuturo == a %}
+                  <li id="{{ j.disciplina.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
+                    ({{ j.disciplina.codigo }}) {{ j.disciplina.nome }}
                   </li>
-                  <li id="BCC201536" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    (BCC201536) Interação Humano Computador
-                  </li>
-                </ul>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header" id="headingThree">
-              <h5 class="mb-0">
-                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <span class="card-header-text"> 2019.1 </span>
-                </button>
-              </h5>
-            </div>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-              <div class="card-body">
-                <ul id="collapseThreeList" class="collapseList">
-                  <li id="BCC201535" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    (BCC201535) Administração de Banco de Dados
-                  </li>
-                  <li id="BCC201536" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    (BCC201536) Interação Humano Computador
-                  </li>
+                  {% endif %}
+                  {% endfor %}
                 </ul>
               </div>
             </div>
           </div>
+          {% endfor %}
+          {% endif %}
         </div>
       </div>
+      {% else %}
+      <div class="row">
+        <div class="col-11 cabecalho-quadros">
+          <span>Não há nenhum Plano de Estudos Cadastrado</span>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
+</div>
 {% endblock %}

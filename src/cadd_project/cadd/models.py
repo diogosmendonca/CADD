@@ -3,6 +3,8 @@ from django.utils import timezone
 
 # Create your models here.
 
+# Constante global para a lista dos períodos
+# Utilizada pelas tabelas que possuem o campo periodo
 PERIODO_CHOICES = (
     (None, 'Selecione o período'),
     (1, '1º semestre'),
@@ -12,11 +14,23 @@ PERIODO_CHOICES = (
 class Comissao(models.Model):
     """Classe de uso do sistema para o cadastro das comissões"""
 
-    descricao = models.CharField(u'Descrição', max_length=50, blank=False,
-                    null=False)
-    curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
-                    null=False)
+    # Armazena a descição da comissão
+    descricao = models.CharField(
+                    u'Descrição',
+                    max_length=50,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do curso correspondente
+    # Relacionamento com a tabela Curso do banco de dados SCA
+    curso = models.ForeignKey(
+                    'sca.Curso',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
+    # Função que retorna uma descrição para cada objeto comissão
     def __str__(self):
         return self.descricao
 
@@ -29,14 +43,37 @@ class Comissao(models.Model):
 class Membro(models.Model):
     """Classe de uso do sistema para o cadastro dos membros das CADDs"""
 
-    ativo = models.BooleanField(u'Ativo')
-    presidente = models.BooleanField(u'Presidente')
-    portaria = models.CharField(u'Portaria', max_length=50, blank=False,
-                        null=False)
-    comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False,
-                        null=False)
-    professor = models.ForeignKey('sca.Professor', models.DO_NOTHING,
-                        blank=False, null=False)
+    # Armazena se um membro está ativo ou não
+    ativo = models.BooleanField(
+                    u'Ativo'
+                )
+    # Armazena se um membro é presidente ou não
+    presidente = models.BooleanField(
+                    u'Presidente'
+                )
+    # Armazena a portaria de origem da função de um membro na comissão
+    portaria = models.CharField(
+                    u'Portaria',
+                    max_length=50,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id da comissão correspondente
+    # Relacionamento com a tabela Comissao
+    comissao = models.ForeignKey(
+                    'Comissao',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do professor correspondente
+    # Relacionamento com a tabela Professor do banco de dados SCA
+    professor = models.ForeignKey(
+                    'sca.Professor',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -47,29 +84,71 @@ class Membro(models.Model):
 class Reuniao(models.Model):
     """Classe de uso do sistema para o agendamento das reuniões"""
 
+    # Constante para a lista dos status das reuniões
     SITUACAO_CHOICES = (
         (None, 'Selecione a situação'),
         ('A', 'Agendada'),
         ('C', 'Cancelada'),
         ('E', 'Encerrada'),
     )
+    # Constante para a lista dos tipos de reuniões
     TIPO_CHOICES = (
         (None, 'Selecione o tipo'),
         ('I', 'Informação'),
         ('C', 'Convocação'),
     )
 
-    data = models.DateField(u'Data', blank=False, null=False)
-    inicio = models.TimeField(u'Início', blank=False, null=False)
-    local = models.CharField(u'Local', max_length=50, blank=False, null=False)
-    situacao = models.CharField(u'Situação', max_length=1,
-                    choices=SITUACAO_CHOICES, blank=False, default='A')
-    tipo = models.CharField(u'Tipo', max_length=1, choices=TIPO_CHOICES,
-                    blank=False, default='I')
-    anotacao = models.TextField(u'Anotação', blank=True, null=True)
-    comissao = models.ForeignKey('Comissao', models.DO_NOTHING, blank=False,
-                    null=False)
+    # Armazena a data agendada para a reunião
+    data = models.DateField(
+                    u'Data',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o horário agendado para a reunião
+    inicio = models.TimeField(
+                    u'Início',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o local da reunião
+    local = models.CharField(
+                    u'Local',
+                    max_length=50,
+                    blank=False,
+                    null=False
+                )
+    # Armazena o status da reunião
+    situacao = models.CharField(
+                    u'Situação',
+                    max_length=1,
+                    choices=SITUACAO_CHOICES,
+                    blank=False,
+                    default='A'
+                )
+    # Armazena o tipo de reunião
+    tipo = models.CharField(
+                    u'Tipo',
+                    max_length=1,
+                    choices=TIPO_CHOICES,
+                    blank=False,
+                    default='I'
+                )
+    # Armazena as anotações referentes a uma reunião
+    anotacao = models.TextField(
+                    u'Anotação',
+                    blank=True,
+                    null=True
+                )
+    # Armazena a id do comissão correspondente
+    # Relacionamento com a tabela Comissao
+    comissao = models.ForeignKey(
+                    'Comissao',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
+    # Função que retorna uma descrição para cada objeto reunião
     def __str__(self):
         return self.local + " em " + str(self.data.strftime('%d/%m/%Y')) + \
                     " às " + str(self.inicio.strftime('%H:%M')) + "h"
@@ -81,15 +160,39 @@ class Reuniao(models.Model):
 
 
 class Convocacao(models.Model):
-    """Classe de uso do sistema para a guarda dos alunos convocados às reuniões"""
+    """Classe de uso do sistema para a guarda dos alunos convocados
+        às reuniões"""
 
-    envioemail = models.BooleanField(u'Email')
-    presente = models.BooleanField(u'Presente')
-    anotacao = models.TextField(u'Anotação', blank=True, null=True)
-    reuniao = models.ForeignKey('Reuniao', models.DO_NOTHING, blank=False,
-                    null=False)
-    aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
-                    null=False)
+    # Armazena se foi enviado ou não e-mail convocando o aluno
+    envioemail = models.BooleanField(
+                    u'Email'
+                )
+    # Armazena a presença do aluno na reunião
+    presente = models.BooleanField(
+                    u'Presente'
+                )
+    # Armazena as anotações/orientações passadas ao aluno
+    anotacao = models.TextField(
+                    u'Anotação',
+                    blank=True,
+                    null=True
+                )
+    # Armazena a id do reunião correspondente
+    # Relacionamento com a tabela Reuniao
+    reuniao = models.ForeignKey(
+                    'Reuniao',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do aluno convocado correspondente
+    # Relacionamento com a tabela Aluno do banco de dados SCA
+    aluno = models.ForeignKey(
+                    'sca.Aluno',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -98,21 +201,53 @@ class Convocacao(models.Model):
 
 
 class Documento(models.Model):
-    """Classe de uso do sistema para a guarda dos documentos escaneados dos alunos"""
+    """Classe de uso do sistema para a guarda dos documentos escaneados
+        dos alunos"""
 
-    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
-                    blank=False, default=1, null=False)
-    descricao = models.CharField(u'Descrição', max_length=50, blank=False,
-                    null=False)
-    indice = models.FileField(u'Índice', max_length=50, blank=False, null=False, upload_to='documentos/')
-    aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
-                    null=False)
-#    uploaded_at = models.DateTimeField(auto_now_add=True)
+    # Armazena o ano de referência à documentação salvaguardada
+    ano = models.PositiveSmallIntegerField(
+                    u'Ano',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o perído de referência à documentação salvaguardada
+    periodo = models.PositiveSmallIntegerField(
+                    u'Período',
+                    choices=PERIODO_CHOICES,
+                    blank=False,
+                    default=1,
+                    null=False
+                )
+    # Armazena a descrição da documentação
+    descricao = models.CharField(
+                    u'Descrição',
+                    max_length=50,
+                    blank=False,
+                    null=False
+                )
+    # Armazena o local do sistema de arquivos onde o documento está salvaguardado
+    indice = models.FileField(
+                    u'Índice',
+                    max_length=50,
+                    blank=False,
+                    null=False,
+                    upload_to='documentos/'
+                )
+    # Armazena o timestamp de upload do documento
+    # uploaded_at = models.DateTimeField(auto_now_add=True)
+    # Armazena a id do aluno convocado correspondente
+    # Relacionamento com a tabela Aluno do banco de dados SCA
+    aluno = models.ForeignKey(
+                    'sca.Aluno',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
-
+    # Função que retorna uma descrição para cada objeto documento
     def __str__(self):
         return self.descricao
+
     class Meta:
         managed = True
         db_table = 'documento'
@@ -120,14 +255,32 @@ class Documento(models.Model):
 
 
 class Horario(models.Model):
-    """Classe de uso do sistema para a guarda da prévia do horário do semestre subsequente"""
+    """Classe de uso do sistema para a guarda da prévia do horário do
+        semestre subsequente"""
 
-    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
-                    blank=False, null=False)
-    curso = models.ForeignKey('sca.Curso', models.DO_NOTHING, blank=False,
-                null=False)
+    # Armazena o ano de referência ao horário salvaguardado
+    ano = models.PositiveSmallIntegerField(
+                    u'Ano',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o perído de referência ao horário salvaguardado
+    periodo = models.PositiveSmallIntegerField(
+                    u'Período',
+                    choices=PERIODO_CHOICES,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do curso correspondente
+    # Relacionamento com a tabela Curso do banco de dados SCA
+    curso = models.ForeignKey(
+                    'sca.Curso',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
+    # Função que retorna uma descrição para cada objeto horário
     def __str__(self):
         return str(self.ano) + '.' + str(self.periodo) + '-' + self.curso.sigla
 
@@ -139,7 +292,26 @@ class Horario(models.Model):
 
 class ItemHorario(models.Model):
     """Classe de uso do sistema para a guarda dos itens da prévia do horário"""
+    """OBS: Possíveis horários das aulas (retirado do SCA):
+        1 07:00 às 07:50
+        2 07:55 às 08:45
+        3 08:50 às 09:40
+        4 09:55 às 10:45
+        5 10:50 às 11:40
+        6 11:45 às 12:35
+        7 12:40 às 13:30
+        8 13:35 às 14:25
+        9 14:30 às 15:20
+        10 15:35 às 16:25
+        11 16:30 às 17:20
+        12 17:25 às 18:15
+        13 18:20 às 19:10
+        14 19:10 às 20:00
+        15 20:00 às 20:50
+        16 21:00 às 21:50
+        17 21:50 às 22:40"""
 
+    # Constante para a lista dos dias da semana
     DIASEMANA_CHOICES = (
         (None, 'Selecione o dia da semana'),
         (0, 'Domingo'),
@@ -153,22 +325,73 @@ class ItemHorario(models.Model):
         (8, 'Horário variável'),
     )
 
-    periodo = models.CharField(u'Período', max_length=3, blank=False,
-                        null=False)
-    diasemana = models.PositiveSmallIntegerField(u'Dia da semana', blank=False,
-                        null=False, choices=DIASEMANA_CHOICES)
-    inicio = models.TimeField(u'Início', blank=True, null=True)
-    fim = models.TimeField(u'Início', blank=True, null=True)
-    horario = models.ForeignKey('Horario', models.DO_NOTHING, blank=False,
-                        null=False)
-    professor = models.ForeignKey('sca.Professor', models.DO_NOTHING,
-                        blank=False, null=False)
-    departamento = models.ForeignKey('sca.Departamento', models.DO_NOTHING,
-                        blank=False, null=False)
-    disciplina = models.ForeignKey('sca.Disciplina', models.DO_NOTHING,
-                        blank=False, null=False)
-    turma = models.ForeignKey('sca.Turma', models.DO_NOTHING, blank=False,
-                        null=False)
+    # Armazena a referência do período previsto da disciplina no curso
+    periodo = models.CharField(
+                    u'Período',
+                    max_length=3,
+                    blank=False,
+                    null=False,
+                    default=1
+                )
+    # Armazena a dia de semana que será ministrada a aula da disciplina
+    diasemana = models.PositiveSmallIntegerField(
+                    u'Dia da semana',
+                    blank=False,
+                    null=False,
+                    choices=DIASEMANA_CHOICES
+                )
+    # Armazena o horário de início da aula
+    inicio = models.TimeField(
+                    u'Início',
+                    blank=True,
+                    null=True
+                )
+    # Armazena o horário de término da aula
+    fim = models.TimeField(
+                    u'Início',
+                    blank=True,
+                    null=True
+                )
+    # Armazena a id do horário correspondente
+    # Relacionamento com a tabela Horario
+    horario = models.ForeignKey(
+                    'Horario',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do professor correspondente
+    # Relacionamento com a tabela Professor do banco de dados SCA
+    professor = models.ForeignKey(
+                    'sca.Professor',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do departamento correspondente
+    # Relacionamento com a tabela Departamento do banco de dados SCA
+    departamento = models.ForeignKey(
+                    'sca.Departamento',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id da disciplina correspondente
+    # Relacionamento com a tabela Disciplina do banco de dados SCA
+    disciplina = models.ForeignKey(
+                    'sca.Disciplina',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id da turma correspondente
+    # Relacionamento com a tabela Turma do banco de dados SCA
+    turma = models.ForeignKey(
+                    'sca.Turma',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -179,6 +402,7 @@ class ItemHorario(models.Model):
 class Plano(models.Model):
     """Classe de uso do sistema para a guarda dos planos de estudo dos alunos"""
 
+    # Constante para a lista dos status dos planos
     SITUACAO_CHOICES = (
         (None, 'Selecione a situação'),
         ('M', 'Montado'),
@@ -186,14 +410,42 @@ class Plano(models.Model):
         ('E', 'Encerrado'),
     )
 
-    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
-                    blank=False, default=1, null=False)
-    situacao = models.CharField(u'Situação', max_length=1,
-                    choices=SITUACAO_CHOICES, blank=False, default='M')
-    avaliacao = models.TextField(u'Anotação', blank=True, null=True)
-    aluno = models.ForeignKey('sca.Aluno', models.DO_NOTHING, blank=False,
-                    null=False)
+    # Armazena o ano de referência ao plano salvaguardado
+    ano = models.PositiveSmallIntegerField(
+                    u'Ano',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o período de referência do plano salvaguardado
+    periodo = models.PositiveSmallIntegerField(
+                    u'Período',
+                    choices=PERIODO_CHOICES,
+                    blank=False,
+                    null=False,
+                    default=1
+                )
+    # Armazena o status do plano
+    situacao = models.CharField(
+                    u'Situação',
+                    max_length=1,
+                    choices=SITUACAO_CHOICES,
+                    blank=False,
+                    default='M'
+                )
+    # Armazena a avaliação de um membro de uma comissão para o plano
+    avaliacao = models.TextField(
+                    u'Anotação',
+                    blank=True,
+                    null=True
+                )
+    # Armazena a id do aluno correspondente
+    # Relacionamento com a tabela Aluno do banco de dados SCA
+    aluno = models.ForeignKey(
+                    'sca.Aluno',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -202,12 +454,25 @@ class Plano(models.Model):
 
 
 class ItemPlanoAtual(models.Model):
-    """Classe de uso do sistema para a guarda dos itens atuais do plano de estudo dos alunos"""
+    """Classe de uso do sistema para a guarda dos itens atuais do
+        plano de estudo dos alunos"""
 
-    plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False,
-                    null=False)
-    itemhorario = models.ForeignKey('ItemHorario', models.DO_NOTHING,
-                    blank=False, null=False)
+    # Armazena a id do plano correspondente
+    # Relacionamento com a tabela Plano
+    plano = models.ForeignKey(
+                    'Plano',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id do item do horário correspondente
+    # Relacionamento com a tabela ItemHorario
+    itemhorario = models.ForeignKey(
+                    'ItemHorario',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -216,13 +481,31 @@ class ItemPlanoAtual(models.Model):
 
 
 class PlanoFuturo(models.Model):
-    """Classe de uso do sistema para a guarda do plano de estudo futuro dos alunos"""
+    """Classe de uso do sistema para a guarda do plano de
+        estudo futuro dos alunos"""
 
-    ano = models.PositiveSmallIntegerField(u'Ano', blank=False, null=False)
-    periodo = models.PositiveSmallIntegerField(u'Período', choices=PERIODO_CHOICES,
-                    blank=False, default=1, null=False)
-    plano = models.ForeignKey('Plano', models.DO_NOTHING, blank=False,
-                    null=False)
+    # Armazena o ano de referência ao plano futuro salvaguardado
+    ano = models.PositiveSmallIntegerField(
+                    u'Ano',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o período de referência ao plano futuro salvaguardado
+    periodo = models.PositiveSmallIntegerField(
+                    u'Período',
+                    choices=PERIODO_CHOICES,
+                    blank=False,
+                    null=False,
+                    default=1
+                )
+    # Armazena a id do plano correspondente
+    # Relacionamento com a tabela Plano
+    plano = models.ForeignKey(
+                    'Plano',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -231,12 +514,25 @@ class PlanoFuturo(models.Model):
 
 
 class ItemPlanoFuturo(models.Model):
-    """Classe de uso do sistema para a guarda dos itens do futuro do plano de estudo dos alunos"""
+    """Classe de uso do sistema para a guarda dos itens do
+        plano de estudo futuro dos alunos"""
 
-    planofuturo = models.ForeignKey('PlanoFuturo', models.DO_NOTHING,
-                        blank=False, null=False)
-    disciplina = models.ForeignKey('sca.Disciplina', models.DO_NOTHING,
-                        blank=False, null=False)
+    # Armazena a id do plano futuro correspondente
+    # Relacionamento com a tabela PlanoFuturo
+    planofuturo = models.ForeignKey(
+                    'PlanoFuturo',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+    # Armazena a id da disciplina correspondente
+    # Relacionamento com a tabela Disciplina do banco de dados SCA
+    disciplina = models.ForeignKey(
+                    'sca.Disciplina',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
 
     class Meta:
         managed = True
@@ -247,6 +543,7 @@ class ItemPlanoFuturo(models.Model):
 class Parametros(models.Model):
     """Classe de uso do sistema para a guarda dos parâmetros do sistema"""
 
+    # Constante para a lista da quantidade de itens a serem visualizados
     ITENSPAGINA_CHOICES = (
         (None, 'Selecione o total de itens por página'),
         (5, 5),
@@ -261,22 +558,76 @@ class Parametros(models.Model):
         (50, 50),
     )
 
-    reprovacurso8periodoslaranja = models.PositiveSmallIntegerField(blank=False,
-                        null=False)
-    reprovademaiscursoslaranja = models.PositiveSmallIntegerField(blank=False,
-                        null=False)
-    reprovacurso8periodosvermelha = models.PositiveSmallIntegerField(blank=False,
-                        null=False)
-    reprovademaiscursosvermelha = models.PositiveSmallIntegerField(blank=False,
-                        null=False)
-    qtdperiodoslaranja = models.CharField(max_length=10, blank=False,
-                        null=False)
-    qtdperiodosvermelha = models.CharField(max_length=10, blank=False,
-                        null=False)
-    maxcreditosporperiodopreta = models.PositiveSmallIntegerField(blank=False,
-                        null=False)
-    defaultitensporpagina = models.PositiveSmallIntegerField(choices=ITENSPAGINA_CHOICES,
-                        blank=False, null=False)
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade laranja pode ter oriundo de um
+    # curso de 8 períodos ou mais
+    reprovacurso8periodoslaranja = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=2
+                )
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade laranja pode ter oriundo dos
+    # demais cursos
+    reprovademaiscursoslaranja = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=1
+                )
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade vermelha pode ter oriundo de um
+    # curso de 8 períodos ou mais
+    reprovacurso8periodosvermelha = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=3
+                )
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade vermelha pode ter oriundo dos
+    # demais cursos
+    reprovademaiscursosvermelha = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=2
+                )
+    # Armazena a fórmula para calcular a quantidade máxima de períodos para
+    # integralização que um aluno na faixa de criticidade laranja pode cursar
+    qtdperiodoslaranja = models.CharField(
+                    max_length=10,
+                    blank=False,
+                    null=False,
+                    default='2 * N'
+                )
+    # Armazena a fórmula para calcular a quantidade máxima de períodos para
+    # integralização que um aluno na faixa de criticidade vermelha pode cursar
+    qtdperiodosvermelha = models.CharField(
+                    max_length=10,
+                    blank=False,
+                    null=False,
+                    default='4 * N - 3'
+                )
+    # Armazena a quantidade máxima de créditos das disciplinas por semana
+    # que um aluno na faixa de criticidade preta pode ter
+    maxcreditosporperiodopreta = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=20
+                )
+    # Armazena a quantidade máxima de créditos das disciplinas por semana
+    # que um aluno pode ter não estando na faixa de criticidade preta
+    maxcreditosporperiodo = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=28
+                )
+    # Armazena a quantidade de itens por página um objeto pode ser listado
+    # (paginação)
+    defaultitensporpagina = models.PositiveSmallIntegerField(
+                    choices=ITENSPAGINA_CHOICES,
+                    blank=False,
+                    null=False,
+                    default=5
+                )
 
     class Meta:
         managed = True

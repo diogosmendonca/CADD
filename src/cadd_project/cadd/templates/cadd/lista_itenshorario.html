@@ -1,78 +1,86 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="row">
-    <h1 class="h3 mb-2 font-weight-normal">Lista de Itens do horário {{ horario }}</h1>
-    {% if messages %}
-        <div class="alert alert-danger" role="alert">
-          {% for message in messages %}
-            {{ message }}
-          {% endfor %}
-        </div>
-    {% endif %}
-    {% if itenshorario %}
+  <div class="row alinhamento-central">
+    <span class="titulo-pagina"><< Lista de Itens do horário {{ horario }} >></span>
+  </div>
+  {% if messages %}
+  <div class="row alinhamento-central">
+    <div class="alert alert-danger" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if itenshorario %}
+  <div class="row alinhamento-central">
     <div class="form-group">
-    <table class="table table-striped table-condensed">
+      <table class="table table-striped table-condensed">
         <thead>
-            <tr>
-                <th>Período</th>
-                <th>Turma</th>
-                <th>Disciplina</th>
-                <th>Professor</th>
-                <th>Dia da semana</th>
-                <th>Início</th>
-                <th>Fim</th>
-                <th>Departamento</th>
-                <th colspan="2" style="textalign:center">Ações</th>
-            </tr>
+          <tr>
+            <th>Período</th>
+            <th>Turma</th>
+            <th>Disciplina</th>
+            <th>Professor</th>
+            <th>Dia da semana</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Departamento</th>
+            <th colspan="2" style="textalign:center">Ações</th>
+          </tr>
         </thead>
         <tbody>
-            {% for i in itenshorario %}
-            <tr>
-                <td>{{ i.periodo }}</td>
-                <td>{{ i.turma }}</td>
-                <td>{{ i.disciplina }}</td>
-                <td>{{ i.professor }}</td>
-                <td>{{ i.get_diasemana_display }}</td>
-                <td>{{ i.inicio }}h</td>
-                <td>{{ i.fim }}h</td>
-                <td>{{ i.departamento }}</td>
-                <td><a href="{% url 'cadd:editar_itemhorario' i.id id_horario %}" class="btn btn-info btn-sm">Editar</a></td>
-                <td><a href="{% url 'cadd:excluir_itemhorario' i.id id_horario %}" class="btn btn-danger btn-sm">Excluir</a></td>
-            </tr>
-            {% endfor %}
+          {% for i in itenshorario %}
+          <tr>
+            <td>{{ i.periodo }}</td>
+            <td>{{ i.turma }}</td>
+            <td>{{ i.disciplina }}</td>
+            <td>{{ i.professor }}</td>
+            <td>{{ i.get_diasemana_display }}</td>
+            <td>{{ i.inicio }}h</td>
+            <td>{{ i.fim }}h</td>
+            <td>{{ i.departamento }}</td>
+            <td colspan="2">
+              <a href="{% url 'cadd:editar_itemhorario' i.id id_horario %}" class="btn btn-info botao-padrao">Editar</a>
+              <a href="{% url 'cadd:excluir_itemhorario' i.id id_horario %}" class="btn botao-padrao botao-vermelho">Excluir</a>
+            </td>
+          </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
     </div>
+  </div>
+  <div class="row alinhamento-central">
     <div class="pagination">
-        <span class="step-links">
-            {% if itenshorario.has_previous %}
-                <a href="?page=1" class="btn btn-info">Primeiro</a>
-                <a href="?page={{ itenshorario.previous_page_number }}" class="btn btn-info">Anterior</a>
-            {% endif %}
+      <span class="step-links">
+        {% if itenshorario.has_previous %}
+        <a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
+        <a href="?page={{ itenshorario.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
+        {% endif %}
 
-            <span class="current">
-                Página {{ itenshorario.number }} de {{ itenshorario.paginator.num_pages }}
-            </span>
-
-            {% if itenshorario.has_next %}
-                <a href="?page={{ itenshorario.next_page_number }}" class="btn btn-info">Próximo</a>
-                <a href="?page={{ itenshorario.paginator.num_pages }}" class="btn btn-info">Último</a>
-            {% endif %}
+        <span class="current">
+          Página {{ itenshorario.number }} de {{ itenshorario.paginator.num_pages }}
         </span>
+
+        {% if itenshorario.has_next %}
+        <a href="?page={{ itenshorario.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
+        <a href="?page={{ itenshorario.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
+        {% endif %}
+      </span>
     </div>
-    {% else %}
-    <br><br>
+  </div>
+  {% else %}
+  <div class="row alinhamento-central">
     <div class="form-group">
-        <div class="alert alert-info" role="alert">
-          <p>Não há nenhum item de horário cadastrado!</p>
-        </div>
+      <div class="alert alert-danger" role="alert">
+        <p>Não há nenhum item de horário cadastrado!</p>
+      </div>
     </div>
-    {% endif %}
-    <div class="form-group">
-      <br><br>
-      <a href="{% url 'cadd:novo_itemhorario' id_horario %}" class="btn btn-primary" role="button">Adicionar item</a>
-      <a href="{% url 'cadd:lista_horarios' %}" class="btn btn-info">Voltar</a>
-    </div>
-</div>
+  </div>
+  {% endif %}
+  <div class="row alinhamento-central">
+    <a href="{% url 'cadd:lista_horarios' %}" class="btn botao-padrao">Voltar</a>
+    <a href="{% url 'cadd:novo_itemhorario' id_horario %}" class="btn botao-padrao botao-azul" role="button">Adicionar item</a>
+  </div>
 {% endblock body %}

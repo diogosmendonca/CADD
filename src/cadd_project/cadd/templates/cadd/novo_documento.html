@@ -2,13 +2,26 @@
 {% load widget_tweaks %}
 
 {% block body %}
-  <h1 class="h3 mb-2 font-weight-normal">Documento</h1>
-  <div class="row">
-      <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit">Upload</button>
-      </form>
+  <div class="row alinhamento-central">
+    <span class="titulo-pagina"><< Documento >></span>
   </div>
-  <p><a href="{% url 'home' %}">Return to home</a></p>
+  {% if messages %}
+  <div class="row alinhamento-central">
+    <div class="alert alert-danger" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="row alinhamento-central">
+    <form class="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+  </div>
+  <div class="row alinhamento-central">
+    <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
+    <button type="submit" class="btn botao-padrao botao-verde">Upload</button>
+  </div>
+  </form>
 {% endblock body %}

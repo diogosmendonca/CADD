@@ -1,58 +1,46 @@
-{% load staticfiles %}
+{% extends "base.html" %}
 {% load widget_tweaks %}
-<!doctype html>
-<html lang="pt-br">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
-    <title>Registro de usuários</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{% static 'css/signin.css' %}" rel="stylesheet">
-  </head>
-
-  <body>
-    <div class="row">
-        <form class="" action="" method="post">
-            <center><h1 class="h2 mb-2 font-weight-bold">Sistema de Apoio às CADDs</h1>
-            <h1 class="h3 mb-2 font-weight-normal">Trocar a senha</h1></center>
-            {% csrf_token %}
-            {% if messages %}
-              <div class="alert alert-danger" role="alert">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-              </div>
-            {% endif %}
-            <div class="form-group">
-              <label for="{{ form.old_password.id_for_label }}">Senha antiga</label>
-              {{ form.old_password|add_class:"form-control"|attr:"autofocus" }}
-            </div>
-            <div class="form-group">
-              <label for="{{ form.new_password1.id_for_label }}">Nova senha</label>
-              {{ form.new_password1|add_class:"form-control" }}
-            </div>
-            <div class="form-group">
-              <label for="{{ form.new_password2.id_for_label }}">Confirmar nova senha</label>
-              {{ form.new_password2|add_class:"form-control" }}
-            </div>
-            <span class="helptext">
-              <ul>
-                <li>Sua senha não pode ser tão parecida com suas outras informações pessoais.</li>
-                <li>Sua senha precisa conter pelo menos 8 caracteres.</li>
-                <li>Sua senha não pode ser uma senha habitualmente utilizada.</li>
-                <li>Sua senha não pode ser inteiramente numérica.</li>
-              </ul>
-            </span>
-            <button type="submit" class="btn btn-primary">Alterar</button>
-            <center><a href="{% url 'home' %}">Voltar</a></center>
-        </form>
+{% block body %}
+  <div class="row alinhamento-central">
+    <span class="titulo-pagina"><< Alterar a senha >></span>
+  </div>
+  {% if messages %}
+  <div class="row alinhamento-central">
+    <div class="alert alert-danger" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
     </div>
-  </body>
-</html>
+  </div>
+  {% endif %}
+  <div class="row alinhamento-central">
+    <form class="" method="post">
+    {% csrf_token %}
+    <div class="form-group ls-login-user">
+      <label for="old_password">Senha antiga</label>
+      <input class="form-control ls-login-bg-user input-lg" id="old_password" name="old_password" type="password" placeholder="Informe a senha antiga" required autofocus>
+    </div>
+    <div class="form-group ls-login-password">
+      <label for="new_password1">Nova senha</label>
+      <input class="form-control ls-login-bg-password input-lg" id="new_password1" name="new_password1" type="password" placeholder="Informe a nova senha" required>
+    </div>
+    <div class="form-group ls-login-password">
+      <label for="new_password2">Confirmar nova senha</label>
+      <input class="form-control ls-login-bg-password input-lg" id="new_password2" name="new_password2" type="password" placeholder="Confirme a nova senha" required>
+    </div>
+  </div>
+  <div class="row alinhamento-central">
+    <ul>
+      <li>Sua senha não pode ser tão parecida com suas outras informações pessoais.</li>
+      <li>Sua senha precisa conter pelo menos 8 caracteres.</li>
+      <li>Sua senha não pode ser uma senha habitualmente utilizada.</li>
+      <li>Sua senha não pode ser inteiramente numérica.</li>
+    </ul>
+  </div>
+  <div class="row alinhamento-central">
+    <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
+    <input type="submit" value="Alterar" class="btn botao-padrao botao-azul">
+  </div>
+  </form>
+{% endblock body %}

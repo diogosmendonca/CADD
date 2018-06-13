@@ -10,6 +10,24 @@ def linhas_por_pagina():
         linhas = Parametros.objects.get(pk=1).defaultitensporpagina
     return linhas
 
+def max_creditos_preta():
+    """Função que retorna a quantidade máxima de créditos por semana para um aluno que esteja na faixa de criticidade preta"""
+
+    creditos = 20
+    registros = Parametros.objects.filter(id=1).count()
+    if registros != 0:
+        linhas = Parametros.objects.get(pk=1).maxcreditosporperiodopreta
+    return creditos
+
+def max_creditos():
+    """Função que retorna a quantidade máxima de créditos por semana para qualquer aluno"""
+
+    creditos = 28
+    registros = Parametros.objects.filter(id=1).count()
+    if registros != 0:
+        linhas = Parametros.objects.get(pk=1).maxcreditosporperiodo
+    return creditos
+
 def tipo_usuario(username, registro):
     """Função que retorna o tipo de usuário vinculado ao SCA por meio do usuário logado"""
 
@@ -31,8 +49,3 @@ def tipo_usuario(username, registro):
     if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAlunoProfile).exists():
         return 'Aluno'
     return ''
-
-def lista_comissoes():
-    """Função que retorna o tipo de usuário vinculado ao SCA por meio do usuário logado"""
-
-    return None

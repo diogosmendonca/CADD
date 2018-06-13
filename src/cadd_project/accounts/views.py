@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import UsuarioForm
 from sca.models import Users, Professor, Aluno
-from cadd.models import Membro, Comissao
+from cadd.models import Membro, Comissao, Convocacao, Reuniao
 from cadd.utils import tipo_usuario
 
 from django.contrib.auth.models import User
@@ -33,7 +33,7 @@ def usuario_login(request):
             return redirect(request.GET.get('next', '/'))
         else:
             messages.error(request, 'Usuário não cadastrado ou senha inválida!')
-    return render(request, 'accounts/usuario_login.html')
+    return render(request, 'accounts/login.html')
 
 
 @login_required
@@ -58,7 +58,6 @@ def usuario_registrar(request):
                     usuario = Aluno.objects.using('sca').get(matricula__iexact=usuario_login.matricula)
                 u = form.save(commit=False)
                 u.set_password(u.password)
-#                u.first_name = tipo_usuario(request.POST.get('username'), 1)
                 u.first_name = usuario.id
                 u.last_name = usuario_login.nome
                 u.email = usuario_login.email
@@ -74,7 +73,7 @@ def usuario_registrar(request):
                 messages.error(request, 'Senhas diferentes!')
     else:
         form = UsuarioForm()
-    return render(request, 'accounts/usuario_registrar.html', {'form': form})
+    return render(request, 'accounts/registrar.html', {'form': form})
 
 
 @login_required
@@ -102,10 +101,24 @@ def home(request):
 
     membro = ""
     comissoes = ""
+    convocacao = ""
+    reunioes = ""
     if 'Prof' in tipo_usuario(request.user.username, 0):
         membro = Membro.objects.filter(professor=request.user.first_name).values_list('comissao')
         comissoes = Comissao.objects.filter(id__in=membro)
         if not membro:
             messages.error(request, 'Professor(a), o Sr(a) não está cadastrado(a) em nenhuma comissão de apoio!')
 
-    return render(request, 'accounts/home.html', {'home': home, 'ativoInicio': True, 'membro': membro, 'comissoes': comissoes})  #, 'tipo': tipo_usuario(request.user.username, 0)})
+    if 'Aluno' in tipo_usuario(request.user.username, 0):
+        convocacao = Convocacao.objects.filter(aluno=request.user.first_name).values_list('reuniao')
+        reunioes = Reuniao.objects.filter(id__in=convocacao)
+        if not convocacao:
+            messages.error(request, 'Aluno(a), você não possui nenhuma reunião agendada!')
+
+    return render(request, 'accounts/home.html', {
+                    'home': home,
+                    'ativoInicio': True,
+                    'membro': membro,
+                    'comissoes': comissoes,
+                    'reunioes': reunioes
+                })

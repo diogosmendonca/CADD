@@ -2,30 +2,37 @@
 {% load widget_tweaks %}
 
 {% block body %}
-<h1 class="h3 mb-2 font-weight-normal">Membro</h1>
-<div class="row">
-    <form class="" action="" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-<!--            <label for="{{ form.professor.id_for_label }}">Professor</label> -->
-            {{ form.professor }}
-        </div>
-        <div class="form-group">
-<!--            <label for="{{ form.portaria.id_for_label }}">Portaria</label> -->
-            {{ form.portaria }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.presidente.id_for_label }}">Presidente</label>
-            {{ form.presidente }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.ativo.id_for_label }}">Ativo</label>
-            {{ form.ativo }}
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Salvar</button>
-            <a href="{% url 'cadd:lista_membros' id_comissao %}" class="btn btn-info">Voltar</a>
-        </div>
-    </form>
-</div>
+  <div class="row alinhamento-central">
+    <span class="titulo-pagina"><< Membro >></span><br />
+  </div>
+  {% if messages %}
+  <div class="row alinhamento-central">
+    <div class="alert alert-danger" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="row alinhamento-central">
+    <form class="" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="{{ form.professor.id_for_label }}">Professor</label>
+      {{ form.professor }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.portaria.id_for_label }}">Portaria</label>
+      {{ form.portaria }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.presidente.id_for_label }}">Presidente</label>
+      {{ form.presidente }}
+    </div>
+  </div>
+  <div class="row alinhamento-central">
+    <a href="{% url 'cadd:lista_membros' id_comissao %}" class="btn botao-padrao">Voltar</a>
+    <button type="submit" class="btn botao-padrao botao-verde">Salvar</button>
+  </div>
+  </form>
 {% endblock body %}

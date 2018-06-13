@@ -26,6 +26,7 @@ function addDisciplina(e){
   // Declaração das Variáveis //
   // *************************//
 
+  var codigoDisciplinaTemp;         // Variável temporária;
   var horaInicioTemp;               // Variável temporária;
   var horaTerminoTemp;              // Variável temporária;
   var i;                            // Variável temporária;
@@ -37,33 +38,29 @@ function addDisciplina(e){
   var horaInicioTextoPlanoSemPontos;// Representa a hora de início da aula de forma concatenada e sem os dois pontos;
   var tempoDeAulaEmMinutos;         // Conversão do tempo total de aula para minutos;
   var celulaDestino;                // Célula de Destino da disciplina;
-  var disciplinaDivObject;          // DIV com o a disciplina;
+  var disciplinaDivObject;          // DIV com a disciplina;
   var countTemposAula;              //
 
   // ************************//
   // Definição das Variáveis //
   // ************************//
 
-  codigoDisciplina = e.target.parentNode.id;
+  idDisciplinaTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-id");
+  codigoDisciplinaTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-desc");
+//  codigoDisciplinaTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-desc");
   horaInicioTemp  = e.target.parentNode.getElementsByClassName("disciplina-previa-horario-inicio");
   horaTerminoTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-horario-termino");
   idDisciplinaCardBody = e.target.parentNode.parentNode.getAttribute("id");
-  idDisciplinaTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-id");
 
-  horaInicio = horaInicioTemp[0].innerHTML;
-  if (horaInicio == "None") {
-    horaInicio = "";
-  }
-  horaTermino = horaTerminoTemp[0].innerHTML;
-  if (horaTermino == "None") {
-    horaTermino = "";
-  }
   idDisciplina = idDisciplinaTemp[0].innerHTML;
-
+  codigoDisciplina = codigoDisciplinaTemp[0].innerHTML;
+  horaInicio = horaInicioTemp[0].innerHTML;
+  horaTermino = horaTerminoTemp[0].innerHTML;
 
   if(!horaInicio){
     prepararDisciplinaSemHorario(document.getElementById(codigoDisciplina));
     moverDisciplina(document.getElementById(codigoDisciplina), "disciplinas-sem-horario");
+    document.getElementById('discip').value += ((document.getElementById('discip').value!="") ? "_" : "") + idDisciplina;
     return 0;
   }
 
@@ -74,40 +71,30 @@ function addDisciplina(e){
   tempoDeAulaEmMinutos = Number(horaToMinutos(horaTermino)) - Number(horaToMinutos(horaInicio));
   celulaDestino = String(idDisciplinaCardBody+horaInicioTextoPlanoSemPontos);
   disciplinaDivObject = document.getElementById(codigoDisciplina);
-
   countTemposAula = (Number(tempoDeAulaEmMinutos)/Number(50));
-  countTemposAula = Math.round(countTemposAula);
 
   if (tempoDeAulaEmMinutos == Number(50)) {
-    if (verificarConflito(ajustarHorario(horaInicio, celulaDestino), idDisciplinaCardBody, countTemposAula)) {
+    if (verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula)) {
       alert("Não é possível incluir esta disciplina em seu plano de estudos pois a mesma está apresentando conflito de horário com outra disciplina já adicionada ao plano.");
     }
     else{
-      prepararTabela(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino), countTemposAula);
-      prepararDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
-      moverDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
+      prepararTabela(disciplinaDivObject, celulaDestino, countTemposAula);
+      prepararDisciplina(disciplinaDivObject, celulaDestino);
+      moverDisciplina(disciplinaDivObject, celulaDestino);
+      document.getElementById('discip').value += ((document.getElementById('discip').value!="") ? "_" : "") + idDisciplina;
     }
   }
   else{
-    if (verificarConflito(ajustarHorario(horaInicio, celulaDestino), idDisciplinaCardBody, countTemposAula)) {
+    if (verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula)) {
       alert("Não é possível incluir esta disciplina em seu plano de estudos pois a mesma está apresentando conflito de horário com outra disciplina já adicionada ao plano.");
     }
     else{
-      prepararTabela(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino), countTemposAula);
-      prepararDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
-      moverDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
+      prepararTabela(disciplinaDivObject, celulaDestino, countTemposAula);
+      prepararDisciplina(disciplinaDivObject, celulaDestino);
+      moverDisciplina(disciplinaDivObject, celulaDestino);
+      document.getElementById('discip').value += ((document.getElementById('discip').value!="") ? "_" : "") + idDisciplina;
     }
   }
-}
-
-function removeDisciplina(e){
-  var idDisciplina = e.target.parentNode.id;
-  var idCardBody = e.target.parentNode.parentNode.id;
-  idCardBody = idCardBody.slice(0,3);
-  alert("idCardBody: " + document.getElementById(idCardBody));
-  alert("idDisciplina: " + document.getElementById(idDisciplina));
-  document.getElementById(idCardBody).appendChild(
-  document.getElementById(idDisciplina));
 }
 
 function exibirDisciplinasSemHorario() {
@@ -125,12 +112,8 @@ function prepararDisciplinaSemHorario(disciplinaDivObject){
 }
 
 function verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula){
+
   var CelulaDestino = document.getElementById(celulaDestino);
-  // alert("Cheguei em 01");
-
-  // alert("countTemposAula: " + countTemposAula);
-  // alert("disciplinaDivObject: " + disciplinaDivObject.id);
-
   var idDisciplinaCardBody;
 
   if(!verificarExistencia(celulaDestino)){
@@ -139,20 +122,13 @@ function verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula)
   else{
     NextCellToVerify = celulaDestino.slice(3,7);
     NextCellToVerify = incrementarTempoEmHora(NextCellToVerify);
-    
     var x = 0;
-
     x += CelulaDestino.innerHTML.length;
-    if(x){
-      return(1);
-    }
-    else{
-      for (i = 0; i < countTemposAula - 1; i++) {
-        CellToVerify = String(idDisciplinaCardBody) + String(NextCellToVerify);
-        CellToVerify = document.getElementById(CellToVerify);
-        x += CellToVerify.innerHTML.length;
-        NextCellToVerify = incrementarTempoEmHora(NextCellToVerify);
-      }
+    for (i = 0; i < countTemposAula - 1; i++) {
+      CellToVerify = String(idDisciplinaCardBody) + String(NextCellToVerify);
+      CellToVerify = document.getElementById(CellToVerify);
+      x += CellToVerify.innerHTML.length;
+      NextCellToVerify = incrementarTempoEmHora(NextCellToVerify);
     }
     if(x){
       return(1);
@@ -194,42 +170,11 @@ function prepararTabela(disciplinaDivObject, celulaDestino, countTemposAula){
 }
 
 function incrementarTempoEmHora(hhmm){
- 
-  /*************************/
-  /*Definição do Incremento*/
-  /*************************/
-  var incremento;
-
-  switch(hhmm) {
-    case "0850":
-      incremento = Number(65);
-      break;
-    case "1430":
-      incremento = Number(65);
-      break;
-    case "1820":
-      incremento = Number(50);
-      break;
-    case "1910":
-      incremento = Number(50);
-      break;
-    case "2000":
-      incremento = Number(60);
-      break;
-    case "2100":
-      incremento = Number(50);
-      break;
-    default:
-      incremento = Number(55);
-  } 
-  /***********************/
-
   b = hhmm.slice(0,2);
   c = hhmm.slice(2,4);
   b = Number(b);
   c = Number(c);
-
-  c += incremento;
+  c += Number(50);
   if(c >= 60){
     b += Number(1);
     c -= Number(60);
@@ -257,111 +202,16 @@ function horaToMinutos(hhmm){
 
 function moverDisciplina(disciplinaDivObject, celulaDestino){
   document.getElementById(celulaDestino).appendChild(disciplinaDivObject);
-  document.getElementById('discip').value += ((document.getElementById('discip').value!="") ? "_" : "") + idDisciplina;
 }
 
-function ajustarHorario(horaInicio, celulaDestino){
-  horaInicio = horaToMinutos(horaInicio);
-  if (horaInicio < 475) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "0700";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 530) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "0755";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 595) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "0850";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 650) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "0955";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 705) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1050";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 760) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1145";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 815) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1240";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 870) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1335";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 935) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1430";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 990) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1535";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 1045) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1630";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 1100) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1725";
-    return celulaDestino = j + k;
-  } else if (horaInicio < 1150) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1820";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 1200) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "1910";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 1260) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "2000";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 1310) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "2100";
-    celulaDestino = j + k;
-    return celulaDestino;
-  } else if (horaInicio < 1350) {
-    j = celulaDestino.slice(0,3);
-    k = celulaDestino.slice(3,7);
-    k = "2150";
-    celulaDestino = j + k;
-    return celulaDestino;
-  }
+function removeDisciplina(e){
+  var idDisciplinaTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-desc");
+  var idDisciplina = idDisciplinaTemp[0].innerHTML;
+  var idCardBody = e.target.parentNode.parentNode.getAttribute("id");
+  var idCardBody2 = idCardBody.slice(0,3);
+  disciplinaDivObject = document.getElementById(idDisciplina);
+
+  alert(idDisciplina + " " + idCardBody2);
+  moverDisciplina(disciplinaDivObject,idCardBody2);
+//  moverDisciplina2(idDisciplina,idCardBody,idCardBody2,2);
 }
