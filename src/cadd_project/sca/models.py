@@ -287,7 +287,7 @@ class Disciplina(models.Model):
     cargahoraria = models.IntegerField(
                     db_column='cargaHoraria'
                 )
-    ehoptativa = models.NullBooleanField(
+    optativa = models.NullBooleanField(
                     u'Optativa',
                     db_column='ehOptativa',
                     blank=True,

@@ -367,7 +367,7 @@ def novo_plano_previa(request):
             for d in disciplinas:
                 disc = int(d)
                 itemhorario = ItemHorario.objects.get(id=disc)
-                i = ItemPlanoAtual.objects. create(plano=plano, itemhorario=itemhorario)
+                i = ItemPlanoAtual.objects.create(plano=plano, itemhorario=itemhorario)
 
         return redirect('cadd:novo_plano_futuro')
     return render(request, 'cadd/novo_plano_estudos.html', {
@@ -398,20 +398,22 @@ def novo_plano_futuro(request):
     # Prévias e afins
     aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
     aprovadas = vidaacademica[0]
-#    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0])) #falta separar por ano e periodo
-#    previas.sort()
-#    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
-#    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
-#    lecionadas = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico).values_list('disciplina_id', flat=True)
-#    previas =
-#    disciplinasCurso = Disciplina.objects.using('sca').filter(versaocurso=aluno.versaocurso).values_list('id', flat=True)
-#    diferenca = set(disciplinasCurso) - aprovadas
-    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso)  #.order_by(ehoptativa)
-    teste = list(aLecionar.ehoptativa)
+    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso).order_by('optativa', 'departamento')
+
+#    if request.method == 'POST':
+#        disciplinas = request.POST.get('discip')
+#        if disciplinas:
+#            disciplinas = disciplinas.split("_")
+#            plano = PlanoFuturo.objects.create(ano=201?, periodo=?, plano=??)
+#            for d in disciplinas:
+#                disc = int(d)
+#                i = ItemPlanoFuturo.objects.create(planofuturo=plano, disciplina=disc)
+
+#        return redirect('cadd:lista_planos')
+
     return render(request, 'cadd/novo_plano_estudos_futuro.html', {
                         'ativoPlanos': True,
                         'aLecionar': aLecionar,
-                        'teste': teste
                     })
 
 
