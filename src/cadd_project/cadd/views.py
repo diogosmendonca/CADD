@@ -11,14 +11,22 @@ from .forms import ParametrosForm, ComissaoForm, MembroForm, HorarioForm, \
 from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
                     ItemPlanoAtual, PlanoFuturo, ItemPlanoFuturo, Reuniao, \
                     Convocacao, Documento
-from sca.models import Aluno, Disciplina, Itemhistoricoescolar
+from sca.models import Aluno, Disciplina, Itemhistoricoescolar, Versaocurso, \
+                    Curso, Disciplinasoriginais, Blocoequivalencia, \
+                    Disciplinasequivalentes
 
 # Paginação
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
 # Funções gerais
-from .utils import linhas_por_pagina, max_creditos, max_creditos_preta
+from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
+                    reprovacoes_faixa_vermelha_cursos_8_periodos, \
+                    reprovacoes_faixa_laranja_demais_cursos, \
+                    reprovacoes_faixa_vermelha_demais_cursos, \
+                    formula_faixa_laranja, formula_faixa_vermelha, \
+                    max_creditos, max_creditos_preta, linhas_por_pagina, \
+                    nome_curso, versao_curso, vida_academica
 
 # Create your views here.
 
@@ -317,7 +325,7 @@ def lista_planos(request):
     except:
         pass
 
-    return render(request, 'cadd/plano_estudos_cadastrado.html', {
+    return render(request, 'cadd/lista_plano_estudos.html', {
                         'ativoPlanos': True,
                         'planoAtual': planoAtual,
                         'itensAtual': itensAtual,
@@ -329,30 +337,23 @@ def lista_planos(request):
 def novo_plano_previa(request):
     """Função para a criação de um novo plano de estudos para o
         próximo semestre"""
+    """TODO: Faltam os prequisitos na ajuda à criação do plano"""
 
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
-    versaocurso = aluno.versaocurso
-
-#    fields = 'field1', 'field2', 'fieldN'
-    disciplinas = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico, situacao__in=[0, 9, 12]) # disciplinas aprovadas
-    aprovadas = list(disciplinas.values_list('disciplina_id', flat=True)) #foradocurso e equivalentes
-#    foradocurso = list(disciplinas.exclude(disciplina.versaocurso!=aluno.versaocurso))
-    equivalentes = ''
-    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True)) #falta separar por ano e periodo
-    # now you have two lists of tuples so you can apply ordinary python comparisons / set operations etc
-    rows3 = set(previas) - set(disciplinas)
-
-    criticidade = ''
-    reprovadas = ''
-    equivalentes = ''
     prerequisitos = ''
-    maxcreditosporperiodo = max_creditos()
-    maxcreditosporperiodopreta = max_creditos_preta()
-    lecionadas = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico).values_list('disciplina_id', flat=True)
-    disciplinasCurso = Disciplina.objects.using('sca').filter(versaocurso=aluno.versaocurso)
-    aLecionar = disciplinasCurso.difference(lecionadas)
-    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=rows3).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
-#    listaHorarios = ItemHorario.objects.order_by('inicio').values_list('inicio', flat=True).distinct().exclude(inicio=None)
+
+    # processamento da vida acadêmica do aluno logado
+    vidaacademica = vida_academica(request)
+    # Verificação do nome do curso, versão do curso e faixa de criticidade
+    nomecurso = nome_curso(request)
+    versaocurso = versao_curso(request)
+    criticidade = vidaacademica[4]
+    maxcreditos = vidaacademica[5]
+    periodos = vidaacademica[6]
+
+    # Prévias e afins
+    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0])) #falta separar por ano e periodo
+    previas.sort()
+    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
     listaHorarios = ('07:00', '07:55', '08:50', '09:55', '10:50', '11:45', \
                      '12:40', '13:35', '14:30', '15:35', '16:30', '17:25', \
                      '18:20', '19:10', '20:00', '21:00', '21:50')
@@ -366,26 +367,51 @@ def novo_plano_previa(request):
             for d in disciplinas:
                 disc = int(d)
                 itemhorario = ItemHorario.objects.get(id=disc)
-                i = ItemPlanoAtual.objects.create(plano=plano, itemhorario=itemhorario)
+                i = ItemPlanoAtual.objects. create(plano=plano, itemhorario=itemhorario)
 
-        return redirect('cadd:lista_planos')
-    return render(request, 'cadd/plano_estudos_previa.html', {
+        return redirect('cadd:novo_plano_futuro')
+    return render(request, 'cadd/novo_plano_estudos.html', {
                         'ativoPlanos': True,
                         'podeLecionarnoPeriodo': podeLecionarnoPeriodo,
-                        'listaHorarios': listaHorarios
+                        'listaHorarios': listaHorarios,
+                        'criticidade': criticidade,
+                        'maxcreditos': maxcreditos,
+                        'nomecurso': nomecurso,
+                        'versaocurso': versaocurso,
+                        'periodos': periodos,
                     })
 
 def novo_plano_futuro(request):
     """Função para a criação de um novo plano de estudos para os
         semestres subsequentes"""
 
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
-    lecionadas = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico).values_list('disciplina_id', flat=True)
-    disciplinasCurso = Disciplina.objects.using('sca').filter(versaocurso=aluno.versaocurso)
-    aLecionar = disciplinasCurso.difference(lecionadas)
+    prerequisitos = ''
 
-    return render(request, 'cadd/plano_estudos_futuro.html', {
-                        'ativoPlanos': True
+    # processamento da vida acadêmica do aluno logado
+    vidaacademica = vida_academica(request)
+    # Verificação do nome do curso, versão do curso e faixa de criticidade
+    versaocurso = versao_curso(request)
+    criticidade = vidaacademica[4]
+    maxcreditos = vidaacademica[5]
+    periodos = vidaacademica[6]
+
+    # Prévias e afins
+    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    aprovadas = vidaacademica[0]
+#    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0])) #falta separar por ano e periodo
+#    previas.sort()
+#    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
+#    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+#    lecionadas = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico).values_list('disciplina_id', flat=True)
+#    previas =
+#    disciplinasCurso = Disciplina.objects.using('sca').filter(versaocurso=aluno.versaocurso).values_list('id', flat=True)
+#    diferenca = set(disciplinasCurso) - aprovadas
+    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso)  #.order_by(ehoptativa)
+    teste = list(aLecionar.ehoptativa)
+    return render(request, 'cadd/novo_plano_estudos_futuro.html', {
+                        'ativoPlanos': True,
+                        'aLecionar': aLecionar,
+                        'teste': teste
                     })
 
 

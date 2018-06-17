@@ -287,7 +287,8 @@ class Disciplina(models.Model):
     cargahoraria = models.IntegerField(
                     db_column='cargaHoraria'
                 )
-    ehoptativa = models.TextField(
+    ehoptativa = models.NullBooleanField(
+                    u'Optativa',
                     db_column='ehOptativa',
                     blank=True,
                     null=True
@@ -299,7 +300,7 @@ class Disciplina(models.Model):
                     blank=True,
                     null=True
                 )
-    alocacao_depto = models.ForeignKey(
+    departamento = models.ForeignKey(
                     Alocacacaodisciplinasemdepartamento,
                     models.DO_NOTHING,
                     db_column='ALOCACAO_DEPTO_ID',
@@ -308,7 +309,7 @@ class Disciplina(models.Model):
                 )
 
     def __str__(self):
-        return self.codigo + "-" + self.nome # + " (" + self.versaocurso.numero + ")"
+        return self.nome + " (" + self.codigo + ")"  + " (versão do curso: " + self.versaocurso.numero + ")"
 
     class Meta:
         managed = False

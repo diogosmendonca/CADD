@@ -26,25 +26,40 @@
   {% if 'Aluno' in tipo %}
   {% if reunioes %}
   <div class="row">
-    <div class="lista-reunioes-pagina-inicial col-6">
+    <div class="lista-reunioes-pagina-inicial col-4">
       <span class="reunioes-titulo"> Reunião(ões): <br></span>
       {% for r in reunioes %}
       {% if not r.situacao == 'E' %}
-      <span class="reunioes-linha">
-        <span class="reunioes-linha-destaque">{{ r.get_situacao_display }}</span> no(a)
-        <span class="reunioes-linha-destaque">{{ r.local }}</span> no dia
-        <span class="reunioes-linha-destaque">{{ r.data }}</span> às
-        <span class="reunioes-linha-destaque">{{ r.inicio }}h</span><br />
-      </span>
+      <div class="row" style="background-color: {% if r.situacao == 'C' %}red{% else %}blue{% endif %}">
+        <div class="col-12">
+          <span class="reunioes-linha">
+            <span class="reunioes-linha-destaque">Reunião {{ r.get_situacao_display }}</span><br />
+            Local: <span class="reunioes-linha-destaque">{{ r.local }}</span><br />
+            Data: <span class="reunioes-linha-destaque">{{ r.data }}</span><br />
+            Horário: <span class="reunioes-linha-destaque">{{ r.inicio }}h</span><br />
+          </span>
+        </div>
+      </div>
       {% endif %}
       {% endfor %}
     </div>
-    <div class="faixa-criticidade-pagina-inicial col-4" style="background-color: red">
+    <div class="faixa-criticidade-pagina-inicial col-6" style="background-color: {% if criticidade == 'AZUL' %}blue{% elif criticidade == 'LARANJA' %}orange{% elif criticidade == 'VERMELHA' %}red{% else %}gray{% endif %}">
       <div>
-        <span class="criticidade-titulo"> Faixa de Critícidade <br></span>
+        <span class="criticidade-titulo">Faixa de Criticidade: {{ criticidade }}</span>
         <hr>
-        <span class="criticidade-status">Faixa Vermelha</span><br>
-        <span>Vamos pensar o que mais conseguimos colocar aqui. Conseguimos fazer como no protótipo?</span>
+<!--        <span class="criticidade-status">Faixa </span><br /> -->
+        <span class="criticidade-status">Curso: </span>
+        <span>{{ nomecurso }}</span><br />
+        <span class="criticidade-status">Versão: </span>
+        <span>{{ versaocurso }}</span><br />
+        <span class="criticidade-status">Períodos cursados: </span>
+        <span>{{ periodos }}</span><br />
+        {% if reprovadas %}
+        <span class="criticidade-status">Reprovações:</span><br />
+        {% for r in reprovadas %}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>{{ r }}</span><br />
+        {% endfor %}
+        {% endif %}
       </div>
     </div>
   </div>

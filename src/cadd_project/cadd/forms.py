@@ -172,7 +172,7 @@ class ItemHorarioForm(forms.ModelForm):
         self.fields['turma'].queryset = \
             Turma.objects.using('sca').distinct().order_by('codigo')
         self.fields['disciplina'].queryset = \
-            Disciplina.objects.using('sca').distinct().order_by('nome')
+            Disciplina.objects.using('sca').order_by('nome').distinct()   #.values('nome','codigo')
         self.fields['professor'].queryset = \
             Professor.objects.using('sca').distinct().order_by('nome')
         self.fields['periodo'].empty_label = 'Selecione o período'

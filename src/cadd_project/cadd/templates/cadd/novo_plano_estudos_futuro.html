@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block body %}
+<div class="main-content">
+  <div class="row alinhamento-central">
+    <span class="titulo-pagina"><< Plano de Estudos para os semestres seguintes >></span>
+  </div>
+  <span>a Lecionar: {{ aLecionar }}</span><br />
+  <span>Teste: {{ teste }}</span><br />
+  <div class="row">
+    <div class="col-6">
+      <div class="row">
+        <div class="col-11 cabecalho-disciplinas">
+          <span>Disciplinas do Curso</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-11p quadro-disciplinas quadro">
+          <h6 class="tipo_disciplina">Disciplinas Obrigatórias</h6>
+          <ul>
+<!--            <li class="item_disc_periodo item_disc_periodo_concluido"> 1° Período</li>
+            <li class="item_disc_periodo item_disc_periodo_concluido"> 2° Período</li>
+            <li class="item_disc_periodo item_disc_periodo_concluido"> 3° Período</li>
+            <li class="item_disc_periodo item_disc_periodo_concluido"> 4° Período</li>
+            <li class="item_disc_periodo item_disc_periodo_pendencia"> 5° Período</li>
+            <li class="item_disc_periodo item_disc_periodo_pendencia"> 6° Período</li>  -->
+            <li>
+              <ul id="5-periodo" ondrop="drop(event)" ondragover="allowDrop(event)" class="">
+                {% for d in aLecionar %}
+                {% if d.ehoptativa == 0 %}
+                <li id="{{ d.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha" draggable="true" ondragstart="drag(event)">
+                  {% filter force_escape|upper|truncatechars:31 %}{{ d.nome }}{% endfilter %}({{ d.codigo }})
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+          <h6 class="tipo_disciplina">Disciplinas Optativas</h6>
+          <ul>
+            {% for d in aLecionar %}
+            {% if d.optativa %}
+            <li class="item_disc_periodo item_disc_periodo_pendencia">{{ d.departamento.id.id }}</li>
+            <li>
+              <ul id="disciplinas-optativas" ondrop="drop(event)" ondragover="allowDrop(event)" class="">
+                <li id="{{ d.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha" draggable="true" ondragstart="drag(event)">
+                  {% filter force_escape|upper|truncatechars:31 %}{{ d.nome }}{% endfilter %}({{ d.codigo }})
+                </li>
+              </ul>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="row">
+        <div class="col-11 cabecalho-quadros">
+          <span>Períodos de Integralização</span>
+        </div>
+      </div>
+      <div class="row">
+        <div id="accordion" class="col-11p quadro-periodos quadro">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <span class="card-header-text"> 2018.1 </span>
+                </button>
+            </div>
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+              <div class="card-body">
+                <ul id="collapseOneList"
+                    ondrop="drop(event)"
+                    ondragover="allowDrop(event)"
+                    class="collapseList">
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header" id="headingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  2018.2
+                </button>
+              </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+              <div class="card-body">
+                <ul id="collapseTwoList"
+                    ondrop="drop(event)"
+                    ondragover="allowDrop(event)"
+                    class="collapseList">
+                </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header" id="headingThree">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  2019.1
+                </button>
+              </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+              <div class="card-body">
+                <ul id="collapseThreeList"
+                    ondrop="drop(event)"
+                    ondragover="allowDrop(event)"
+                    class="collapseList">
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

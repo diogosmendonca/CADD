@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import UsuarioForm
 from sca.models import Users, Professor, Aluno
 from cadd.models import Membro, Comissao, Convocacao, Reuniao
-from cadd.utils import tipo_usuario
+from cadd.utils import tipo_usuario, vida_academica, nome_curso, versao_curso
 
 from django.contrib.auth.models import User
 
@@ -103,6 +103,11 @@ def home(request):
     comissoes = ""
     convocacao = ""
     reunioes = ""
+    nomecurso = ""
+    versaocurso = ""
+    criticidade = ""
+    periodos = ""
+    reprovadas = ""
     if 'Prof' in tipo_usuario(request.user.username, 0):
         membro = Membro.objects.filter(professor=request.user.first_name).values_list('comissao')
         comissoes = Comissao.objects.filter(id__in=membro)
@@ -112,6 +117,16 @@ def home(request):
     if 'Aluno' in tipo_usuario(request.user.username, 0):
         convocacao = Convocacao.objects.filter(aluno=request.user.first_name).values_list('reuniao')
         reunioes = Reuniao.objects.filter(id__in=convocacao)
+
+        # processamento da vida acadêmica do aluno logado
+        vidaacademica = vida_academica(request)
+        reprovadas = vidaacademica[3]
+        # Verificação do nome do curso, versão, faixa de criticidade e periodos
+        nomecurso = nome_curso(request)
+        versaocurso = versao_curso(request)
+        criticidade = vidaacademica[4]
+        periodos = vidaacademica[6]
+
         if not convocacao:
             messages.error(request, 'Aluno(a), você não possui nenhuma reunião agendada!')
 
@@ -120,5 +135,10 @@ def home(request):
                     'ativoInicio': True,
                     'membro': membro,
                     'comissoes': comissoes,
-                    'reunioes': reunioes
+                    'reunioes': reunioes,
+                    'nomecurso': nomecurso,
+                    'versaocurso':versaocurso,
+                    'periodos': periodos,
+                    'criticidade': criticidade,
+                    'reprovadas': reprovadas
                 })

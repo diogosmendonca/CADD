@@ -3,17 +3,15 @@
 
 {% block body %}
 <div class="main-content">
-  <div class="row">
-    <div class="col-12">
-      <h3 class="Titulo-Pagina">Plano de Estudos</h3>
-    </div>
+  <div class="row alinhamento-central">
+    <span class="titulo-pagina"><< Plano de Estudos >></span>
   </div>
   <div class="row">
     <div class="col-3">
-      <button type="button" class="botao-padrao botao-desabilitado">Cadastrar Plano</button><br>
-      <button type="button" class="botao-padrao botao-azul">Editar Plano</button><br>
-      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_previa' %}'">Cadastrar Prévia</button><br>
-      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_futuro' %}'">Cadastrar Futuro</button><br>
+      <button type="button" class="botao-padrao botao-{% if planoAtual %}desabilitado{% else %}azul{% endif %}" onclick="window.location.href='{% if planoAtual %}#{% else %}{% url 'cadd:novo_plano_previa' %}{% endif %}'">Cadastrar Plano</button><br>
+      <button type="button" class="botao-padrao botao-{% if planoAtual %}azul{% else %}desabilitado{% endif %}" onclick="window.location.href='{% if planoAtual %}{% url 'cadd:novo_plano_previa' %}{% else %}#{% endif %}'">Editar Plano</button><br>
+<!--      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_previa' %}'">Cadastrar Prévia</button><br>
+      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_futuro' %}'">Cadastrar Futuro</button><br>  -->
       <span class="status_plano_titulo">Status:</span>
       <span class="status_plano_nao_cadastrado">{% if planoAtual %}{{ planoAtual.get_situacao_display }}{% else %}Não Cadastrado{% endif %}</span><br>
       <button type="button" class="botao-padrao botao-desabilitado">Download PDF</button><br>

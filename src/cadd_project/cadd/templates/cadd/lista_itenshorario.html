@@ -37,9 +37,13 @@
             <td>{{ i.turma }}</td>
             <td>{{ i.disciplina }}</td>
             <td>{{ i.professor }}</td>
+            {% if i.diasemana == 7 or i.diasemana == 8 %}
+            <td colspan="3">{{ i.get_diasemana_display }}</td>
+            {% else %}
             <td>{{ i.get_diasemana_display }}</td>
             <td>{{ i.inicio }}h</td>
             <td>{{ i.fim }}h</td>
+            {% endif %}
             <td>{{ i.departamento }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_itemhorario' i.id id_horario %}" class="btn btn-info botao-padrao">Editar</a>
