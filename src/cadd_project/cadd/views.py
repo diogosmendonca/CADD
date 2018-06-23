@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-#from django.forms import formset_factory
+# Paginação
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render
 
 # Models e Forms
 from .forms import ParametrosForm, ComissaoForm, MembroForm, HorarioForm, \
-                    ItemHorarioForm, PlanoForm, PlanoAtualForm, ReuniaoForm, \
+                    ItemHorarioForm, AvaliaPlanoForm, ReuniaoForm, \
                     ConvocadoForm, DocumentoForm
 from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
                     ItemPlanoAtual, PlanoFuturo, ItemPlanoFuturo, Reuniao, \
@@ -15,18 +16,15 @@ from sca.models import Aluno, Disciplina, Itemhistoricoescolar, Versaocurso, \
                     Curso, Disciplinasoriginais, Blocoequivalencia, \
                     Disciplinasequivalentes
 
-# Paginação
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render
-
 # Funções gerais
 from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
                     reprovacoes_faixa_vermelha_cursos_8_periodos, \
                     reprovacoes_faixa_laranja_demais_cursos, \
                     reprovacoes_faixa_vermelha_demais_cursos, \
-                    formula_faixa_laranja, formula_faixa_vermelha, \
-                    max_creditos, max_creditos_preta, linhas_por_pagina, \
-                    nome_curso, versao_curso, vida_academica
+                    formula_inicial_faixa_laranja, formula_final_faixa_laranja, \
+                    formula_faixa_vermelha, max_creditos, max_creditos_preta, \
+                    linhas_por_pagina, nome_sigla_curso, versao_curso, vida_academica, \
+                    excluir_arquivo
 
 # Create your views here.
 
@@ -160,7 +158,6 @@ def excluir_membro(request, id_membro, id_comissao):
     membro = Membro.objects.get(id=id_membro)
     membro.ativo = False
     membro.save()
-#    membro.delete()
     return redirect('cadd:lista_membros', id_comissao)
 
 @login_required
@@ -303,117 +300,6 @@ def editar_itemhorario(request, id_itemhorario, id_horario):
                         'form': form,
                         'id_horario': id_horario,
                         'ativoHorarios': True
-                    })
-
-
-#Planos de estudo
-@login_required
-def lista_planos(request):
-    """Função para a listagem dos planos de estudo cadastrados"""
-
-    planoAtual = ""
-    itensAtual = ""
-    planosFuturos = ""
-    itensFuturos = ""
-    try:
-        planoAtual = Plano.objects.get(aluno=request.user.first_name)
-        if planoAtual:
-            itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
-            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)  #.order_by(ano, periodo)
-        if planosFuturos:
-            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)   #.order_by(planofuturo)
-    except:
-        pass
-
-    return render(request, 'cadd/lista_plano_estudos.html', {
-                        'ativoPlanos': True,
-                        'planoAtual': planoAtual,
-                        'itensAtual': itensAtual,
-                        'planosFuturos': planosFuturos,
-                        'itensFuturos': itensFuturos
-                    })
-
-@login_required
-def novo_plano_previa(request):
-    """Função para a criação de um novo plano de estudos para o
-        próximo semestre"""
-    """TODO: Faltam os prequisitos na ajuda à criação do plano"""
-
-    prerequisitos = ''
-
-    # processamento da vida acadêmica do aluno logado
-    vidaacademica = vida_academica(request)
-    # Verificação do nome do curso, versão do curso e faixa de criticidade
-    nomecurso = nome_curso(request)
-    versaocurso = versao_curso(request)
-    criticidade = vidaacademica[4]
-    maxcreditos = vidaacademica[5]
-    periodos = vidaacademica[6]
-
-    # Prévias e afins
-    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0])) #falta separar por ano e periodo
-    previas.sort()
-    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
-    listaHorarios = ('07:00', '07:55', '08:50', '09:55', '10:50', '11:45', \
-                     '12:40', '13:35', '14:30', '15:35', '16:30', '17:25', \
-                     '18:20', '19:10', '20:00', '21:00', '21:50')
-
-    if request.method == 'POST':
-        disciplinas = request.POST.get('discip')
-        if disciplinas:
-            disciplinas = disciplinas.split("_")
-            aluno = Aluno.objects.get(id=request.user.first_name)
-            plano = Plano.objects.create(ano=2018, periodo=1, situacao='M', aluno=aluno)
-            for d in disciplinas:
-                disc = int(d)
-                itemhorario = ItemHorario.objects.get(id=disc)
-                i = ItemPlanoAtual.objects.create(plano=plano, itemhorario=itemhorario)
-
-        return redirect('cadd:novo_plano_futuro')
-    return render(request, 'cadd/novo_plano_estudos.html', {
-                        'ativoPlanos': True,
-                        'podeLecionarnoPeriodo': podeLecionarnoPeriodo,
-                        'listaHorarios': listaHorarios,
-                        'criticidade': criticidade,
-                        'maxcreditos': maxcreditos,
-                        'nomecurso': nomecurso,
-                        'versaocurso': versaocurso,
-                        'periodos': periodos,
-                    })
-
-def novo_plano_futuro(request):
-    """Função para a criação de um novo plano de estudos para os
-        semestres subsequentes"""
-
-    prerequisitos = ''
-
-    # processamento da vida acadêmica do aluno logado
-    vidaacademica = vida_academica(request)
-    # Verificação do nome do curso, versão do curso e faixa de criticidade
-    versaocurso = versao_curso(request)
-    criticidade = vidaacademica[4]
-    maxcreditos = vidaacademica[5]
-    periodos = vidaacademica[6]
-
-    # Prévias e afins
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
-    aprovadas = vidaacademica[0]
-    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso).order_by('optativa', 'departamento')
-
-#    if request.method == 'POST':
-#        disciplinas = request.POST.get('discip')
-#        if disciplinas:
-#            disciplinas = disciplinas.split("_")
-#            plano = PlanoFuturo.objects.create(ano=201?, periodo=?, plano=??)
-#            for d in disciplinas:
-#                disc = int(d)
-#                i = ItemPlanoFuturo.objects.create(planofuturo=plano, disciplina=disc)
-
-#        return redirect('cadd:lista_planos')
-
-    return render(request, 'cadd/novo_plano_estudos_futuro.html', {
-                        'ativoPlanos': True,
-                        'aLecionar': aLecionar,
                     })
 
 
@@ -575,6 +461,7 @@ def excluir_documento(request, id_documento):
     """Função para a exclusão de um documento"""
 
     documento = Documento.objects.get(id=id_documento)
+    excluir_arquivo(documento.indice)
     documento.delete()
     return redirect('cadd:lista_documentos')
 
@@ -586,4 +473,206 @@ def visualizar_documento(request, id_documento):
     return render(request, 'cadd/visualiza_documento.html', {
                         'doc': doc,
                         'ativoDocumentos': True
+                    })
+
+
+#Planos de estudo
+@login_required
+def lista_planos(request):
+    """Função para a listagem dos planos de estudo cadastrados"""
+
+    planoAtual = ""
+    itensAtual = ""
+    planosFuturos = ""
+    itensFuturos = ""
+    avaliacao = ""
+    try:
+        planoAtual = Plano.objects.get(aluno=request.user.first_name)
+        if planoAtual:
+            itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
+            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)  #.order_by(ano, periodo)
+        if planosFuturos:
+            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)   #.order_by(planofuturo)
+    except:
+        pass
+
+    avaliacao = planoAtual.avaliacao
+
+    return render(request, 'cadd/lista_plano_estudos.html', {
+                        'ativoPlanos': True,
+                        'planoAtual': planoAtual,
+                        'itensAtual': itensAtual,
+                        'planosFuturos': planosFuturos,
+                        'itensFuturos': itensFuturos,
+                        'avaliacao': avaliacao,
+                    })
+
+@login_required
+def novo_plano_previa(request):
+    """Função para a criação de um novo plano de estudos para o
+        próximo semestre"""
+    """TODO: Faltam os pré-requisitos na ajuda à criação do plano"""
+
+    prerequisitos = ''
+
+    # processamento da vida acadêmica do aluno logado
+    vidaacademica = vida_academica(request)
+    # Verificação do nome do curso, versão do curso e faixa de criticidade
+    nomecurso = nome_sigla_curso(request.user.first_name)[0]
+    versaocurso = versao_curso(request)
+    criticidade = vidaacademica[4]
+    maxcreditos = vidaacademica[5]
+    periodos = vidaacademica[6]
+    plano = 0
+
+    aluno = Aluno.objects.get(id=request.user.first_name)
+    # Prévias e afins
+    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0])) #falta separar por ano e periodo
+    previas.sort()
+    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
+    listaHorarios = ('07:00', '07:55', '08:50', '09:55', '10:50', '11:45', \
+                     '12:40', '13:35', '14:30', '15:35', '16:30', '17:25', \
+                     '18:20', '19:10', '20:00', '21:00', '21:50')
+
+    if request.method == 'POST':
+        disciplinas = request.POST.get('discip')
+        if disciplinas:
+            disciplinas = disciplinas.split("_")
+            try:
+                plano = Plano.objects.get(ano=2018, periodo=1, aluno=aluno)
+            except:
+                plano = Plano.objects.create(ano=2018, periodo=1, situacao='M', aluno=aluno)
+            for d in disciplinas:
+                disc = int(d)
+                itemhorario = ItemHorario.objects.get(id=disc)
+                i = ItemPlanoAtual.objects.create(plano=plano, itemhorario=itemhorario)
+
+#        return redirect('cadd:novo_plano_futuro')
+    return render(request, 'cadd/novo_plano_estudos_atual.html', {
+                        'ativoPlanos': True,
+                        'ativoPlanos2': True,
+                        'podeLecionarnoPeriodo': podeLecionarnoPeriodo,
+                        'listaHorarios': listaHorarios,
+                        'criticidade': criticidade,
+                        'maxcreditos': maxcreditos,
+                        'nomecurso': nomecurso,
+                        'versaocurso': versaocurso,
+                        'periodos': periodos,
+                    })
+
+@login_required
+def novo_plano_futuro(request):
+    """Função para a criação de um novo plano de estudos para os
+        semestres subsequentes"""
+    """TODO: Falta ver as disciplinas da prévia e seus equivalentes"""
+
+    prerequisitos = ''
+
+    # processamento da vida acadêmica do aluno logado
+    vidaacademica = vida_academica(request)
+    # Verificação do nome do curso, versão do curso e faixa de criticidade
+    versaocurso = versao_curso(request)
+    criticidade = vidaacademica[4]
+    maxcreditos = vidaacademica[5]
+    periodos = vidaacademica[6]
+    plano = 1
+
+    # Prévias e afins
+    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    aprovadas = vidaacademica[0]
+    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso).order_by('optativa', 'departamento')
+
+#    if request.method == 'POST':
+#        disciplinas = request.POST.get('discip')
+#        if disciplinas:
+#            plano = 1
+#            disciplinas = disciplinas.split("_")
+#            for d in disciplinas:
+#                ano = 2018
+#                periodo = 1
+#                disc = int(d)
+#                plano = PlanoFuturo.objects.create(ano=ano, periodo=periodo, plano=plano)
+#                i = ItemPlanoFuturo.objects.create(planofuturo=plano, disciplina=disc)
+
+#        return redirect('cadd:lista_planos')
+
+    return render(request, 'cadd/novo_plano_estudos_futuro.html', {
+                        'ativoPlanos': True,
+                        'ativoPlanos3': True,
+                        'aLecionar': aLecionar,
+                        'plano': plano
+                    })
+
+@login_required
+def lista_planos_avaliar(request):
+    """Função para a listagem dos alunos e seus planos de estudo cadastrados"""
+
+    matricula = request.user.username
+    siglacurso = nome_sigla_curso(request.user.first_name)[1]
+
+#    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+
+    return render(request, 'cadd/lista_plano_estudos_avaliar.html', {
+                        'ativoPlanos': True,
+                        'matricula': matricula,
+                        'siglacurso': siglacurso,
+#                        'aluno': aluno,
+                    })
+
+@login_required
+def avalia_plano(request, id_aluno):
+    """Função para a avaliação do plano de estudos dos alunos pelos membros
+        das comissões"""
+
+    # Variáveis
+    versaocurso = ""
+    criticidade = ""
+    periodos = ""
+    reprovadas = ""
+    planoAtual = ""
+    itensAtual = ""
+    planosFuturos = ""
+    itensFuturos = ""
+    avaliacao = ""
+    # Processamento da vida acadêmica do aluno logado e obtidos o nome do aluno,
+    # versão do curso, faixa de criticidade, periodos, disciplinas reprovadas
+    vidaacademica = vida_academica(id_aluno)
+    aluno = vidaacademica[7]
+    criticidade = vidaacademica[4]
+    periodos = vidaacademica[6]
+    reprovadas = vidaacademica[3]
+    versaocurso = versao_curso(id_aluno)
+
+    # Planos atual e futuro para visualização
+    try:
+        planoAtual = Plano.objects.get(aluno=id_aluno, ano=2018, periodo=1)
+        if planoAtual:
+            itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
+            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)  #.order_by(ano, periodo)
+        if planosFuturos:
+            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)   #.order_by(planofuturo)
+    except:
+        pass
+
+    if planoAtual.avaliacao:
+        avaliacao = planoAtual.avaliacao
+
+    if request.method == 'POST':
+        t_avaliacao = request.POST.get('avaliacao')
+        if t_avaliacao:
+            planoAtual.avaliacao = t_avaliacao
+            planoAtual.situacao = 'A'
+            planoAtual.save()
+
+    return render(request, 'cadd/avalia_plano_estudos.html', {
+                        'aluno': aluno,
+                        'versaocurso': versaocurso,
+                        'periodos': periodos,
+                        'criticidade': criticidade,
+                        'reprovadas': reprovadas,
+                        'planoAtual': planoAtual,
+                        'itensAtual': itensAtual,
+                        'planosFuturos': planosFuturos,
+                        'itensFuturos': itensFuturos,
+                        'avaliacao': avaliacao,
                     })

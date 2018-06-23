@@ -31,7 +31,7 @@
             <td>{{ h.ano }}.{{ h.periodo }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_horario' h.id %}" class="btn btn-info botao-padrao">Editar</a>
-              <a href="{% url 'cadd:excluir_horario' h.id %}" class="btn botao-padrao botao-vermelho">Excluir</a>
+              <a href="{% url 'cadd:excluir_horario' h.id %}" class="btn botao-padrao botao-vermelho" onclick="if(!confirm('Você tem certeza que deseja excluir este horário?')){return false;}">Excluir</a>
               <a href="{% url 'cadd:lista_itenshorario' h.id %}" class="btn botao-padrao botao-azul">Editar Itens</a>
             </td>
           </tr>

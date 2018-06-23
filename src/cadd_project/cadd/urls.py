@@ -29,6 +29,8 @@ urlpatterns = [
     path('lista-planos/', views.lista_planos, name='lista_planos'),
     path('novo-plano-previa/', views.novo_plano_previa, name='novo_plano_previa'),
     path('novo-plano-futuro/', views.novo_plano_futuro, name='novo_plano_futuro'),
+    path('lista_planos_avaliar/', views.lista_planos_avaliar, name='lista_planos_avaliar'),
+    path('avalia-plano/?<id_aluno>', views.avalia_plano, name='avalia_plano'),
 
     path('lista-reunioes/', views.lista_reunioes, name='lista_reunioes'),
     path('nova-reuniao/', views.nova_reuniao, name='nova_reuniao'),

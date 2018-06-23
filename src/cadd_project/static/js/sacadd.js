@@ -3,22 +3,6 @@
   * Copyright 2018
   */
 
-// para o form plano de estudos e plano de estudos cadastrados
-function allowDrop(ev) {
-  ev.preventDefault();
-}
-
-function drag(ev) {
-  ev.dataTransfer.setData("text/html", ev.target.id);
-}
-
-function drop(ev) {
-  ev.preventDefault();
-  var data = ev.dataTransfer.getData("text/html");
-  ev.target.appendChild(document.getElementById(data));
-}
-
-
 // para o form plano de estudos prévia
 function addDisciplina(e){
 
@@ -51,11 +35,11 @@ function addDisciplina(e){
   idDisciplinaTemp = e.target.parentNode.getElementsByClassName("disciplina-previa-id");
 
   horaInicio = horaInicioTemp[0].innerHTML;
-  if (horaInicio == "None") {
+  if (horaInicio == "Semipresencial" || horaInicio == "Horário variável") {
     horaInicio = "";
   }
   horaTermino = horaTerminoTemp[0].innerHTML;
-  if (horaTermino == "None") {
+  if (horaTermino == "Semipresencial" || horaTermino == "Horário variável") {
     horaTermino = "";
   }
   idDisciplina = idDisciplinaTemp[0].innerHTML;
@@ -139,7 +123,7 @@ function verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula)
   else{
     NextCellToVerify = celulaDestino.slice(3,7);
     NextCellToVerify = incrementarTempoEmHora(NextCellToVerify);
-    
+
     var x = 0;
 
     x += CelulaDestino.innerHTML.length;
@@ -194,7 +178,7 @@ function prepararTabela(disciplinaDivObject, celulaDestino, countTemposAula){
 }
 
 function incrementarTempoEmHora(hhmm){
- 
+
   /*************************/
   /*Definição do Incremento*/
   /*************************/
@@ -221,7 +205,7 @@ function incrementarTempoEmHora(hhmm){
       break;
     default:
       incremento = Number(55);
-  } 
+  }
   /***********************/
 
   b = hhmm.slice(0,2);

@@ -33,7 +33,7 @@
             <td>{{ c.envioemail|yesno }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_convocado' c.id id_reuniao %}" class="btn btn-info botao-padrao">Editar</a>
-              <a href="{% url 'cadd:excluir_convocado' c.id id_reuniao %}" class="btn botao-padrao botao-vermelho">Excluir</a>
+              <a href="{% url 'cadd:excluir_convocado' c.id id_reuniao %}" class="btn botao-padrao botao-vermelho" onclick="if(!confirm('Você tem certeza que deseja desconvocar o aluno\n{{ c.aluno }}?')){return false;}">Excluir</a>
             </td>
           </tr>
           {% endfor %}

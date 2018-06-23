@@ -35,7 +35,7 @@
             <td>{{ m.ativo|yesno }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_membro' m.id id_comissao %}" class="btn btn-info botao-padrao">Editar</a>
-              <a href="{% url 'cadd:excluir_membro' m.id id_comissao %}" class="btn botao-padrao botao-vermelho">Desativar</a>
+              <a href="{% url 'cadd:excluir_membro' m.id id_comissao %}" class="btn botao-padrao botao-vermelho"  onclick="if(!confirm('Você tem certeza que deseja desativar o professor\n{{ m.professor }}?')){return false;}">Desativar</a>
             </td>
           </tr>
           {% endfor %}

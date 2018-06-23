@@ -15,7 +15,7 @@
   </div>
   {% endif %}
 
-  {% if tipo == 'Admin' or tipo == 'Prof' %}
+  {% if tipo == 'Admin' %}
   <div class="row alinhamento-central">
     <div class="background-div">
       <img src="{% static 'img/bg.jpg' %}" class="background-image">
@@ -23,14 +23,31 @@
   </div>
   {% endif %}
 
+  {% if 'Prof' in tipo %}
+  {% if comissoes %}
+  <div class="row">
+    <div class="lista-reunioes-pagina-inicial col-4">
+      <span class="reunioes-titulo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Membro da(s) comissão(ões):</span>
+      {% for c in comissoes %}
+      <div class="col-12">
+        <span class="reunioes-linha">
+          {{ c.descricao }}<br />
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+
   {% if 'Aluno' in tipo %}
   {% if reunioes %}
   <div class="row">
     <div class="lista-reunioes-pagina-inicial col-4">
-      <span class="reunioes-titulo"> Reunião(ões): <br></span>
+      <span class="reunioes-titulo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reunião(ões):</span>
       {% for r in reunioes %}
       {% if not r.situacao == 'E' %}
-      <div class="row" style="background-color: {% if r.situacao == 'C' %}red{% else %}blue{% endif %}">
+      <div class="row item-reuniao-{% if r.situacao == 'C' %}cancelada{% else %}agendada{% endif %}">
         <div class="col-12">
           <span class="reunioes-linha">
             <span class="reunioes-linha-destaque">Reunião {{ r.get_situacao_display }}</span><br />
@@ -45,13 +62,15 @@
     </div>
     <div class="faixa-criticidade-pagina-inicial col-6" style="background-color: {% if criticidade == 'AZUL' %}blue{% elif criticidade == 'LARANJA' %}orange{% elif criticidade == 'VERMELHA' %}red{% else %}gray{% endif %}">
       <div>
-        <span class="criticidade-titulo">Faixa de Criticidade: {{ criticidade }}</span>
-        <hr>
-<!--        <span class="criticidade-status">Faixa </span><br /> -->
+        <span class="criticidade-titulo">Faixa de Criticidade: {{ criticidade }}</span><hr>
         <span class="criticidade-status">Curso: </span>
         <span>{{ nomecurso }}</span><br />
         <span class="criticidade-status">Versão: </span>
         <span>{{ versaocurso }}</span><br />
+        <span class="criticidade-status">Matrícula: </span>
+        <span>{{ matricula }}</span><br />
+        <span class="criticidade-status">Período atual: </span>
+        <span>{{ ano }}.{{ periodo }}</span><br />
         <span class="criticidade-status">Períodos cursados: </span>
         <span>{{ periodos }}</span><br />
         {% if reprovadas %}
@@ -64,13 +83,6 @@
     </div>
   </div>
   {% endif %}
-  {% endif %}
-
-  {% if 'Prof' in tipo %}
-  Membro da(s) comissão(ões):<br />
-  {% for comissao in comissoes %}
-    {{ comissao.descricao }}<br />
-  {% endfor %}
   {% endif %}
 
   {% if user.is_authenticated == "False" %}

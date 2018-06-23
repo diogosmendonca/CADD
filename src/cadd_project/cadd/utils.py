@@ -1,7 +1,40 @@
+from datetime import datetime
+import os
+
 from .models import Parametros
 from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
                     Itemhistoricoescolar, Disciplinasoriginais, \
                     Blocoequivalencia, Disciplinasequivalentes, Versaocurso
+
+# Funções úteis
+def periodo_atual():
+    """Função que retorna o ano e período atual"""
+
+    agora = datetime.now()
+    ano = agora.year
+    mes = agora.month
+    if mes in [1, 2, 3, 4, 5, 6]:
+        periodo = 1
+    else:
+        periodo = 2
+    retorno = ano, periodo
+    return retorno
+
+def proximo_periodo(periodos):
+    """Função que retorna o ano e periodo conforme a quantidade de semestres
+        selecionados"""
+
+    temp = periodo_atual()
+    ano = temp[0]
+    tperiodos = temp[1] + periodos
+    if tperiodos % 2 == 0:
+        periodo = 2
+        ano = ano + (tperiodos // 2) - 1
+    else:
+        periodo = 1
+        ano = ano + (tperiodos // 2)
+    retorno = ano, periodo
+    return retorno
 
 # Funções para receber valores da tabela Parametros
 def reprovacoes_faixa_laranja_cursos_8_periodos():
@@ -48,14 +81,26 @@ def reprovacoes_faixa_vermelha_demais_cursos():
         reprovacoes = Parametros.objects.get(pk=1).reprovademaiscursosvermelha
     return reprovacoes
 
-def formula_faixa_laranja():
-    """Função que retorna a fórmula para cálculo das integralizações dos
-        cursos para que esteja na faixa de criticidade laranja"""
+def formula_inicial_faixa_laranja():
+    """Função que retorna a fórmula do valor inicial para cálculo das
+        integralizações dos cursos para que esteja na faixa de
+        criticidade laranja"""
 
     formula = '2 * N'
     registros = Parametros.objects.filter(id=1).count()
     if registros != 0:
-        formula = Parametros.objects.get(pk=1).qtdperiodoslaranja
+        formula = Parametros.objects.get(pk=1).qtdperiodosiniciallaranja
+    return formula
+
+def formula_final_faixa_laranja():
+    """Função que retorna a fórmula do valor final para cálculo das
+        integralizações dos cursos para que esteja na faixa de
+        criticidade laranja"""
+
+    formula = '2 * N'
+    registros = Parametros.objects.filter(id=1).count()
+    if registros != 0:
+        formula = Parametros.objects.get(pk=1).qtdperiodosfinallaranja
     return formula
 
 def formula_faixa_vermelha():
@@ -121,26 +166,38 @@ def tipo_usuario(username, registro):
         return 'Aluno'
     return ''
 
-def versao_curso(request):
+def versao_curso(id_aluno):
     """Função que retorna a versão do curso do aluno logado"""
 
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    aluno = Aluno.objects.using('sca').get(id=id_aluno)
     versaocurso = aluno.versaocurso.numero
     return versaocurso
 
-def nome_curso(request):
+def nome_sigla_curso(id_aluno):
     """Função que retorna o nome do curso do aluno logado"""
 
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    aluno = Aluno.objects.using('sca').get(id=id_aluno)
     t_curso = Curso.objects.using('sca').get(id=aluno.versaocurso.curso.id)
     nomecurso = t_curso.nome + " (" + t_curso.sigla + ")"
-    return nomecurso
+    retorno = nomecurso, t_curso.sigla
+    return retorno
 
-def vida_academica(request):
+def excluir_arquivo(documento):
+    """Função que exclui o documento cadastrado e enviado para a pasta de
+        mídias de documentos do projeto"""
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    try:
+        os.remove('{}/{}'.format(MEDIA_ROOT, documento))
+    except:
+        messages.error(request, 'o arquivo não existe!')
+    return None
+
+def vida_academica(id_aluno):
     """Função que retorna a quantidade máxima de reprovações em uma disciplina
         para cálculo da faixa de criticidade do aluno logado"""
-    """TODO: Falta filtrar o item por ano e periodo nos itens de historico e
-        acrescentar as fórmulas de integralização dinamicamente"""
+    """TODO: Falta filtrar o item por ano e periodo nos itens de historico"""
 
     # Variáveis
 #    t_lecionadas = []
@@ -160,7 +217,8 @@ def vida_academica(request):
 #    equivalentes = 0
     numcriticidade = 0
 
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    aluno = Aluno.objects.using('sca').get(id=id_aluno)
+    nomeAluno = aluno.nome
     # TODO
     historico = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico)
     for h in historico:
@@ -232,16 +290,16 @@ def vida_academica(request):
         reprovacoest = 3
 
     # Parâmetros e cálculo para integralização
-    formulalaranja = formula_faixa_laranja()
+    formulainiciallaranja = formula_inicial_faixa_laranja()
+    formulafinallaranja = formula_final_faixa_laranja()
     formulavermelha = formula_faixa_vermelha()
     periodos = periodos - trancamentos - 1
     N = periodomin / 2
-    # TODO
-    if periodos < 2 * N:
+    if periodos < eval(formulainiciallaranja): # 2 * N:
         integralizacaot = 0
-    elif periodos <= 4 * N - 4:
+    elif periodos <= eval(formulafinallaranja): #4 * N - 4:
         integralizacaot = 1
-    elif periodos <= 4 * N - 3:
+    elif periodos <= eval(formulavermelha): # 4 * N - 3:
         integralizacaot = 2
     else:
         integralizacaot = 3
@@ -263,5 +321,5 @@ def vida_academica(request):
     else:
         criticidade = 'PRETA'
 
-    retorno = t_aprovadas, t_reprovacoes, t_reprovadas, t_discreprovadas, criticidade, maxcreditos, periodos
+    retorno = t_aprovadas, t_reprovacoes, t_reprovadas, t_discreprovadas, criticidade, maxcreditos, periodos, nomeAluno
     return retorno

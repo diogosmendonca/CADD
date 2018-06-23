@@ -13,12 +13,12 @@
 <!--      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_previa' %}'">Cadastrar Prévia</button><br>
       <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_futuro' %}'">Cadastrar Futuro</button><br>  -->
       <span class="status_plano_titulo">Status:</span>
-      <span class="status_plano_nao_cadastrado">{% if planoAtual %}{{ planoAtual.get_situacao_display }}{% else %}Não Cadastrado{% endif %}</span><br>
+      <span class="status_plano_{% if planoAtual %}{% else %}nao_{% endif %}cadastrado">{% if planoAtual %}{{ planoAtual.get_situacao_display }}{% else %}Não Cadastrado{% endif %}</span><br>
       <button type="button" class="botao-padrao botao-desabilitado">Download PDF</button><br>
       <button type="button" class="botao-padrao botao-desabilitado">Enviar por E-mail</button><br>
       <button type="button" class="botao-padrao botao-desabilitado">Imprimir</button><br>
     </div>
-    <div class="col-8">
+    <div class="col-5">
       {% if planoAtual %}
       <div class="row">
         <div class="col-11 cabecalho-quadros">
@@ -81,6 +81,24 @@
       </div>
       {% endif %}
     </div>
+    {% if avaliacao %}
+    <div class="col-4">
+      <div class="row">
+        <div id="accordion" class="col-11p quadro-periodos quadro">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  <span class="card-header-text"> Avaliação da Comissão </span>
+                </button>
+            </div>
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+              {{ avaliacao }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

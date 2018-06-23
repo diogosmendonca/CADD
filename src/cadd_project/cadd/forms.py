@@ -46,7 +46,12 @@ class ParametrosForm(forms.ModelForm):
                     'min': 1, 'max': 10, 'step': 1,
                     'empty_label': 'Selecione a quantidade de reprovações'
                 }),
-            'qtdperiodoslaranja': TextInput(attrs={
+            'qtdperiodosiniciallaranja': TextInput(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'placeholder': 'Informe a fórmula para cálculo'
+                }),
+            'qtdperiodosfinallaranja': TextInput(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
                     'placeholder': 'Informe a fórmula para cálculo'
@@ -221,35 +226,6 @@ class ItemHorarioForm(forms.ModelForm):
         }
 
 
-class PlanoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de plano de estudos"""
-
-    class Meta:
-        model = Plano
-#        exclude = (id, )
-        exclude = '__all__'
-        widgets = {
-#            'ano': HiddenInput(attrs={data-rules': 'required'}),
-#            'periodo': HiddenInput(attrs={data-rules': 'required'}),
-#            'situacao': HiddenInput(attrs={data-rules': 'required'}),
-#            'aluno': HiddenInput(attrs={data-rules': 'required'}),
-        }
-
-
-class PlanoAtualForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de plano de estudos para o
-        próximo semestre"""
-
-    class Meta:
-        model = ItemPlanoAtual
-#        exclude = (id, )
-        exclude = '__all__'
-        widgets = {
-#            'plano': HiddenInput(attrs={data-rules': 'required'}),
-#            'itemhorario': CheckboxSelectMultiple()
-        }
-
-
 class ReuniaoForm(forms.ModelForm):
     """Classe de uso do sistema para o formulário de reuniões"""
 
@@ -338,3 +314,46 @@ class DocumentoForm(forms.ModelForm):
     class Meta:
         model = Documento
         exclude = (id, )
+
+
+class AvaliaPlanoForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de avaliação plano de estudos"""
+
+    class Meta:
+        model = Plano
+        fields = ['avaliacao']
+        widgets = {
+            'avaliacao': Textarea(attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Informe a avaliação'
+                })
+        }
+
+
+class PlanoForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de plano de estudos"""
+
+    class Meta:
+        model = Plano
+#        exclude = (id, )
+        exclude = '__all__'
+        widgets = {
+#            'ano': HiddenInput(attrs={data-rules': 'required'}),
+#            'periodo': HiddenInput(attrs={data-rules': 'required'}),
+#            'situacao': HiddenInput(attrs={data-rules': 'required'}),
+#            'aluno': HiddenInput(attrs={data-rules': 'required'}),
+        }
+
+
+class PlanoAtualForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário de plano de estudos para o
+        próximo semestre"""
+
+    class Meta:
+        model = ItemPlanoAtual
+#        exclude = (id, )
+        exclude = '__all__'
+        widgets = {
+#            'plano': HiddenInput(attrs={data-rules': 'required'}),
+#            'itemhorario': CheckboxSelectMultiple()
+        }

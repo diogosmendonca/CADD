@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import UsuarioForm
 from sca.models import Users, Professor, Aluno
 from cadd.models import Membro, Comissao, Convocacao, Reuniao
-from cadd.utils import tipo_usuario, vida_academica, nome_curso, versao_curso
+from cadd.utils import tipo_usuario, vida_academica, nome_sigla_curso, versao_curso
 
 from django.contrib.auth.models import User
 
@@ -103,6 +103,7 @@ def home(request):
     comissoes = ""
     convocacao = ""
     reunioes = ""
+    matricula = ""
     nomecurso = ""
     versaocurso = ""
     criticidade = ""
@@ -115,18 +116,20 @@ def home(request):
             messages.error(request, 'Professor(a), o Sr(a) não está cadastrado(a) em nenhuma comissão de apoio!')
 
     if 'Aluno' in tipo_usuario(request.user.username, 0):
-        convocacao = Convocacao.objects.filter(aluno=request.user.first_name).values_list('reuniao')
+        id_aluno = request.user.first_name
+        convocacao = Convocacao.objects.filter(aluno=id_aluno).values_list('reuniao')
         reunioes = Reuniao.objects.filter(id__in=convocacao)
 
         # processamento da vida acadêmica do aluno logado
-        vidaacademica = vida_academica(request)
+        vidaacademica = vida_academica(id_aluno)
         reprovadas = vidaacademica[3]
         # Verificação do nome do curso, versão, faixa de criticidade e periodos
-        nomecurso = nome_curso(request)
-        versaocurso = versao_curso(request)
+        matricula = request.user.username
+        nomecurso = nome_sigla_curso(id_aluno)[0]
+        versaocurso = versao_curso(id_aluno)
         criticidade = vidaacademica[4]
         periodos = vidaacademica[6]
-
+        # Convocação para alguma reunião
         if not convocacao:
             messages.error(request, 'Aluno(a), você não possui nenhuma reunião agendada!')
 
@@ -136,6 +139,7 @@ def home(request):
                     'membro': membro,
                     'comissoes': comissoes,
                     'reunioes': reunioes,
+                    'matricula': matricula,
                     'nomecurso': nomecurso,
                     'versaocurso':versaocurso,
                     'periodos': periodos,

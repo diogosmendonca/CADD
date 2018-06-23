@@ -31,7 +31,7 @@
             <td colspan="2">{{ c.curso }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_comissao' c.id %}" class="btn btn-info botao-padrao">Editar</a>
-              <a href="{% url 'cadd:excluir_comissao' c.id %}" class="btn botao-padrao botao-vermelho">Excluir</a>
+              <a href="{% url 'cadd:excluir_comissao' c.id %}" class="btn botao-padrao botao-vermelho" onclick="if(!confirm('Você tem certeza que deseja excluir\n{{ c.descricao }}?')){return false;}">Excluir</a>
               <a href="{% url 'cadd:lista_membros' c.id %}" class="btn botao-padrao botao-azul">Editar Membros</a>
             </td>
           </tr>

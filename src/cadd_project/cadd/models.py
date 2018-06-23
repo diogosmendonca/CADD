@@ -592,7 +592,17 @@ class Parametros(models.Model):
                 )
     # Armazena a fórmula para calcular a quantidade máxima de períodos para
     # integralização que um aluno na faixa de criticidade laranja pode cursar
-    qtdperiodoslaranja = models.CharField(
+    # (início da faixa)
+    qtdperiodosiniciallaranja = models.CharField(
+                    max_length=10,
+                    blank=False,
+                    null=False,
+                    default='2 * N'
+                )
+    # Armazena a fórmula para calcular a quantidade máxima de períodos para
+    # integralização que um aluno na faixa de criticidade laranja pode cursar
+    # (final da faixa)
+    qtdperiodosfinallaranja = models.CharField(
                     max_length=10,
                     blank=False,
                     null=False,

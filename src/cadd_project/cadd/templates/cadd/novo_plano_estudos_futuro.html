@@ -2,108 +2,118 @@
 {% load widget_tweaks %}
 
 {% block body %}
-<div class="main-content">
-  <div class="row alinhamento-central">
-    <span class="titulo-pagina"><< Plano de Estudos para os semestres seguintes >></span>
-  </div>
-  <div class="row">
-    <div class="col-6">
-      <div class="row">
-        <div class="col-11 cabecalho-disciplinas">
-          <span>Disciplinas do Curso</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-11p quadro-disciplinas quadro">
-          <h6 class="tipo_disciplina">Disciplinas Obrigatórias</h6>
-          <ul id="5-periodo" ondrop="drop(event)" ondragover="allowDrop(event)" class="">
-            {% for d in aLecionar %}
-            {% if not d.optativa %}
-            <li id="{{ d.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha" draggable="true" ondragstart="drag(event)">
-              {% filter force_escape|upper %}{{ d.nome }}{% endfilter %} ({{ d.codigo }})
-              <div class="detalhes-nao-exibir-quadro-previa">
-                <span class="disciplina-previa-label-creditos">Créditos: </span>
-                <span class="disciplina-previa-creditos">{{ d.quantidadecreditos }}</span>
-                <span class="disciplina-previa-id">{{ d.id }}</span>
-              </div>
-            </li>
-            {% endif %}
-            {% endfor %}
-          </ul>
-          <h6 class="tipo_disciplina">Disciplinas Optativas</h6>
-          <ul id="disciplinas-optativas" ondrop="drop(event)" ondragover="allowDrop(event)" class="">
-            {% for d in aLecionar %}
-            {% if d.optativa%}
-<!--            <li class="item_disc_periodo item_disc_periodo_pendencia">{{ d.departamento }}</li> -->
-            <li id="{{ d.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha" draggable="true" ondragstart="drag(event)">
-              {% filter force_escape|upper %}{{ d.nome }}{% endfilter %} ({{ d.codigo }})
-            </li>
-            {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
+  <div class="main-content">
+    <div class="row alinhamento-central">
+      <span class="titulo-pagina">&lt;&lt; Plano de Estudos para os semestres seguintes &gt;&gt;</span>
     </div>
-    <div class="col-6">
-      <div class="row">
-        <div class="col-11 cabecalho-quadros">
-          <span>Períodos de Integralização</span>
+    <div class="row">
+      <div class="col-6">
+        <div class="row">
+          <div class="col-11 cabecalho-disciplinas">
+            <span>Disciplinas do Curso</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-11p quadro-disciplinas quadro">
+            <h6 class="tipo_disciplina">Disciplinas Obrigatórias</h6>
+            <ul id="disciplinas-obrigatorias" ondrop="drop(event)" ondragover="allowDrop(event)" class="">
+              {% for d in aLecionar %}
+              {% if not d.optativa %}
+              <li id="{{ d.id }}" name="{{ d.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha" draggable="true" ondragstart="drag(event)">
+                {% filter force_escape|upper %}{{ d.nome }}{% endfilter %} ({{ d.codigo }})
+                <div class="detalhes-nao-exibir-quadro-previa">
+                  <span class="disciplina-previa-label-creditos">Créditos: </span>
+                  <span class="disciplina-previa-creditos">{{ d.quantidadecreditos }}</span>
+                </div>
+              </li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+            <h6 class="tipo_disciplina">Disciplinas Optativas</h6>
+            <ul id="disciplinas-optativas" ondrop="drop(event)" ondragover="allowDrop(event)" class="">
+              {% for d in aLecionar %}
+              {% if d.optativa%}
+              <li id="{{ d.id }}" name="{{ d.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha" draggable="true" ondragstart="drag(event)">
+                {% filter force_escape|upper %}{{ d.nome }}{% endfilter %} ({{ d.codigo }})
+                <div class="detalhes-nao-exibir-quadro-previa">
+                  <span class="disciplina-previa-label-creditos">Créditos: </span>
+                  <span class="disciplina-previa-creditos">{{ d.quantidadecreditos }}</span>
+                </div>
+              </li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div id="accordion" class="col-11p quadro-periodos quadro">
-          <div class="card">
-            <div class="card-header" id="headingOne">
+      <div class="col-6">
+        <div class="row">
+          <div class="col-11 cabecalho-quadros">
+            <span>Períodos de Integralização</span>
+          </div>
+        </div>
+        <div class="row">
+          <div id="accordion" class="col-11p quadro-periodos quadro">
+            <div class="card">
+              <div class="card-header" id="headingOne">
                 <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <span class="card-header-text"> 2018.1 </span>
+                  <span class="card-header-text"> 2018.1 </span>
                 </button>
-            </div>
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-              <div class="card-body">
-                <ul id="collapseOneList" ondrop="drop(event)" ondragover="allowDrop(event)" class="collapseList">
-                </ul>
+              </div>
+              <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body-integralizacao">
+                  <ul id="collapseOneList" class="collapseList lista-de-disciplinas">
+                    <li class="receptor-disciplina" ondrop="drop(event)" ondragover="allowDrop(event)" >
+                      <span id="text-return" ondrop="dropparent(event)">SOLTAR DISCIPLINA AQUI</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="card">
-            <div class="card-header" id="headingTwo">
-              <h5 class="mb-0">
+            <div class="card">
+              <div class="card-header" id="headingTwo">
                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  2018.2
+                  <span class="card-header-text"> 2018.2 </span>
                 </button>
-              </h5>
+              </div>
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body-integralizacao">
+                  <ul id="collapseTwoList" class="collapseList lista-de-disciplinas">
+                    <li class="receptor-disciplina" ondrop="drop(event)" ondragover="allowDrop(event)" >
+                      <span id="text-return" ondrop="dropparent(event)">SOLTAR DISCIPLINA AQUI</span>
+                    </li>
+                  </ul>
+              </div>
             </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-              <div class="card-body">
-                <ul id="collapseTwoList" ondrop="drop(event)" ondragover="allowDrop(event)" class="collapseList">
-                </ul>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header" id="headingThree">
-              <h5 class="mb-0">
+            <div class="card">
+              <div class="card-header" id="headingThree">
                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  2019.1
+                  <span class="card-header-text"> 2019.1 </span>
                 </button>
-              </h5>
-            </div>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-              <div class="card-body">
-                <ul id="collapseThreeList" ondrop="drop(event)" ondragover="allowDrop(event)" class="collapseList">
-                </ul>
+              </div>
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body-integralizacao">
+                  <ul id="collapseThreeList" class="collapseList lista-de-disciplinas">
+                    <li class="receptor-disciplina" ondrop="drop(event)" ondragover="allowDrop(event)" >
+                      <span id="text-return" ondrop="dropparent(event)">SOLTAR DISCIPLINA AQUI</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="form-group">
-        <form class="" action="" method="post">
-          {% csrf_token %}
-          <input type="hidden" id="discip" name="discip">
-          <div id="salvar-futuro">
-            <button type="submit">Salvar Plano de Estudos Futuro</button>
-          </div>
-        </form>
+        <div class="form-group">
+          <form class="" action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="plano" name="plano" value="{{ plano }}">
+            <input type="hidden" id="discip" name="discip">
+            <div id="salvar-futuro">
+              <br>
+              <button type="submit" onclick="preencherDisciplinas()" class="botao-padrao botao-verde">Salvar Plano de Estudos Futuro</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

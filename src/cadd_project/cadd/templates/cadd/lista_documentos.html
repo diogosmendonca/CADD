@@ -14,50 +14,57 @@
   </div>
   {% endif %}
   {% if documentos %}
-  <div class="row alinhamento-central">
-    <div class="form-group">
-      <table class="table table-striped table-condensed">
-        <thead>
-          <tr>
-            <th colspan="2">Aluno</th>
-            <th>Descrição</th>
-            <th>Semestre</th>
-            <th colspan="2" style="textalign:center">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for d in documentos %}
-          <tr>
-            <td colspan="2">{{ d.aluno }}</td>
-            <td>{{ d.descricao }}</td>
-            <td>{{ d.ano }}.{{ d.periodo }}</td>
-            <td colspan="2">
-              <a href="{% url 'cadd:visualizar_documento' d.id %}" class="btn btn-info botao-padrao">Visualizar</a>
-              <a href="{% url 'cadd:excluir_documento' d.id %}" class="btn botao-padrao botao-vermelho">Excluir</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-    </table>
+  <div class="row">
+    <div class="col-7">
+      <div class="row alinhamento-central">
+        <div class="form-group">
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2">Aluno</th>
+                <th>Descrição</th>
+                <th colspan="2" style="textalign:center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in documentos %}
+              <tr>
+                <td colspan="2">{{ d.aluno }}</td>
+                <td>{{ d.descricao }}</td>
+                <td colspan="2">
+                  <a href="/media/{{ d.indice }}" target="interno" class="btn btn-info botao-padrao" onclick="mostrarIframe()">Visualizar</a>
+                  <a href="{% url 'cadd:excluir_documento' d.id %}" class="btn botao-padrao botao-vermelho" onclick="if(!confirm('Você tem certeza que deseja excluir o documento?')){return false;}">Excluir</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="pagination">
+            <span class="step-links">
+            	{% if documentos.has_previous %}
+            	<a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
+            	<a href="?page={{ documentos.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
+            	{% endif %}
+
+            	<span class="current">
+            	  Página {{ documentos.number }} de {{ documentos.paginator.num_pages }}
+            	</span>
+
+            	{% if documentos.has_next %}
+            	<a href="?page={{ documentos.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
+            	<a href="?page={{ documentos.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
+            	{% endif %}
+            </span>
+          </div>
+        </div>
+        <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
+        <a href="{% url 'cadd:novo_documento' %}" class="btn botao-padrao botao-azul" role="button">Adicionar documento</a>
+      </div>
     </div>
-  </div>
-  <div class="row alinhamento-central">
-    <div class="pagination">
-      <span class="step-links">
-        {% if documentos.has_previous %}
-        <a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
-        <a href="?page={{ documentos.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
-        {% endif %}
-
-        <span class="current">
-          Página {{ documentos.number }} de {{ documentos.paginator.num_pages }}
-        </span>
-
-        {% if documentos.has_next %}
-        <a href="?page={{ documentos.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
-        <a href="?page={{ documentos.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
-        {% endif %}
-      </span>
+    <div class="col-5">
+      <div id ="iframe-documento">
+        <iframe name="interno" width="500" height="600" frameborder="1"></iframe>
+      </div>
     </div>
   </div>
   {% else %}
@@ -68,9 +75,9 @@
       </div>
     </div>
   </div>
-  {% endif %}
   <div class="row alinhamento-central">
     <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
     <a href="{% url 'cadd:novo_documento' %}" class="btn botao-padrao botao-azul" role="button">Adicionar documento</a>
   </div>
+  {% endif %}
 {% endblock body %}
