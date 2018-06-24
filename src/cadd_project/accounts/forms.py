@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 from django.forms import TextInput, PasswordInput, HiddenInput
 
 class UsuarioForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de registro"""
+    """
+    Classe de uso do sistema para o formulário de registro
+    """
 
     new_password1 = forms.CharField(widget=forms.PasswordInput(
                     attrs={'class': 'form-control', 'data-rules': 'required',
@@ -21,9 +23,6 @@ class UsuarioForm(forms.ModelForm):
             'password': PasswordInput(attrs={'class': 'form-control',
                                          'data-rules': 'required',
                                          'placeholder': 'Informe a senha'}),
-            'first_name': HiddenInput(),
-            'last_name': HiddenInput(),
-            'email': HiddenInput(),
         }
 
     def clean(self):

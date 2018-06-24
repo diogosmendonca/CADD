@@ -4,6 +4,10 @@ from cadd.utils import tipo_usuario, periodo_atual
 from cadd.models import Perfil, Membro
 
 def context_processors(request):
+    """
+    Função para a inclusão de variáveis de contexto nos templates
+    """
+
     ret = {}
     if request.user.is_authenticated:
         usuario = Perfil.objects.get(user=request.user.id)

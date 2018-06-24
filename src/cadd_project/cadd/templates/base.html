@@ -72,11 +72,11 @@
             {% if user.is_authenticated %}
 
             {% if 'Admin' in tipo %}
+            <li class="nav-item{% if ativoConfiguracoes %} active{% endif %}">
+              <a class="nav-link" href="{% url 'cadd:editar_parametros' %}">CONFIGURAÇÕES</a>
+            </li>
             <li class="nav-item{% if ativoComissoes %} active{% endif %}">
               <a class="nav-link" href="{% url 'cadd:lista_comissoes' %}">COMISSÕES</a>
-            </li>
-            <li class="nav-item{% if ativoConfiguracoes %} active{% endif %}">
-              <a class="nav-link" href="{% url 'cadd:editar_parametros' %}">CONFIGURAÇÕES DO SISTEMA</a>
             </li>
             {% endif %}
 

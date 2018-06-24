@@ -9,8 +9,10 @@ from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
 from sca.models import Curso, Professor, Turma, Disciplina, Aluno
 
 class ParametrosForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de parâmetros de
-        configuração do sistema"""
+    """
+    Classe de uso do sistema para o formulário de parâmetros de
+    configuração do sistema
+    """
 
     class Meta:
         model = Parametros
@@ -77,7 +79,9 @@ class ParametrosForm(forms.ModelForm):
 
 
 class PerfilForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário meu perfil do usuário logado"""
+    """
+    Classe de uso do sistema para o formulário meu perfil do usuário logado
+    """
 
     class Meta:
         model = Perfil
@@ -92,7 +96,9 @@ class PerfilForm(forms.ModelForm):
 
 
 class ComissaoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de comissões de apoio"""
+    """
+    Classe de uso do sistema para o formulário de comissões de apoio
+    """
 
     def __init__(self,*args,**kwargs):
         super (ComissaoForm,self ).__init__(*args,**kwargs) # popula o post
@@ -117,8 +123,10 @@ class ComissaoForm(forms.ModelForm):
 
 
 class MembroForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de membros de uma
-        comissão de apoio"""
+    """
+    Classe de uso do sistema para o formulário de membros de uma
+    comissão de apoio
+    """
 
     def __init__(self,*args,**kwargs):
         super (MembroForm,self ).__init__(*args,**kwargs)
@@ -145,8 +153,90 @@ class MembroForm(forms.ModelForm):
         }
 
 
+class ReuniaoForm(forms.ModelForm):
+    """
+    Classe de uso do sistema para o formulário de reuniões
+    """
+
+    def __init__(self,*args,**kwargs):
+        super (ReuniaoForm,self ).__init__(*args,**kwargs)
+        self.fields['comissao'].queryset = \
+            Comissao.objects.distinct().order_by('descricao')
+        self.fields['comissao'].empty_label = 'Selecione a comissão de apoio'
+
+    class Meta:
+        model = Reuniao
+        exclude = (id, 'situacao', 'anotacao')
+        widgets = {
+            'data': DateInput(attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Informe a data'
+                }),
+            'inicio': TimeInput(attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Informe a hora de início'
+                }),
+            'local': TextInput(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'placeholder': 'Informe o local'
+                }),
+            'tipo': Select(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'empty_label': 'Selecione o tipo'
+                }),
+#            'anotacao': Textarea(attrs={
+#                    'class': 'form-control',
+#                    'data-rules': 'required',
+#                    'placeholder': 'Informe a anotação'
+#                }),
+            'comissao': Select(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'empty_label': 'Selecione a comissão'
+                }),
+        }
+
+
+class ConvocadoForm(forms.ModelForm):
+    """
+    Classe de uso do sistema para o formulário de convocados
+    """
+
+    def __init__(self,*args,**kwargs):
+        super (ConvocadoForm,self ).__init__(*args,**kwargs)
+        self.fields['aluno'].queryset = \
+            Aluno.objects.using('sca').distinct().order_by('nome')
+        self.fields['aluno'].empty_label = 'Selecione o aluno'
+
+    class Meta:
+        model = Convocacao
+        exclude = (id, 'reuniao', 'envioemail', 'presente', 'anotacao')
+        widgets = {
+#            'envioemail': CheckboxInput(attrs={
+#                    'class': 'form-control'
+#                }),
+#            'presente': CheckboxInput(attrs={
+#                    'class': 'form-control'
+#                }),
+#            'anotacao': Textarea(attrs={
+#                    'class': 'form-control',
+#                    'data-rules': 'required',
+#                    'placeholder': 'Informe a anotação'
+#                }),
+            'aluno': Select(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'empty_label': 'Selecione o aluno'
+                }),
+        }
+
+
 class HorarioForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de previsão de horários"""
+    """
+    Classe de uso do sistema para o formulário de previsão de horários
+    """
 
     def __init__(self,*args,**kwargs):
         super (HorarioForm,self ).__init__(*args,**kwargs)
@@ -179,8 +269,10 @@ class HorarioForm(forms.ModelForm):
 
 
 class ItemHorarioForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de itens de uma
-        previsão de horário"""
+    """
+    Classe de uso do sistema para o formulário de itens de uma
+    previsão de horário
+    """
 
     def __init__(self,*args,**kwargs):
         super (ItemHorarioForm,self ).__init__(*args,**kwargs)
@@ -236,84 +328,10 @@ class ItemHorarioForm(forms.ModelForm):
         }
 
 
-class ReuniaoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de reuniões"""
-
-    def __init__(self,*args,**kwargs):
-        super (ReuniaoForm,self ).__init__(*args,**kwargs)
-        self.fields['comissao'].queryset = \
-            Comissao.objects.distinct().order_by('descricao')
-        self.fields['comissao'].empty_label = 'Selecione a comissão de apoio'
-
-    class Meta:
-        model = Reuniao
-        exclude = (id, 'situacao', 'anotacao')
-        widgets = {
-            'data': DateInput(attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Informe a data'
-                }),
-            'inicio': TimeInput(attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Informe a hora de início'
-                }),
-            'local': TextInput(attrs={
-                    'class': 'form-control',
-                    'data-rules': 'required',
-                    'placeholder': 'Informe o local'
-                }),
-            'tipo': Select(attrs={
-                    'class': 'form-control',
-                    'data-rules': 'required',
-                    'empty_label': 'Selecione o tipo'
-                }),
-#            'anotacao': Textarea(attrs={
-#                    'class': 'form-control',
-#                    'data-rules': 'required',
-#                    'placeholder': 'Informe a anotação'
-#                }),
-            'comissao': Select(attrs={
-                    'class': 'form-control',
-                    'data-rules': 'required',
-                    'empty_label': 'Selecione a comissão'
-                }),
-        }
-
-
-class ConvocadoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de convocados"""
-
-    def __init__(self,*args,**kwargs):
-        super (ConvocadoForm,self ).__init__(*args,**kwargs)
-        self.fields['aluno'].queryset = \
-            Aluno.objects.using('sca').distinct().order_by('nome')
-        self.fields['aluno'].empty_label = 'Selecione o aluno'
-
-    class Meta:
-        model = Convocacao
-        exclude = (id, 'reuniao')
-        widgets = {
-            'envioemail': CheckboxInput(attrs={
-                    'class': 'form-control'
-                }),
-            'presente': CheckboxInput(attrs={
-                    'class': 'form-control'
-                }),
-            'anotacao': Textarea(attrs={
-                    'class': 'form-control',
-                    'data-rules': 'required',
-                    'placeholder': 'Informe a anotação'
-                }),
-            'aluno': Select(attrs={
-                    'class': 'form-control',
-                    'data-rules': 'required',
-                    'empty_label': 'Selecione o aluno'
-                }),
-        }
-
-
 class DocumentoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de documentos"""
+    """
+    Classe de uso do sistema para o formulário de documentos
+    """
 
     def __init__(self,*args,**kwargs):
         super (DocumentoForm,self ).__init__(*args,**kwargs)
@@ -327,7 +345,9 @@ class DocumentoForm(forms.ModelForm):
 
 
 class AvaliaPlanoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de avaliação plano de estudos"""
+    """
+    Classe de uso do sistema para o formulário de avaliação plano de estudos
+    """
 
     class Meta:
         model = Plano
@@ -341,7 +361,9 @@ class AvaliaPlanoForm(forms.ModelForm):
 
 
 class PlanoForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de plano de estudos"""
+    """
+    Classe de uso do sistema para o formulário de plano de estudos
+    """
 
     class Meta:
         model = Plano
@@ -356,8 +378,10 @@ class PlanoForm(forms.ModelForm):
 
 
 class PlanoAtualForm(forms.ModelForm):
-    """Classe de uso do sistema para o formulário de plano de estudos para o
-        próximo semestre"""
+    """
+    Classe de uso do sistema para o formulário de plano de estudos para o
+    próximo semestre
+    """
 
     class Meta:
         model = ItemPlanoAtual

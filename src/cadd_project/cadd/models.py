@@ -13,7 +13,9 @@ PERIODO_CHOICES = (
 )
 
 class Comissao(models.Model):
-    """Classe de uso do sistema para o cadastro das comissões"""
+    """
+    Classe de uso do sistema para o cadastro das comissões
+    """
 
     # Armazena a descição da comissão
     descricao = models.CharField(
@@ -42,7 +44,9 @@ class Comissao(models.Model):
 
 
 class Membro(models.Model):
-    """Classe de uso do sistema para o cadastro dos membros das CADDs"""
+    """
+    Classe de uso do sistema para o cadastro dos membros das CADDs
+    """
 
     # Armazena se um membro está ativo ou não
     ativo = models.BooleanField(
@@ -63,7 +67,7 @@ class Membro(models.Model):
     # Relacionamento com a tabela Comissao
     comissao = models.ForeignKey(
                     'Comissao',
-                    models.DO_NOTHING,
+                    models.PROTECT,
                     blank=False,
                     null=False
                 )
@@ -83,7 +87,9 @@ class Membro(models.Model):
 
 
 class Reuniao(models.Model):
-    """Classe de uso do sistema para o agendamento das reuniões"""
+    """
+    Classe de uso do sistema para o agendamento das reuniões
+    """
 
     # Constante para a lista dos status das reuniões
     SITUACAO_CHOICES = (
@@ -161,16 +167,17 @@ class Reuniao(models.Model):
 
 
 class Convocacao(models.Model):
-    """Classe de uso do sistema para a guarda dos alunos convocados
-        às reuniões"""
+    """
+    Classe de uso do sistema para a guarda dos alunos convocados às reuniões
+    """
 
     # Armazena se foi enviado ou não e-mail convocando o aluno
-    envioemail = models.BooleanField(
-                    u'Email'
+    envioemail = models.NullBooleanField(
+                    u'Email',
                 )
     # Armazena a presença do aluno na reunião
-    presente = models.BooleanField(
-                    u'Presente'
+    presente = models.NullBooleanField(
+                    u'Presente',
                 )
     # Armazena as anotações/orientações passadas ao aluno
     anotacao = models.TextField(
@@ -202,8 +209,10 @@ class Convocacao(models.Model):
 
 
 class Documento(models.Model):
-    """Classe de uso do sistema para a guarda dos documentos escaneados
-        dos alunos"""
+    """
+    Classe de uso do sistema para a guarda dos documentos escaneados
+    dos alunos
+    """
 
     # Armazena o ano de referência à documentação salvaguardada
     ano = models.PositiveSmallIntegerField(
@@ -256,8 +265,10 @@ class Documento(models.Model):
 
 
 class Horario(models.Model):
-    """Classe de uso do sistema para a guarda da prévia do horário do
-        semestre subsequente"""
+    """
+    Classe de uso do sistema para a guarda da prévia do horário do
+    semestre subsequente
+    """
 
     # Armazena o ano de referência ao horário salvaguardado
     ano = models.PositiveSmallIntegerField(
@@ -292,8 +303,10 @@ class Horario(models.Model):
 
 
 class ItemHorario(models.Model):
-    """Classe de uso do sistema para a guarda dos itens da prévia do horário"""
-    """OBS: Possíveis horários das aulas (retirado do SCA):
+    """
+    Classe de uso do sistema para a guarda dos itens da prévia do horário
+
+    OBS: Possíveis horários das aulas (retirado do SCA):
         1 07:00 às 07:50
         2 07:55 às 08:45
         3 08:50 às 09:40
@@ -310,7 +323,8 @@ class ItemHorario(models.Model):
         14 19:10 às 20:00
         15 20:00 às 20:50
         16 21:00 às 21:50
-        17 21:50 às 22:40"""
+        17 21:50 às 22:40
+    """
 
     # Constante para a lista dos dias da semana
     DIASEMANA_CHOICES = (
@@ -401,7 +415,9 @@ class ItemHorario(models.Model):
 
 
 class Plano(models.Model):
-    """Classe de uso do sistema para a guarda dos planos de estudo dos alunos"""
+    """
+    Classe de uso do sistema para a guarda dos planos de estudo dos alunos
+    """
 
     # Constante para a lista dos status dos planos
     SITUACAO_CHOICES = (
@@ -455,8 +471,10 @@ class Plano(models.Model):
 
 
 class ItemPlanoAtual(models.Model):
-    """Classe de uso do sistema para a guarda dos itens atuais do
-        plano de estudo dos alunos"""
+    """
+    Classe de uso do sistema para a guarda dos itens atuais dos planos de
+    estudo dos alunos
+    """
 
     # Armazena a id do plano correspondente
     # Relacionamento com a tabela Plano
@@ -482,8 +500,10 @@ class ItemPlanoAtual(models.Model):
 
 
 class PlanoFuturo(models.Model):
-    """Classe de uso do sistema para a guarda do plano de
-        estudo futuro dos alunos"""
+    """
+    Classe de uso do sistema para a guarda dos planos de estudo futuro
+    dos alunos
+    """
 
     # Armazena o ano de referência ao plano futuro salvaguardado
     ano = models.PositiveSmallIntegerField(
@@ -515,8 +535,10 @@ class PlanoFuturo(models.Model):
 
 
 class ItemPlanoFuturo(models.Model):
-    """Classe de uso do sistema para a guarda dos itens do
-        plano de estudo futuro dos alunos"""
+    """
+    Classe de uso do sistema para a guarda dos itens do plano de estudo futuro
+    dos alunos
+    """
 
     # Armazena a id do plano futuro correspondente
     # Relacionamento com a tabela PlanoFuturo
@@ -542,7 +564,9 @@ class ItemPlanoFuturo(models.Model):
 
 
 class Parametros(models.Model):
-    """Classe de uso do sistema para a guarda dos parâmetros do sistema"""
+    """
+    Classe de uso do sistema para a guarda dos parâmetros do sistema
+    """
 
     # Armazena a quantidade máxima de reprovações em uma mesma disciplina
     # que um aluno na faixa de criticidade laranja pode ter oriundo de um
@@ -624,10 +648,13 @@ class Parametros(models.Model):
 
 
 class Perfil(models.Model):
-    """Classe para estender a Model User padrão do Django adicionando alguns
-        campos necessários e criando um perfil para o usuário logado"""
-    """TODO: Faltam os campos situacao, faixa e formaEvasao
-        não contemplados no esquema"""
+    """
+    Classe para estender a Model User padrão do Django adicionando alguns
+    campos necessários e criando um perfil para o usuário logado
+
+    TODO: Faltam os campos situacao e formaEvasao
+            não contemplados no esquema
+    """
 
     # Constante para a lista da quantidade de itens de uma lista a serem
     # visualizados por página

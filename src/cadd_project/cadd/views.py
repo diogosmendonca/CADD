@@ -11,7 +11,7 @@ from .forms import ParametrosForm, ComissaoForm, MembroForm, HorarioForm, \
                     ConvocadoForm, DocumentoForm
 from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
                     ItemPlanoAtual, PlanoFuturo, ItemPlanoFuturo, Reuniao, \
-                    Convocacao, Documento
+                    Convocacao, Documento, Perfil
 from sca.models import Aluno, Disciplina, Itemhistoricoescolar, Versaocurso, \
                     Curso, Disciplinasoriginais, Blocoequivalencia, \
                     Disciplinasequivalentes
@@ -31,7 +31,9 @@ from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
 # Configurações do sistema
 @login_required
 def editar_parametros(request):
-    """Função para a edição dos parâmetros do sistema"""
+    """
+    Função para a edição dos parâmetros do sistema
+    """
 
     registros = Parametros.objects.filter(id=1).count()
     if request.method == 'POST':
@@ -40,8 +42,13 @@ def editar_parametros(request):
             form = ParametrosForm(request.POST, instance=parametros)
         else:
             form = ParametrosForm(request.POST)
+
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Parâmetro salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('home')
     else:
         if registros != 0:
@@ -49,6 +56,7 @@ def editar_parametros(request):
             form = ParametrosForm(instance=parametros)
         else:
             form = ParametrosForm()
+
     return render(request, 'cadd/configuracoes.html', {
                         'form': form,
                         'ativoConfiguracoes': True
@@ -58,15 +66,22 @@ def editar_parametros(request):
 # Comissões de apoio
 @login_required
 def nova_comissao(request):
-    """Função para a criação de uma nova comissão de apoio"""
+    """
+    Função para a criação de uma nova comissão de apoio
+    """
 
     if request.method == 'POST':
         form = ComissaoForm(request.POST)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Comissão salva com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_comissoes')
     else:
         form = ComissaoForm()
+
     return render(request, 'cadd/nova_comissao.html', {
                         'form': form,
                         'ativoComissoes': True
@@ -74,13 +89,17 @@ def nova_comissao(request):
 
 @login_required
 def lista_comissoes(request):
-    """Função para a listagem das comissões de apoio cadastradas"""
+    """
+    Função para a listagem das comissões de apoio cadastradas
+    """
 
-    linhas = linhas_por_pagina(request.idusuario)
+    usuario = Perfil.objects.get(user=request.user.id)
+    linhas = linhas_por_pagina(usuario.idusuario)
     comissoes_list = Comissao.objects.all()
     paginator = Paginator(comissoes_list, linhas) # Paginação
     page = request.GET.get('page')
     comissoes = paginator.get_page(page)
+
     return render(request, 'cadd/lista_comissoes.html', {
                         'comissoes': comissoes,
                         'ativoComissoes': True
@@ -88,24 +107,38 @@ def lista_comissoes(request):
 
 @login_required
 def excluir_comissao(request, id_comissao):
-    """Função para a exclusão de uma comissão de apoio"""
+    """
+    Função para a exclusão de uma comissão de apoio
+    """
 
     comissao = Comissao.objects.get(id=id_comissao)
-    comissao.delete()
+    try:
+        comissao.delete()
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'A exclusão não foi realizada! Para isso, exclua primeiramente seus membros.')
+
     return redirect('cadd:lista_comissoes')
 
 @login_required
 def editar_comissao(request, id_comissao):
-    """Função para a edição de uma comissão de apoio"""
+    """
+    Função para a edição de uma comissão de apoio
+    """
 
     comissao = get_object_or_404(Comissao, id=id_comissao)
     if request.method == 'POST':
         form = ComissaoForm(request.POST, instance=comissao)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Comissão salva com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_comissoes')
     else:
         form = ComissaoForm(instance=comissao)
+
     return render(request, 'cadd/nova_comissao.html', {
                         'form': form,
                         'ativoComissoes': True
@@ -115,7 +148,9 @@ def editar_comissao(request, id_comissao):
 # Membros das Comissões de apoio
 @login_required
 def novo_membro(request, id_comissao):
-    """Função para a criação de uma novo membro de uma comissão de apoio"""
+    """
+    Função para a criação de uma novo membro de uma comissão de apoio
+    """
 
     if request.method == 'POST':
         form = MembroForm(request.POST)
@@ -124,10 +159,15 @@ def novo_membro(request, id_comissao):
             f = form.save(commit=False)
             f.comissao = comissao
             f.ativo = True
-            f.save()
+            try:
+                form.save()
+                messages.success(request, 'Membro salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_membros', id_comissao)
     else:
         form = MembroForm()
+
     return render(request, 'cadd/novo_membro.html', {
                         'form': form,
                         'id_comissao': id_comissao,
@@ -136,15 +176,19 @@ def novo_membro(request, id_comissao):
 
 @login_required
 def lista_membros(request, id_comissao):
-    """Função para a listagem dos membros cadastrados de uma comissões de apoio"""
+    """
+    Função para a listagem dos membros cadastrados de uma comissões de apoio
+    """
 
-    linhas = linhas_por_pagina()
+    usuario = Perfil.objects.get(user=request.user.id)
+    linhas = linhas_por_pagina(usuario.idusuario)
     membros_list = Membro.objects.all().filter(comissao=id_comissao)
     paginator = Paginator(membros_list, linhas) # Paginação
     page = request.GET.get('page')
     membros = paginator.get_page(page)
     # objeto comissão anteriormente requisitado
     comissao = Comissao.objects.get(id__exact=id_comissao)
+
     return render(request, 'cadd/lista_membros.html', {
                         'membros': membros,
                         'id_comissao': id_comissao,
@@ -154,24 +198,39 @@ def lista_membros(request, id_comissao):
 
 @login_required
 def excluir_membro(request, id_membro, id_comissao):
-    """Função para a desativação de um membro de uma comissão de apoio"""
+    """
+    Função para a desativação de um membro de uma comissão de apoio
+    """
+
     membro = Membro.objects.get(id=id_membro)
     membro.ativo = False
-    membro.save()
+    try:
+        membro.save()
+        messages.success(request, 'Membro desativado com sucesso!')
+    except:
+        messages.error(request, 'Houve algum problema técnico e a desativamento não foi realizado!')
+
     return redirect('cadd:lista_membros', id_comissao)
 
 @login_required
 def editar_membro(request, id_membro, id_comissao):
-    """Função para a edição de um membro de uma comissão de apoio"""
+    """
+    Função para a edição de um membro de uma comissão de apoio
+    """
 
     membro = get_object_or_404(Membro, id=id_membro)
     if request.method == 'POST':
         form = MembroForm(request.POST, instance=membro)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Membro salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_membros', id_comissao)
     else:
         form = MembroForm(instance=membro)
+
     return render(request, 'cadd/novo_membro.html', {
                         'form': form,
                         'id_comissao': id_comissao,
@@ -182,15 +241,22 @@ def editar_membro(request, id_membro, id_comissao):
 # Horários
 @login_required
 def novo_horario(request):
-    """Função para a criação de uma nova previsão de horário"""
+    """
+    Função para a criação de uma nova previsão de horário
+    """
 
     if request.method == 'POST':
         form = HorarioForm(request.POST)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_horarios')
     else:
         form = HorarioForm()
+
     return render(request, 'cadd/novo_horario.html', {
                         'form': form,
                         'ativoHorarios': True
@@ -198,15 +264,19 @@ def novo_horario(request):
 
 @login_required
 def lista_horarios(request):
-    """Função para a listagem das previsões de horário"""
+    """
+    Função para a listagem das previsões de horário
+    """
 
-    linhas = linhas_por_pagina()
-    membro = Membro.objects.filter(professor=request.user.first_name).values_list('comissao')
+    usuario = Perfil.objects.get(user=request.user.id)
+    linhas = linhas_por_pagina(usuario.idusuario)
+    membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao')
     comissoes = Comissao.objects.filter(id__in=membro).values_list('curso')
     horarios_list = Horario.objects.filter(curso__in=comissoes)
     paginator = Paginator(horarios_list, linhas) # Paginação
     page = request.GET.get('page')
     horarios = paginator.get_page(page)
+
     return render(request, 'cadd/lista_horarios.html', {
                         'horarios': horarios,
                         'ativoHorarios': True
@@ -214,23 +284,38 @@ def lista_horarios(request):
 
 @login_required
 def excluir_horario(request, id_horario):
-    """Função para a exclusão de uma previsão de horário"""
+    """
+    Função para a exclusão de uma previsão de horário
+    """
 
     horario = Horario.objects.get(id=id_horario)
-    horario.delete()
+    try:
+        horario.delete()
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'A exclusão não foi realizada! Para isso, exclua primeiramente seus itens de horário.')
+
     return redirect('cadd:lista_horarios')
 
 @login_required
 def editar_horario(request, id_horario):
-    """Função para a edição de uma previsão de horário"""
+    """
+    Função para a edição de uma previsão de horário
+    """
 
     horario = get_object_or_404(Horario, id=id_horario)
     if request.method == 'POST':
         form = HorarioForm(request.POST, instance=horario)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+            return redirect('cadd:lista_horarios')
     else:
         form = HorarioForm(instance=horario)
+
     return render(request, 'cadd/novo_horario.html', {
                         'form': form,
                         'ativoHorarios': True
@@ -240,7 +325,9 @@ def editar_horario(request, id_horario):
 # Itens de Horário
 @login_required
 def novo_itemhorario(request, id_horario):
-    """Função para a criação de uma novo item em uma previsão de horário"""
+    """
+    Função para a criação de uma novo item em uma previsão de horário
+    """
 
     if request.method == 'POST':
         form = ItemHorarioForm(request.POST)
@@ -248,10 +335,15 @@ def novo_itemhorario(request, id_horario):
             horario = Horario.objects.get(id=id_horario)
             f = form.save(commit=False)
             f.horario = horario
-            f.save()
+            try:
+                f.save()
+                messages.success(request, 'Item de horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_itenshorario', id_horario)
     else:
         form = ItemHorarioForm()
+
     return render(request, 'cadd/novo_itemhorario.html', {
                         'form': form,
                         'id_horario': id_horario,
@@ -260,15 +352,19 @@ def novo_itemhorario(request, id_horario):
 
 @login_required
 def lista_itenshorario(request, id_horario):
-    """Função para a listagem dos itens cadastrados em uma previsão de horário"""
+    """
+    Função para a listagem dos itens cadastrados em uma previsão de horário
+    """
 
-    linhas = linhas_por_pagina()
+    usuario = Perfil.objects.get(user=request.user.id)
+    linhas = linhas_por_pagina(usuario.idusuario)
     itenshorario_list = ItemHorario.objects.all().filter(horario=id_horario).order_by('periodo', 'disciplina', 'turma')
     paginator = Paginator(itenshorario_list, linhas) # Paginação
     page = request.GET.get('page')
     itenshorario = paginator.get_page(page)
     # objeto horário anteriormente requisitado
     horario = Horario.objects.get(id__exact=id_horario)
+
     return render(request, 'cadd/lista_itenshorario.html', {
                         'itenshorario': itenshorario,
                         'id_horario': id_horario,
@@ -278,24 +374,38 @@ def lista_itenshorario(request, id_horario):
 
 @login_required
 def excluir_itemhorario(request, id_itemhorario, id_horario):
-    """Função para a exclusão de um item de uma previsão de horário"""
+    """
+    Função para a exclusão de um item de uma previsão de horário
+    """
 
     itemhorario = ItemHorario.objects.get(id=id_itemhorario)
-    itemhorario.delete()
+    try:
+        itemhorario.delete()
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'Houve algum problema técnico e a exclusão não foi realizada!')
+
     return redirect('cadd:lista_itenshorario', id_horario)
 
 @login_required
 def editar_itemhorario(request, id_itemhorario, id_horario):
-    """Função para a edição de item de uma previsão de horário"""
+    """
+    Função para a edição de item de uma previsão de horário
+    """
 
     itemhorario = get_object_or_404(ItemHorario, id=id_itemhorario)
     if request.method == 'POST':
         form = ItemHorarioForm(request.POST, instance=itemhorario)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Item de horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_itenshorario', id_horario)
     else:
         form = ItemHorarioForm(instance=itemhorario)
+
     return render(request, 'cadd/novo_itemhorario.html', {
                         'form': form,
                         'id_horario': id_horario,
@@ -306,15 +416,22 @@ def editar_itemhorario(request, id_itemhorario, id_horario):
 # Reuniões
 @login_required
 def nova_reuniao(request):
-    """Função para a criação de uma nova reuniao"""
+    """
+    Função para a criação de uma nova reuniao
+    """
 
     if request.method == 'POST':
         form = ReuniaoForm(request.POST)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Reunião salva com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_reunioes')
     else:
         form = ReuniaoForm()
+
     return render(request, 'cadd/nova_reuniao.html', {
                         'form': form,
                         'ativoReunioes': True
@@ -322,13 +439,17 @@ def nova_reuniao(request):
 
 @login_required
 def lista_reunioes(request):
-    """Função para a listagem das reuniões agendadas"""
+    """
+    Função para a listagem das reuniões agendadas
+    """
 
-    linhas = linhas_por_pagina()
+    usuario = Perfil.objects.get(user=request.user.id)
+    linhas = linhas_por_pagina(usuario.idusuario)
     reunioes_list = Reuniao.objects.all()
     paginator = Paginator(reunioes_list, linhas) # Paginação
     page = request.GET.get('page')
     reunioes = paginator.get_page(page)
+
     return render(request, 'cadd/lista_reunioes.html', {
                         'reunioes': reunioes,
                         'ativoReunioes': True
@@ -336,25 +457,39 @@ def lista_reunioes(request):
 
 @login_required
 def excluir_reuniao(request, id_reuniao):
-    """Função para o cancelamento de uma reunião"""
+    """
+    Função para o cancelamento de uma reunião
+    """
 
     reuniao = Reuniao.objects.get(id=id_reuniao)
     reuniao.situacao = 'C'
-    reuniao.save()
+    try:
+        reuniao.save()
+        messages.success(request, 'Reunião cancelada com sucesso!')
+    except:
+        messages.error(request, 'Houve algum problema técnico e a cancelamento não foi realizado!')
+
     return redirect('cadd:lista_reunioes')
 
 @login_required
 def editar_reuniao(request, id_reuniao):
-    """Função para a edição de uma reuniao"""
+    """
+    Função para a edição de uma reunião
+    """
 
     reuniao = get_object_or_404(Reuniao, id=id_reuniao)
     if request.method == 'POST':
         form = ReuniaoForm(request.POST, instance=reuniao)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Reunião salva com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_reunioes')
     else:
         form = ReuniaoForm(instance=reuniao)
+
     return render(request, 'cadd/nova_reuniao.html', {
                         'form': form,
                         'ativoReunioes': True
@@ -364,7 +499,9 @@ def editar_reuniao(request, id_reuniao):
 # Convocados às reuniões
 @login_required
 def novo_convocado(request, id_reuniao):
-    """Função para a cadastro de um convocado para uma reunião específica"""
+    """
+    Função para a cadastro de um convocado para uma reunião específica
+    """
 
     if request.method == 'POST':
         form = ConvocadoForm(request.POST)
@@ -372,10 +509,17 @@ def novo_convocado(request, id_reuniao):
             reuniao = Reuniao.objects.get(id=id_reuniao)
             f = form.save(commit=False)
             f.reuniao = reuniao
-            f.save()
+            f.envioemail = False
+            f.presente = False
+            try:
+                f.save()
+                messages.success(request, 'Convocado salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_convocados', id_reuniao)
     else:
         form = ConvocadoForm()
+
     return render(request, 'cadd/novo_convocado.html', {
                         'form': form,
                         'id_reuniao': id_reuniao,
@@ -384,14 +528,20 @@ def novo_convocado(request, id_reuniao):
 
 @login_required
 def lista_convocados(request, id_reuniao):
-    """Função para a listagem dos convidados para uma reunião específica"""
+    """
+    Função para a listagem dos convidados para uma reunião específica
+    """
 
-    linhas = linhas_por_pagina()
+    usuario = Perfil.objects.get(user=request.user.id)
+    linhas = linhas_por_pagina(usuario.idusuario)
     convocados_list = Convocacao.objects.filter(reuniao=id_reuniao)
-    paginator = Paginator(convocados_list, linhas) # Paginação
+    # Paginação
+    paginator = Paginator(convocados_list, linhas)
     page = request.GET.get('page')
     convocados = paginator.get_page(page)
-    reuniao = Reuniao.objects.get(id__exact=id_reuniao) # objeto reunião anteriormente requisitado
+    # objeto reunião anteriormente requisitado
+    reuniao = Reuniao.objects.get(id__exact=id_reuniao)
+
     return render(request, 'cadd/lista_convocados.html', {
                         'convocados': convocados,
                         'id_reuniao': id_reuniao,
@@ -401,24 +551,38 @@ def lista_convocados(request, id_reuniao):
 
 @login_required
 def excluir_convocado(request, id_convocado, id_reuniao):
-    """Função para a exclusão de um convocado de uma reunião específica"""
+    """
+    Função para a exclusão de um convocado de uma reunião específica
+    """
 
     convocado = Convocacao.objects.get(id=id_convocado)
-    convocado.delete()
+    try:
+        convocado.delete()
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'Houve algum problema técnico e a exclusão não foi realizada!')
+
     return redirect('cadd:lista_convocados', id_reuniao)
 
 @login_required
 def editar_convocado(request, id_convocado, id_reuniao):
-    """Função para a edição de um convocado para uma reuniao específica"""
+    """
+    Função para a edição de um convocado para uma reuniao específica
+    """
 
     convocado = get_object_or_404(Convocacao, id=id_convocado)
     if request.method == 'POST':
         form = ConvocadoForm(request.POST, instance=convocado)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Convocado salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_convocados', id_reuniao)
     else:
         form = ConvocadoForm(instance=convocado)
+
     return render(request, 'cadd/novo_convocado.html', {
                         'form': form,
                         'id_reuniao': id_reuniao,
@@ -428,15 +592,22 @@ def editar_convocado(request, id_convocado, id_reuniao):
 # Documentos
 @login_required
 def novo_documento(request):
-    """Função para o cadastro de um novo documento"""
+    """
+    Função para o cadastro de um novo documento
+    """
 
     if request.method == 'POST':
         form = DocumentoForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+                messages.success(request, 'Documento salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
             return redirect('cadd:lista_documentos')
     else:
         form = DocumentoForm()
+
     return render(request, 'cadd/novo_documento.html', {
                         'form': form,
                         'ativoDocumentos': True
@@ -444,13 +615,18 @@ def novo_documento(request):
 
 @login_required
 def lista_documentos(request):
-    """Função para a listagem dos documentos cadastrados"""
+    """
+    Função para a listagem dos documentos cadastrados
+    """
 
-    linhas = linhas_por_pagina()
+    usuario = Perfil.objects.get(user=request.user.id)
+    # Paginação
+    linhas = linhas_por_pagina(usuario.idusuario)
     documentos_list = Documento.objects.all()
-    paginator = Paginator(documentos_list, linhas) # Paginação
+    paginator = Paginator(documentos_list, linhas)
     page = request.GET.get('page')
     documentos = paginator.get_page(page)
+
     return render(request, 'cadd/lista_documentos.html', {
                         'documentos': documentos,
                         'ativoDocumentos': True
@@ -458,28 +634,39 @@ def lista_documentos(request):
 
 @login_required
 def excluir_documento(request, id_documento):
-    """Função para a exclusão de um documento"""
+    """
+    Função para a exclusão de um documento
+    """
 
     documento = Documento.objects.get(id=id_documento)
-    excluir_arquivo(documento.indice)
-    documento.delete()
+    try:
+        documento.delete()
+        excluir_arquivo(documento.indice)
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'Houve algum problema técnico e a exclusão não foi realizada!')
+
     return redirect('cadd:lista_documentos')
 
-@login_required
-def visualizar_documento(request, id_documento):
-    """Função para a visualização de um documento cadastrado"""
-
-    doc = get_object_or_404(Documento, id=id_documento)
-    return render(request, 'cadd/visualiza_documento.html', {
-                        'doc': doc,
-                        'ativoDocumentos': True
-                    })
+#@login_required
+#def visualizar_documento(request, id_documento):
+#    """
+#    Função para a visualização de um documento cadastrado
+#    """
+#
+#    doc = get_object_or_404(Documento, id=id_documento)
+#    return render(request, 'cadd/visualiza_documento.html', {
+#                        'doc': doc,
+#                        'ativoDocumentos': True
+#                    })
 
 
 #Planos de estudo
 @login_required
 def lista_planos(request):
-    """Função para a listagem dos planos de estudo cadastrados"""
+    """
+    Função para a listagem dos planos de estudo cadastrados
+    """
 
     planoAtual = ""
     itensAtual = ""
@@ -509,8 +696,10 @@ def lista_planos(request):
 
 @login_required
 def novo_plano_previa(request):
-    """Função para a criação de um novo plano de estudos para o
-        próximo semestre"""
+    """
+    Função para a criação de um novo plano de estudos para o
+    próximo semestre
+    """
     """TODO: Faltam os pré-requisitos na ajuda à criação do plano"""
 
     prerequisitos = ''
@@ -547,7 +736,6 @@ def novo_plano_previa(request):
                 itemhorario = ItemHorario.objects.get(id=disc)
                 i = ItemPlanoAtual.objects.create(plano=plano, itemhorario=itemhorario)
 
-#        return redirect('cadd:novo_plano_futuro')
     return render(request, 'cadd/novo_plano_estudos_atual.html', {
                         'ativoPlanos': True,
                         'ativoPlanos2': True,
@@ -562,8 +750,10 @@ def novo_plano_previa(request):
 
 @login_required
 def novo_plano_futuro(request):
-    """Função para a criação de um novo plano de estudos para os
-        semestres subsequentes"""
+    """
+    Função para a criação de um novo plano de estudos para os
+    semestres subsequentes
+    """
     """TODO: Falta ver as disciplinas da prévia e seus equivalentes"""
 
     prerequisitos = ''
@@ -605,24 +795,29 @@ def novo_plano_futuro(request):
 
 @login_required
 def lista_planos_avaliar(request):
-    """Função para a listagem dos alunos e seus planos de estudo cadastrados"""
+    """
+    Função para a listagem dos alunos e seus planos de estudo cadastrados
+    """
 
-    matricula = request.user.username
-    siglacurso = nome_sigla_curso(request.user.first_name)[1]
+    usuario = Perfil.objects.get(user=request.user.id)
+#    matricula = request.user.username
+    siglacurso = nome_sigla_curso(usuario.idusuario)[1]
 
 #    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
 
     return render(request, 'cadd/lista_plano_estudos_avaliar.html', {
                         'ativoPlanos': True,
-                        'matricula': matricula,
+#                        'matricula': matricula,
                         'siglacurso': siglacurso,
 #                        'aluno': aluno,
                     })
 
 @login_required
 def avalia_plano(request, id_aluno):
-    """Função para a avaliação do plano de estudos dos alunos pelos membros
-        das comissões"""
+    """
+    Função para a avaliação do plano de estudos dos alunos pelos membros
+    das comissões
+    """
 
     # Variáveis
     versaocurso = ""

@@ -9,8 +9,10 @@
 from django.db import models
 
 class Alocacacaodisciplinasemdepartamento(models.Model):
-    """Classe importada da tabela alocacacaodisciplinasemdepartamento
-        do banco de dados SCA"""
+    """
+    Classe importada da tabela alocacacaodisciplinasemdepartamento
+    do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -29,10 +31,13 @@ class Alocacacaodisciplinasemdepartamento(models.Model):
 
 
 class Aluno(models.Model):
-    """Classe importada da tabela aluno do banco de dados SCA"""
-    """OBS: O campo endereco é o da salvaguarda do e-mail"""
-    """TODO: Faltam os campos situacao, faixa e formaEvasao
-        não contemplados no esquema"""
+    """
+    Classe importada da tabela aluno do banco de dados SCA
+
+    OBS: O campo endereco é o da salvaguarda do e-mail
+    TODO: Faltam os campos situacao, faixa e formaEvasao não contemplados
+          no esquema
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -86,8 +91,11 @@ class Aluno(models.Model):
 
 
 class Atividadecomplementar(models.Model):
-    """Classe importada da tabela atividadecomplementar do banco de dados SCA"""
-    """TODO: Ainda não se sabe se será utilizada"""
+    """
+    Classe importada da tabela atividadecomplementar do banco de dados SCA
+
+    TODO: Ainda não se sabe se será utilizada
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -116,7 +124,9 @@ class Atividadecomplementar(models.Model):
 
 
 class Blocoequivalencia(models.Model):
-    """Classe importada da tabela blocoequivalencia do banco de dados SCA"""
+    """
+    Classe importada da tabela blocoequivalencia do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -129,7 +139,9 @@ class Blocoequivalencia(models.Model):
 
 
 class Curso(models.Model):
-    """Classe importada da tabela curso do banco de dados SCA"""
+    """
+    Classe importada da tabela curso do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -171,7 +183,9 @@ class Curso(models.Model):
 
 
 class Cursodisciplina(models.Model):
-    """Classe importada da tabela curso_disciplina do banco de dados SCA"""
+    """
+    Classe importada da tabela curso_disciplina do banco de dados SCA
+    """
 
     curso = models.ForeignKey(
                     Curso,
@@ -191,7 +205,9 @@ class Cursodisciplina(models.Model):
 
 
 class Departamento(models.Model):
-    """Classe importada da tabela departamento do banco de dados SCA"""
+    """
+    Classe importada da tabela departamento do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -217,8 +233,9 @@ class Departamento(models.Model):
 
 
 class Departamentodisciplina(models.Model):
-    """Classe importada da tabela departamento_disciplina do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela departamento_disciplina do banco de dados SCA
+    """
 
     departamento = models.OneToOneField(
                     Departamento,
@@ -240,8 +257,9 @@ class Departamentodisciplina(models.Model):
 
 
 class Departamentoprofessor(models.Model):
-    """Classe importada da tabela departamento_professor do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela departamento_professor do banco de dados SCA
+    """
 
     departamento = models.OneToOneField(
                     Departamento,
@@ -263,8 +281,11 @@ class Departamentoprofessor(models.Model):
 
 
 class Disciplina(models.Model):
-    """Classe importada da tabela disciplina do banco de dados SCA"""
-    """TODO: Incluído o campo ehoptativa diferentemente do diagrama de classes"""
+    """
+    Classe importada da tabela disciplina do banco de dados SCA
+
+    TODO: Incluído o campo ehoptativa diferentemente do diagrama de classes
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -309,7 +330,8 @@ class Disciplina(models.Model):
                 )
 
     def __str__(self):
-        return self.nome + " (" + self.codigo + ")"  + " (versão do curso: " + self.versaocurso.numero + ")"
+        return self.nome + " (" + self.codigo + ")"  + " (versão do curso: " + \
+                self.versaocurso.numero + ")"
 
     class Meta:
         managed = False
@@ -318,7 +340,9 @@ class Disciplina(models.Model):
 
 
 class DisciplinaPrereqs(models.Model):
-    """Classe importada da tabela disciplina_prereqs do banco de dados SCA"""
+    """
+    Classe importada da tabela disciplina_prereqs do banco de dados SCA
+    """
 
     grade = models.OneToOneField(
                     Disciplina,
@@ -342,8 +366,9 @@ class DisciplinaPrereqs(models.Model):
 
 
 class Disciplinasequivalentes(models.Model):
-    """Classe importada da tabela disciplinas_equivalentes do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela disciplinas_equivalentes do banco de dados SCA
+    """
 
     bloco = models.OneToOneField(
                     Blocoequivalencia,
@@ -365,7 +390,9 @@ class Disciplinasequivalentes(models.Model):
 
 
 class Disciplinasoriginais(models.Model):
-    """Classe importada da tabela disciplinas_originais do banco de dados SCA"""
+    """
+    Classe importada da tabela disciplinas_originais do banco de dados SCA
+    """
 
     bloco = models.OneToOneField(
                     Blocoequivalencia,
@@ -387,7 +414,9 @@ class Disciplinasoriginais(models.Model):
 
 
 class Historicoescolar(models.Model):
-    """Classe importada da tabela historicoescolar do banco de dados SCA"""
+    """
+    Classe importada da tabela historicoescolar do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -407,7 +436,9 @@ class Historicoescolar(models.Model):
 
 
 class Inscricao(models.Model):
-    """Classe importada da tabela inscricao do banco de dados SCA"""
+    """
+    Classe importada da tabela inscricao do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -439,8 +470,10 @@ class Inscricao(models.Model):
 
 
 class Itemhistoricoescolar(models.Model):
-    """Classe importada da tabela itemhistoricoescolar do banco de dados SCA"""
-    """OBS: Possíveis valores para o campo situacao:
+    """
+    Classe importada da tabela itemhistoricoescolar do banco de dados SCA
+
+    OBS: Possíveis valores para o campo situacao:
         0 APROVADO
         1 REPROVADO_POR_MEDIA
         2 REPROVADO_POR_FALTAS
@@ -454,7 +487,8 @@ class Itemhistoricoescolar(models.Model):
         10 MATRICULA
         11 REPROVADO_SEM_NOTA
         12 APROVADO_SEM_NOTA
-        13 REAPROVADO_COM_DEPENDENCIA"""
+        13 REAPROVADO_COM_DEPENDENCIA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -492,7 +526,9 @@ class Itemhistoricoescolar(models.Model):
 
 
 class Notafinal(models.Model):
-    """Classe importada da tabela notafinal do banco de dados SCA"""
+    """
+    Classe importada da tabela notafinal do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -532,8 +568,11 @@ class Notafinal(models.Model):
 
 
 class Professor(models.Model):
-    """Classe importada da tabela professor do banco de dados SCA"""
-    """OBS: O campo endereço é o da salvaguarda do e-mail"""
+    """
+    Classe importada da tabela professor do banco de dados SCA
+
+    OBS: O campo endereço é o da salvaguarda do e-mail
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -574,7 +613,9 @@ class Professor(models.Model):
 
 
 class Professordisciplina(models.Model):
-    """Classe importada da tabela professor_disciplina do banco de dados SCA"""
+    """
+    Classe importada da tabela professor_disciplina do banco de dados SCA
+    """
 
     professor = models.OneToOneField(
                     Professor,
@@ -596,8 +637,10 @@ class Professordisciplina(models.Model):
 
 
 class Registroatividadecomplementar(models.Model):
-    """Classe importada da tabela registroatividadecomplementar do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela registroatividadecomplementar do banco de
+    dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -642,8 +685,10 @@ class Registroatividadecomplementar(models.Model):
 
 
 class Tabelaatividadescomplementares(models.Model):
-    """Classe importada da tabela tabelaatividadescomplementares do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela tabelaatividadescomplementares do banco de
+    dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -656,8 +701,10 @@ class Tabelaatividadescomplementares(models.Model):
 
 
 class TabelaatividadescomplementaresAtividadecomplementar(models.Model):
-    """Classe importada da tabela tabelaatividadescomplementares_atividadecomplementar
-        do banco de dados SCA"""
+    """
+    Classe importada da tabela tabelaatividadescomplementares_atividadecomplementar
+    do banco de dados SCA
+    """
 
     tabelaatividadescomplementares = models.ForeignKey(
                     Tabelaatividadescomplementares,
@@ -677,7 +724,9 @@ class TabelaatividadescomplementaresAtividadecomplementar(models.Model):
 
 
 class Tabelaequivalencias(models.Model):
-    """Classe importada da tabela tabelaequivalencias do banco de dados SCA"""
+    """
+    Classe importada da tabela tabelaequivalencias do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -697,8 +746,10 @@ class Tabelaequivalencias(models.Model):
 
 
 class TabelaequivalenciasBlocoequivalencia(models.Model):
-    """Classe importada da tabela tabelaequivalencias_blocoequivalencia do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela tabelaequivalencias_blocoequivalencia do
+    banco de dados SCA
+    """
 
     tabelaequivalencias = models.OneToOneField(
                     Tabelaequivalencias,
@@ -721,8 +772,9 @@ class TabelaequivalenciasBlocoequivalencia(models.Model):
 
 
 class Tipoatividadecomplementar(models.Model):
-    """Classe importada da tabela tipoatividadecomplementar do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela tipoatividadecomplementar do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -744,7 +796,9 @@ class Tipoatividadecomplementar(models.Model):
 
 
 class Turma(models.Model):
-    """Classe importada da tabela turma do banco de dados SCA"""
+    """
+    Classe importada da tabela turma do banco de dados SCA
+    """
 
     id = models.BigAutoField(
                     primary_key=True
@@ -785,7 +839,9 @@ class Turma(models.Model):
 
 
 class UserProfile(models.Model):
-    """Classe importada da tabela user_profile do banco de dados SCA"""
+    """
+    Classe importada da tabela user_profile do banco de dados SCA
+    """
 
     type = models.CharField(
                     db_column='TYPE',
@@ -803,7 +859,9 @@ class UserProfile(models.Model):
 
 
 class Useruserprofile(models.Model):
-    """Classe importada da tabela user_user_profile do banco de dados SCA"""
+    """
+    Classe importada da tabela user_user_profile do banco de dados SCA
+    """
 
     user = models.OneToOneField(
                     'Users',
@@ -828,8 +886,11 @@ class Useruserprofile(models.Model):
 
 
 class Users(models.Model):
-    """Classe importada da tabela users do banco de dados SCA"""
-    """OBS: O campo email foi o utilizado para envio de e-mails"""
+    """
+    Classe importada da tabela users do banco de dados SCA
+
+    OBS: O campo email foi o utilizado para envio de e-mails
+    """
 
     dob = models.DateTimeField(
                     blank=True,
@@ -862,13 +923,16 @@ class Users(models.Model):
 
 
 class Versaocurso(models.Model):
-    """Classe importada da tabela versaocurso do banco de dados SCA"""
-    """OBS: Possíveis valores para o campo situacao:
+    """
+    Classe importada da tabela versaocurso do banco de dados SCA
+
+    OBS: Possíveis valores para o campo situacao:
         0 INATIVO
         1 ATIVO
-        2 CORRENTE"""
-    """TODO: os campos cargahorariaminativcomp e cargahorariaminoptativas
-        estão serializados pelo java"""
+        2 CORRENTE
+    TODO: os campos cargahorariaminativcomp e cargahorariaminoptativas
+            estão serializados pelo java
+    """
 
     id = models.BigAutoField(primary_key=True)
 #    cargahorariaminativcomp = models.TextField(db_column='cargaHorariaMinAitvComp',
@@ -909,8 +973,10 @@ class Versaocurso(models.Model):
 
 
 class VersaocursoTabelaequivalencias(models.Model):
-    """Classe importada da tabela versaocurso_tabelaequivalencias do
-        banco de dados SCA"""
+    """
+    Classe importada da tabela versaocurso_tabelaequivalencias do banco de
+    dados SCA
+    """
 
     versaocurso = models.OneToOneField(
                     Versaocurso,

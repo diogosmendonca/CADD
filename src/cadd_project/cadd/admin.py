@@ -6,7 +6,9 @@ from sca.models import Aluno, Professor, Curso, Departamento, Disciplina, Turma
 # Register your models here.
 
 class ComissaoAdmin(admin.ModelAdmin):
-    """Classe para CRUD da tabela comissao"""
+    """
+    Classe para CRUD da tabela comissao
+    """
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "Comissao.curso":
@@ -15,24 +17,20 @@ class ComissaoAdmin(admin.ModelAdmin):
 
 
 class MembroAdmin(admin.ModelAdmin):
-    """Classe para CRUD da tabela membro"""
+    """
+    Classe para CRUD da tabela membro
+    """
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "Membro.professor":
             kwargs["queryset"] = Professor.objects.using('sca').all()
             return super().formfield_for_foreignkey(db_field, request, using='sca', **kwargs)
 
-    # Fields shown in lists
-#    list_display = ('ativo', 'presidente', 'portaria', 'professor')
-#    list_per_page = 20
-    # Modify the layout of the form, put the optional choices last
-#    fieldsets = (
-#        (None,      {'fields': ('ativo', 'presidente', 'portaria', 'professor')}),
-#    )
-
 
 class DocumentoAdmin(admin.ModelAdmin):
-    """Classe para CRUD da tabela documento"""
+    """
+    Classe para CRUD da tabela documento
+    """
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "Documento.aluno":
@@ -41,7 +39,9 @@ class DocumentoAdmin(admin.ModelAdmin):
 
 
 class HorarioAdmin(admin.ModelAdmin):
-    """Classe para CRUD da tabela horario"""
+    """
+    Classe para CRUD da tabela horario
+    """
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "Horario.curso":
@@ -50,7 +50,9 @@ class HorarioAdmin(admin.ModelAdmin):
 
 
 class ItemHorarioAdmin(admin.ModelAdmin):
-    """Classe para CRUD da tabela item_horario"""
+    """
+    Classe para CRUD da tabela item_horario
+    """
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "ItemHorario.departamento":
@@ -71,7 +73,9 @@ class ItemHorarioAdmin(admin.ModelAdmin):
 
 
 class PlanoAdmin(admin.ModelAdmin):
-    """Classe para CRUD da tabela plano"""
+    """
+    Classe para CRUD da tabela plano
+    """
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "Plano.aluno":

@@ -44,6 +44,6 @@ urlpatterns = [
 
     path('lista-documentos/', views.lista_documentos, name='lista_documentos'),
     path('novo-documento/', views.novo_documento, name='novo_documento'),
-    path('visualizar-documento/?<id_documento>', views.visualizar_documento, name='visualizar_documento'),
+#    path('visualizar-documento/?<id_documento>', views.visualizar_documento, name='visualizar_documento'),
     path('excluir-documento/?<id_documento>', views.excluir_documento, name='excluir_documento'),
 ]

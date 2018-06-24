@@ -1,5 +1,3 @@
-from django.views.generic.base import ContextMixin
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, \
                     update_session_auth_hash
@@ -18,7 +16,9 @@ from cadd.utils import tipo_usuario, vida_academica, nome_sigla_curso, \
 # Create your views here.
 
 def usuario_registrar(request):
-    """Função para o formulário de criação de usuários para o sistema"""
+    """
+    Função para o formulário de criação de usuários para o sistema
+    """
 
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
@@ -54,13 +54,18 @@ def usuario_registrar(request):
                 messages.error(request, 'Matrícula já registrada!')
             if (request.POST.get('password') != request.POST.get('new_password1')):
                 messages.error(request, 'Senhas diferentes!')
+            if len(request.POST.get('password')) < 8:
+                messages.error(request, 'Senha não está com o comprimento mínimo de 8 caracteres!')
+
     else:
         form = UsuarioForm()
 
     return render(request, 'accounts/registro.html', {'form': form})
 
 def usuario_login(request):
-    """Função para o formulário de entrada no sistema"""
+    """
+    Função para o formulário de entrada no sistema
+    """
 
     if request.user.is_authenticated:
         return redirect('home')
@@ -85,14 +90,18 @@ def usuario_login(request):
 
 @login_required
 def usuario_logout(request):
-    """Função para a saída do sistema"""
+    """
+    Função para a saída do sistema
+    """
 
     logout(request)
     return redirect('accounts:usuario_login')
 
 @login_required
 def usuario_perfil(request):
-    """Função para o formulário de troca de senha dos usuários do sistema"""
+    """
+    Função para o formulário de troca de senha dos usuários do sistema
+    """
 
     perfil = get_object_or_404(Perfil, user=request.user.id)
     if request.method == 'POST':
@@ -126,7 +135,9 @@ def usuario_perfil(request):
 # Tela inicial
 @login_required
 def home(request):
-    """Função de saída para a tela inicial do sistema"""
+    """
+    Função de saída para a tela inicial do sistema
+    """
 
     membro = ""
     comissoes = ""
@@ -139,29 +150,25 @@ def home(request):
     periodos = ""
     reprovadas = ""
 
-
-    context = ContextMixin.get_context_data(**kwargs)
-
-    teste = get_context_dict(RequestContext(request.context))
-    ctx = RequestContext(context['request'], args)
-    contexto = RequestContext(context['tipo'])
-    if 'Prof' in tipo:
-        membro = Membro.objects.filter(professor=request.idusuario).values_list('comissao')
+    usuario = Perfil.objects.get(user=request.user.id)
+    tipousuario = tipo_usuario(usuario.matricula,0)
+    if 'Prof' in tipousuario:
+        membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao')
         comissoes = Comissao.objects.filter(id__in=membro)
         if not membro:
             messages.error(request, 'Professor(a), o Sr(a) não está cadastrado(a) em nenhuma comissão de apoio!')
 
-    if 'Aluno' in request.tipo:
-        convocacao = Convocacao.objects.filter(aluno=request.idusuario).values_list('reuniao')
+    if 'Aluno' in tipousuario:
+        convocacao = Convocacao.objects.filter(aluno=usuario.idusuario).values_list('reuniao')
         reunioes = Reuniao.objects.filter(id__in=convocacao)
 
         # processamento da vida acadêmica do aluno logado
-        vidaacademica = vida_academica(request.idusuario)
+        vidaacademica = vida_academica(usuario.idusuario)
         reprovadas = vidaacademica[3]
         # Verificação do nome do curso, versão, faixa de criticidade e periodos
 #        matricula = request.user.username
-        nomecurso = nome_sigla_curso(request.idusuario)[0]
-        versaocurso = versao_curso(request.idusuario)
+        nomecurso = nome_sigla_curso(usuario.idusuario)[0]
+        versaocurso = versao_curso(usuario.idusuario)
         criticidade = vidaacademica[4]
         periodos = vidaacademica[6]
         # Convocação para alguma reunião

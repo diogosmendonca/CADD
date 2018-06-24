@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from .models import Parametros
+from .models import Parametros, Perfil
 from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
                     Itemhistoricoescolar, Disciplinasoriginais, \
                     Blocoequivalencia, Disciplinasequivalentes, Versaocurso
@@ -9,7 +9,9 @@ from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
 # Funções úteis
 # Função para se saber o tipo do usuário logado
 def tipo_usuario(matricula, registro):
-    """Função que retorna o tipo de usuário por meio do SCA e usuário logado"""
+    """
+    Função que retorna o tipo de usuário por meio da ROLE do SCA e usuário logado
+    """
 
     # Pesquisa na tabela de usuários do SCA o usuário a ser registrado
     usuario = Users.objects.using('sca').get(login__iexact=matricula)
@@ -33,113 +35,133 @@ def tipo_usuario(matricula, registro):
 
 # Funções para valores de parâmetros
 def reprovacoes_faixa_laranja_cursos_8_periodos():
-    """Função que retorna a quantidade de reprovações em uma mesma disciplina
-        de um aluno em um curso de 8 períodos ou mais para que esteja na
-        faixa de criticidade laranja"""
+    """
+    Função que retorna a quantidade de reprovações em uma mesma disciplina
+    de um aluno em um curso de 8 períodos ou mais para que esteja na
+    faixa de criticidade laranja
+    """
 
     reprovacoes = 2
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        reprovacoes = Parametros.objects.get(pk=1).reprovacurso8periodoslaranja
+        reprovacoes = registros.reprovacurso8periodoslaranja
 
     return reprovacoes
 
 def reprovacoes_faixa_vermelha_cursos_8_periodos():
-    """Função que retorna a quantidade de reprovações em uma mesma disciplina
-        de um aluno em um curso de 8 períodos ou mais para que esteja na
-        faixa de criticidade vermelha"""
+    """
+    Função que retorna a quantidade de reprovações em uma mesma disciplina
+    de um aluno em um curso de 8 períodos ou mais para que esteja na
+    faixa de criticidade vermelha
+    """
 
     reprovacoes = 3
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        reprovacoes = Parametros.objects.get(pk=1).reprovacurso8periodosvermelha
+        reprovacoes = registros.reprovacurso8periodosvermelha
 
     return reprovacoes
 
 def reprovacoes_faixa_laranja_demais_cursos():
-    """Função que retorna a quantidade de reprovações em uma mesma disciplina
-        de um aluno em um curso de menos de 8 períodos para que esteja na
-        faixa de criticidade laranja"""
+    """
+    Função que retorna a quantidade de reprovações em uma mesma disciplina
+    de um aluno em um curso de menos de 8 períodos para que esteja na
+    faixa de criticidade laranja
+    """
 
     reprovacoes = 1
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        reprovacoes = Parametros.objects.get(pk=1).reprovademaiscursoslaranja
+        reprovacoes = registros.reprovademaiscursoslaranja
 
     return reprovacoes
 
 def reprovacoes_faixa_vermelha_demais_cursos():
-    """Função que retorna a quantidade de reprovações em uma mesma disciplina
-        de um aluno em um curso de menos de 8 períodos para que esteja na
-        faixa de criticidade vermelha"""
+    """
+    Função que retorna a quantidade de reprovações em uma mesma disciplina
+    de um aluno em um curso de menos de 8 períodos para que esteja na
+    faixa de criticidade vermelha
+    """
 
     reprovacoes = 2
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        reprovacoes = Parametros.objects.get(pk=1).reprovademaiscursosvermelha
+        reprovacoes = registros.reprovademaiscursosvermelha
 
     return reprovacoes
 
 def formula_inicial_faixa_laranja():
-    """Função que retorna a fórmula do valor inicial para cálculo das
-        integralizações dos cursos para que esteja na faixa de
-        criticidade laranja"""
+    """
+    Função que retorna a fórmula do valor inicial para cálculo das
+    integralizações dos cursos para que esteja na faixa de
+    criticidade laranja
+    """
 
     formula = '2 * N'
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        formula = Parametros.objects.get(pk=1).qtdperiodosiniciallaranja
+        formula = registros.qtdperiodosiniciallaranja
 
     return formula
 
 def formula_final_faixa_laranja():
-    """Função que retorna a fórmula do valor final para cálculo das
-        integralizações dos cursos para que esteja na faixa de
-        criticidade laranja"""
+    """
+    Função que retorna a fórmula do valor final para cálculo das
+    integralizações dos cursos para que esteja na faixa de
+    criticidade laranja
+    """
 
     formula = '2 * N'
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        formula = Parametros.objects.get(pk=1).qtdperiodosfinallaranja
+        formula = registros.qtdperiodosfinallaranja
 
     return formula
 
 def formula_faixa_vermelha():
-    """Função que retorna a fórmula para cálculo das integralizações dos
-        cursos para que esteja na faixa de criticidade vermelha"""
+    """
+    Função que retorna a fórmula para cálculo das integralizações dos
+    cursos para que esteja na faixa de criticidade vermelha
+    """
 
     formula = '4 * N - 3'
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        formula = Parametros.objects.get(pk=1).qtdperiodosvermelha
+        formula = registros.qtdperiodosvermelha
 
     return formula
 
 def max_creditos_preta():
-    """Função que retorna a quantidade máxima de créditos por semana para um
-        aluno que esteja na faixa de criticidade preta"""
+    """
+    Função que retorna a quantidade máxima de créditos por semana para um
+    aluno que esteja na faixa de criticidade preta
+    """
 
     creditos = 20
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        linhas = Parametros.objects.get(pk=1).maxcreditosporperiodopreta
+        creditos = registros.maxcreditosporperiodopreta
 
     return creditos
 
 def max_creditos():
-    """Função que retorna a quantidade máxima de créditos por semana para
-        qualquer aluno"""
+    """
+    Função que retorna a quantidade máxima de créditos por semana para
+    qualquer aluno
+    """
 
     creditos = 28
-    registros = Parametros.objects.filter(id=1).count()
+    registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        linhas = Parametros.objects.get(pk=1).maxcreditosporperiodo
+        creditos = registros.maxcreditosporperiodo
 
     return creditos
 
 def linhas_por_pagina(id_usuario):
-    """Função que retorna a quantidade de linhas por página cadastrada na
-        tabela perfil do usuário"""
+    """
+    Função que retorna a quantidade de linhas por página cadastrada na
+    tabela perfil do usuário
+    """
 
     linhas = 5
     registros = Perfil.objects.get(idusuario=id_usuario)
@@ -150,7 +172,9 @@ def linhas_por_pagina(id_usuario):
 
 # Funções gerais
 def periodo_atual():
-    """Função que retorna o ano e período atual"""
+    """
+    Função que retorna o ano e período atual
+    """
 
     agora = datetime.now()
     ano = agora.year
@@ -164,8 +188,10 @@ def periodo_atual():
     return retorno
 
 def proximo_periodo(periodos):
-    """Função que retorna o ano e periodo conforme a quantidade de semestres
-        selecionados"""
+    """
+    Função que retorna o ano e periodo conforme a quantidade de semestres
+    selecionados
+    """
 
     temp = periodo_atual()
     ano = temp[0]
@@ -181,7 +207,9 @@ def proximo_periodo(periodos):
     return retorno
 
 def versao_curso(id_aluno):
-    """Função que retorna a versão do curso do aluno logado"""
+    """
+    Função que retorna a versão do curso do aluno logado
+    """
 
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     versaocurso = aluno.versaocurso.numero
@@ -189,7 +217,9 @@ def versao_curso(id_aluno):
     return versaocurso
 
 def nome_sigla_curso(id_aluno):
-    """Função que retorna o nome do curso do aluno logado"""
+    """
+    Função que retorna o nome do curso do aluno logado
+    """
 
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     t_curso = Curso.objects.using('sca').get(id=aluno.versaocurso.curso.id)
@@ -199,8 +229,10 @@ def nome_sigla_curso(id_aluno):
     return retorno
 
 def excluir_arquivo(documento):
-    """Função que exclui o documento cadastrado e enviado para a pasta de
-        mídias de documentos do projeto"""
+    """
+    Função que exclui o documento cadastrado e enviado para a pasta de
+    mídias de documentos do projeto
+    """
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -213,8 +245,10 @@ def excluir_arquivo(documento):
 
 # Função
 def vida_academica(id_aluno):
-    """Função que retorna a quantidade máxima de reprovações em uma disciplina
-        para cálculo da faixa de criticidade do aluno logado"""
+    """
+    Função que retorna a quantidade máxima de reprovações em uma disciplina
+    para cálculo da faixa de criticidade do aluno logado
+    """
     """TODO: Falta filtrar o item por ano e periodo nos itens de historico"""
 
     # Variáveis
