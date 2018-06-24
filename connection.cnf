@@ -1,7 +1,0 @@
-[client]
-database = scadb
-user = root
-password = root
-HOST = 172.20.10.2
-PORT = 3311
-default-character-set = utf8

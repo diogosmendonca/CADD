@@ -1,4 +1,5 @@
-from django.template import RequestContext
+from django.views.generic.base import ContextMixin
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, \
                     update_session_auth_hash
@@ -12,7 +13,7 @@ from sca.models import Users, Professor, Aluno
 from cadd.models import Membro, Comissao, Convocacao, Reuniao, Perfil
 from cadd.forms import PerfilForm
 from cadd.utils import tipo_usuario, vida_academica, nome_sigla_curso, \
-                    versao_curso, get_context_dict
+                    versao_curso
 
 # Create your views here.
 
@@ -138,7 +139,10 @@ def home(request):
     periodos = ""
     reprovadas = ""
 
-    teste = get_context_dict(RequestContext(request))
+
+    context = ContextMixin.get_context_data(**kwargs)
+
+    teste = get_context_dict(RequestContext(request.context))
     ctx = RequestContext(context['request'], args)
     contexto = RequestContext(context['tipo'])
     if 'Prof' in tipo:

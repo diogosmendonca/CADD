@@ -1,4 +1,3 @@
-from django.template import RequestContext
 from datetime import datetime
 import os
 
@@ -8,21 +7,6 @@ from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
                     Blocoequivalencia, Disciplinasequivalentes, Versaocurso
 
 # Funções úteis
-
-def get_context_dict(context):
-    """
-     Contexts in django version 1.9+ must be dictionaries. As xadmin has a legacy with older versions of django,
-    the function helps the transition by converting the [RequestContext] object to the dictionary when necessary.
-    :param context: RequestContext
-    :return: dict
-    """
-    if isinstance(context, RequestContext):
-        ctx = {}
-        map(ctx.update, context.dicts)
-    else:
-        ctx = context
-    return ctx
-
 # Função para se saber o tipo do usuário logado
 def tipo_usuario(matricula, registro):
     """Função que retorna o tipo de usuário por meio do SCA e usuário logado"""
