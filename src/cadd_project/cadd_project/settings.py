@@ -147,10 +147,6 @@ DATE_FORMAT = 'd/m/Y'
 
 FILE_CHARSET="utf-8"
 
-#DATE_INPUT_FORMATS = (
-#    '%d/%m/%Y',
-#)
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

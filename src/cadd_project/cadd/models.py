@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
@@ -356,7 +357,7 @@ class ItemHorario(models.Model):
     # Relacionamento com a tabela Horario
     horario = models.ForeignKey(
                     'Horario',
-                    models.DO_NOTHING,
+                    models.PROTECT,
                     blank=False,
                     null=False
                 )
@@ -543,21 +544,6 @@ class ItemPlanoFuturo(models.Model):
 class Parametros(models.Model):
     """Classe de uso do sistema para a guarda dos parâmetros do sistema"""
 
-    # Constante para a lista da quantidade de itens a serem visualizados
-    ITENSPAGINA_CHOICES = (
-        (None, 'Selecione o total de itens por página'),
-        (5, 5),
-        (10, 10),
-        (15, 15),
-        (20, 20),
-        (25, 25),
-        (30, 30),
-        (35, 35),
-        (40, 40),
-        (45, 45),
-        (50, 50),
-    )
-
     # Armazena a quantidade máxima de reprovações em uma mesma disciplina
     # que um aluno na faixa de criticidade laranja pode ter oriundo de um
     # curso de 8 períodos ou mais
@@ -630,9 +616,59 @@ class Parametros(models.Model):
                     null=False,
                     default=28
                 )
+
+    class Meta:
+        managed = True
+        db_table = 'parametros'
+        app_label = 'cadd'
+
+
+class Perfil(models.Model):
+    """Classe para estender a Model User padrão do Django adicionando alguns
+        campos necessários e criando um perfil para o usuário logado"""
+    """TODO: Faltam os campos situacao, faixa e formaEvasao
+        não contemplados no esquema"""
+
+    # Constante para a lista da quantidade de itens de uma lista a serem
+    # visualizados por página
+    ITENSPAGINA_CHOICES = (
+        (None, 'Selecione o total de itens por página'),
+        (5, 5),
+        (10, 10),
+        (15, 15),
+        (20, 20),
+        (25, 25),
+        (30, 30),
+        (35, 35),
+        (40, 40),
+        (45, 45),
+        (50, 50),
+    )
+
+    # Armazena a id do usuário correspondente
+    # Relacionamento com a tabela auth_user do Django
+    user = models.OneToOneField(
+                    User,
+                    models.PROTECT,
+                    related_name='profile'
+                )
+    # Armazena a matrícula seja do aluno ou professor
+    matricula = models.CharField(
+                    max_length=255,
+                    blank=False,
+                    null=False
+                )
+    # Armazena o identificador do usuário logado no banco de dados SCA, podendo
+    # ser um aluno (campo id da tabela Aluno) ou um professor (campo id da
+    # tabela Professor)
+    idusuario = models.BigIntegerField(
+                    blank=False,
+                    null=False,
+                )
+
     # Armazena a quantidade de itens por página um objeto pode ser listado
     # (paginação)
-    defaultitensporpagina = models.PositiveSmallIntegerField(
+    itenspagina = models.PositiveSmallIntegerField(
                     choices=ITENSPAGINA_CHOICES,
                     blank=False,
                     null=False,
@@ -641,5 +677,5 @@ class Parametros(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'parametros'
+        db_table = 'perfil'
         app_label = 'cadd'

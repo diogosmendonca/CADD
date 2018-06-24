@@ -76,7 +76,7 @@ def nova_comissao(request):
 def lista_comissoes(request):
     """Função para a listagem das comissões de apoio cadastradas"""
 
-    linhas = linhas_por_pagina()
+    linhas = linhas_por_pagina(request.idusuario)
     comissoes_list = Comissao.objects.all()
     paginator = Paginator(comissoes_list, linhas) # Paginação
     page = request.GET.get('page')

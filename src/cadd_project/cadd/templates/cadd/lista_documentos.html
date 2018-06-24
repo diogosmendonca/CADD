@@ -33,7 +33,7 @@
                 <td>{{ d.descricao }}</td>
                 <td colspan="2">
                   <a href="/media/{{ d.indice }}" target="interno" class="btn btn-info botao-padrao" onclick="mostrarIframe()">Visualizar</a>
-                  <a href="{% url 'cadd:excluir_documento' d.id %}" class="btn botao-padrao botao-vermelho" onclick="if(!confirm('Você tem certeza que deseja excluir o documento?')){return false;}">Excluir</a>
+                  <button type="button" class="btn botao-padrao botao-vermelho" data-toggle="modal" data-target="#excluirModal" onclick="preencherModal('{% url 'cadd:excluir_documento' d.id %}')">Excluir</button>
                 </td>
               </tr>
               {% endfor %}
@@ -80,4 +80,26 @@
     <a href="{% url 'cadd:novo_documento' %}" class="btn botao-padrao botao-azul" role="button">Adicionar documento</a>
   </div>
   {% endif %}
+
+  <!-- Modal -->
+  <div class="modal fade" id="excluirModal" tabindex="-1" role="dialog" aria-labelledby="excluir" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="excluir">Confirmar Exclusão</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Você tem certeza que deseja excluir este documento?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn botao-padrao botao-azul" data-dismiss="modal">Cancelar</button>
+          <a id="link-modal" class="btn botao-padrao botao-vermelho">Sim</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Final Modal -->
 {% endblock body %}

@@ -5,7 +5,7 @@ from django.forms import TextInput, Textarea, Select, CheckboxInput, \
                     HiddenInput, NumberInput, TimeInput, DateInput
 
 from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
-                    ItemPlanoAtual, Reuniao, Convocacao, Documento
+                    ItemPlanoAtual, Reuniao, Convocacao, Documento, Perfil
 from sca.models import Curso, Professor, Turma, Disciplina, Aluno
 
 class ParametrosForm(forms.ModelForm):
@@ -73,10 +73,20 @@ class ParametrosForm(forms.ModelForm):
                     'min': 1, 'max': 50, 'step': 1,
                     'empty_label': 'Selecione o máximo de créditos por período'
                 }),
-            'defaultitensporpagina': Select(attrs={
+        }
+
+
+class PerfilForm(forms.ModelForm):
+    """Classe de uso do sistema para o formulário meu perfil do usuário logado"""
+
+    class Meta:
+        model = Perfil
+        exclude = (id, 'user', 'matricula', 'idusuario', )
+        widgets = {
+            'itenspagina': Select(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
-                    'empty_label': 'Selecione o total de itens por página'
+                    'empty_label': 'Selecione o máximo de itens por página'
                 }),
         }
 
@@ -237,7 +247,7 @@ class ReuniaoForm(forms.ModelForm):
 
     class Meta:
         model = Reuniao
-        exclude = (id, 'situacao')
+        exclude = (id, 'situacao', 'anotacao')
         widgets = {
             'data': DateInput(attrs={
                     'class': 'form-control',
@@ -257,11 +267,11 @@ class ReuniaoForm(forms.ModelForm):
                     'data-rules': 'required',
                     'empty_label': 'Selecione o tipo'
                 }),
-            'anotacao': Textarea(attrs={
-                    'class': 'form-control',
-                    'data-rules': 'required',
-                    'placeholder': 'Informe a anotação'
-                }),
+#            'anotacao': Textarea(attrs={
+#                    'class': 'form-control',
+#                    'data-rules': 'required',
+#                    'placeholder': 'Informe a anotação'
+#                }),
             'comissao': Select(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
