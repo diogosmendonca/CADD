@@ -160,4 +160,15 @@ doc/
 
 # Box storage for spec
 test/vagrant-spec/boxes/*.box
+
+####
 *.log
+action_provision
+action_set_name
+creator_uid
+id
+index_uuid
+private_key
+synced_folders
+vagrant_cwd
+Vagrant*
