@@ -16,22 +16,6 @@ urlpatterns = [
     path('editar-membro/?<id_membro>&<id_comissao>', views.editar_membro, name='editar_membro'),
     path('excluir-membro/?<id_membro>&<id_comissao>', views.excluir_membro, name='excluir_membro'),
 
-    path('lista-horarios/', views.lista_horarios, name='lista_horarios'),
-    path('novo-horario/', views.novo_horario, name='novo_horario'),
-    path('editar-horario/?<id_horario>', views.editar_horario, name='editar_horario'),
-    path('excluir-horario/?<id_horario>', views.excluir_horario, name='excluir_horario'),
-
-    path('lista-itenshorario/?<id_horario>', views.lista_itenshorario, name='lista_itenshorario'),
-    path('novo-itemhorario/?<id_horario>', views.novo_itemhorario, name='novo_itemhorario'),
-    path('editar-itemhorario/?<id_itemhorario>&<id_horario>', views.editar_itemhorario, name='editar_itemhorario'),
-    path('excluir-itemhorario/?<id_itemhorario>&<id_horario>', views.excluir_itemhorario, name='excluir_itemhorario'),
-
-    path('lista-planos/', views.lista_planos, name='lista_planos'),
-    path('novo-plano-previa/', views.novo_plano_previa, name='novo_plano_previa'),
-    path('novo-plano-futuro/', views.novo_plano_futuro, name='novo_plano_futuro'),
-    path('lista_planos_avaliar/', views.lista_planos_avaliar, name='lista_planos_avaliar'),
-    path('avalia-plano/?<id_aluno>', views.avalia_plano, name='avalia_plano'),
-
     path('lista-reunioes/', views.lista_reunioes, name='lista_reunioes'),
     path('nova-reuniao/', views.nova_reuniao, name='nova_reuniao'),
     path('editar-reuniao/?<id_reuniao>', views.editar_reuniao, name='editar_reuniao'),
@@ -42,8 +26,23 @@ urlpatterns = [
     path('editar-convocado/?<id_convocado>&<id_reuniao>', views.editar_convocado, name='editar_convocado'),
     path('excluir-convocado/?<id_convocado>&<id_reuniao>', views.excluir_convocado, name='excluir_convocado'),
 
+    path('lista-horarios/', views.lista_horarios, name='lista_horarios'),
+    path('novo-horario/', views.novo_horario, name='novo_horario'),
+    path('editar-horario/?<id_horario>', views.editar_horario, name='editar_horario'),
+    path('excluir-horario/?<id_horario>', views.excluir_horario, name='excluir_horario'),
+
+    path('lista-itenshorario/?<id_horario>', views.lista_itenshorario, name='lista_itenshorario'),
+    path('novo-itemhorario/?<id_horario>', views.novo_itemhorario, name='novo_itemhorario'),
+    path('editar-itemhorario/?<id_itemhorario>&<id_horario>', views.editar_itemhorario, name='editar_itemhorario'),
+    path('excluir-itemhorario/?<id_itemhorario>&<id_horario>', views.excluir_itemhorario, name='excluir_itemhorario'),
+
     path('lista-documentos/', views.lista_documentos, name='lista_documentos'),
     path('novo-documento/', views.novo_documento, name='novo_documento'),
-#    path('visualizar-documento/?<id_documento>', views.visualizar_documento, name='visualizar_documento'),
     path('excluir-documento/?<id_documento>', views.excluir_documento, name='excluir_documento'),
+
+    path('lista-planos/', views.lista_planos, name='lista_planos'),
+    path('novo-plano-previa/', views.novo_plano_previa, name='novo_plano_previa'),
+    path('novo-plano-futuro/', views.novo_plano_futuro, name='novo_plano_futuro'),
+    path('lista_planos_avaliar/', views.lista_planos_avaliar, name='lista_planos_avaliar'),
+    path('avalia-plano/?<id_aluno>', views.avalia_plano, name='avalia_plano'),
 ]

@@ -20,7 +20,6 @@
         <thead>
           <tr>
             <th colspan="2">Curso</th>
-            <th>Semestre</th>
             <th colspan="2" style="textalign:center">Ações</th>
           </tr>
         </thead>
@@ -28,7 +27,6 @@
           {% for h in horarios %}
           <tr>
             <td colspan="2">{{ h.curso }}</td>
-            <td>{{ h.ano }}.{{ h.periodo }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_horario' h.id %}" class="btn btn-info botao-padrao">Editar</a>
               <button type="button" class="btn botao-padrao botao-vermelho" data-toggle="modal" data-target="#excluirModal" onclick="preencherModal('{% url 'cadd:excluir_horario' h.id %}')">Excluir</button>
@@ -72,7 +70,7 @@
     <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
     <a href="{% url 'cadd:novo_horario' %}" class="btn botao-padrao botao-azul" role="button">Adicionar horario</a>
   </div>
-  
+
   <!-- Modal -->
   <div class="modal fade" id="excluirModal" tabindex="-1" role="dialog" aria-labelledby="excluir" aria-hidden="true">
     <div class="modal-dialog" role="document">

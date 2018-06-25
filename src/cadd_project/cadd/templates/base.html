@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -23,6 +23,14 @@
       }
       function preencherModal(link){
         document.getElementById('link-modal').href = link;
+      }
+      function exibirpreencherIframe(link){
+        document.getElementById("interno").src = link;
+        document.getElementById("iframe-documento").style.display = "block";
+      }
+      function ocultarCard(id){
+        document.getElementById(id).style.display = "none";
+        document.getElementById("iframe-documento").style.display = "none";
       }
     </script>
 

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -18,35 +18,27 @@
     <link href="{% static 'css/sacadd.css' %}" rel="stylesheet">
 
   </head>
-  <body>
+  <body style="border-left: 1px solid #ccc;">
     <!-- Content section -->
     <section class="content">
       <div class="main-content">
         <div class="row alinhamento-central">
-          <span class="titulo-pagina"><< Aluno {{ aluno }}>></span>
+          <span class="titulo-pagina">Aluno {{ aluno }}</span>
         </div>
         <div class="row">
-          <div class="col-3">
-            <div class="faixa-criticidade-pagina-inicial col-6" style="background-color: {% if criticidade == 'AZUL' %}blue{% elif criticidade == 'LARANJA' %}orange{% elif criticidade == 'VERMELHA' %}red{% else %}gray{% endif %}">
-              <div>
-                <span class="criticidade-titulo">Faixa de Criticidade: {{ criticidade }}</span><hr>
-                <span class="criticidade-status">Curso: </span>
-                <span>{{ nomecurso }}</span><br />
-                <span class="criticidade-status">Versão: </span>
-                <span>{{ versaocurso }}</span><br />
-                <span class="criticidade-status">Matrícula: </span>
-                <span>{{ matricula }}</span><br />
-                <span class="criticidade-status">Período atual: </span>
-                <span>{{ ano }}.{{ periodo }}</span><br />
-                <span class="criticidade-status">Períodos cursados: </span>
-                <span>{{ periodos }}</span><br />
-                {% if reprovadas %}
-                <span class="criticidade-status">Reprovações:</span><br />
-                {% for r in reprovadas %}
-                &nbsp;&nbsp;<span>{{ r }}</span><br />
-                {% endfor %}
-                {% endif %}
-              </div>
+          <div class="faixa-criticidade-iframe-avaliacao col-6" style="background-color: {% if criticidade == 'AZUL' %}blue{% elif criticidade == 'LARANJA' %}orange{% elif criticidade == 'VERMELHA' %}red{% else %}gray{% endif %}">
+            <div>
+              <span class="criticidade-titulo">FAIXA {{ criticidade }}</span><hr>
+              <span class="criticidade-status">Período atual: </span>
+              <span>{{ periodoatual }}</span><br />
+              <span class="criticidade-status">Períodos cursados: </span>
+              <span>{{ periodos }}</span><br />
+              {% if reprovadas %}
+              <span class="criticidade-status">Reprovações:</span><br />
+              {% for r in reprovadas %}
+              &nbsp;&nbsp;<span class="disciplina-previa-nome">{{ r }}</span><br />
+              {% endfor %}
+              {% endif %}
             </div>
           </div>
           <div class="col-5">
@@ -61,7 +53,7 @@
                 <div class="card">
                   <div class="card-header" id="headingOne">
                       <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      <span class="card-header-text"> {{ planoAtual.ano }}.{{ planoAtual.periodo }} </span>
+                        <span class="card-header-text"> {{ planoAtual.ano }}.{{ planoAtual.periodo }} </span>
                       </button>
                   </div>
                   <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
@@ -112,30 +104,19 @@
             </div>
             {% endif %}
           </div>
-          <div class="col-4">
-            <div class="row">
-              <div id="accordion" class="col-11p quadro-periodos quadro">
-                <div class="card">
-                  <div class="card-header" id="headingOne">
-                        <span class="card-header-text"> Avaliação da Comissão </span>
-                  </div>
-                  <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-                    <div class="row alinhamento-central">
-                      <form class="" method="post">
-                      {% csrf_token %}
-                      <div class="form-group">
-                        <textarea class="form-control" rows="10" id="avaliacao" name="avaliacao">{{ avaliacao }}</textarea>
-                      </div>
-                    </div>
-                    <div class="row alinhamento-central">
-                      <button type="submit" class="btn botao-padrao botao-verde">Salvar</button>
-                    </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+        </div>
+        <div class="row">
+          <div class="col-6 bloco-avaliacao" >
+            <span class="titulo-pagina titulo-avaliacao"> Avaliação da Comissão</span>
+            <hr>
+            <form class="" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <textarea class="form-control" rows="5" id="avaliacao" name="avaliacao">{{ avaliacao }}</textarea>
             </div>
+            <button type="submit" class="btn botao-padrao botao-verde" onclick="window.top.ocultarCard({{ id_aluno }});">Salvar</button>
           </div>
+          </form>
         </div>
       </div>
     </section>

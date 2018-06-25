@@ -5,6 +5,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+import re
 
 from .forms import UsuarioForm
 from sca.models import Users, Professor, Aluno
@@ -30,33 +31,39 @@ def usuario_registrar(request):
                         )
                 if 'Prof' in tipo_usuario(request.POST.get('username'), 0):
                     usuario = Professor.objects.using('sca').get(
-                            matricula__iexact=usuario_login.matricula
+                            matricula__iexact=request.POST.get('username')
                         )
                 else:
                     usuario = Aluno.objects.using('sca').get(
-                            matricula__iexact=usuario_login.matricula
+                            matricula__iexact=request.POST.get('username')
                         )
                 u = form.save(commit=False)
                 u.set_password(u.password)
                 u.username = usuario_login.nome
                 u.email = usuario_login.email
                 u.save()
-                perfil = Perfil.objects.all()
-                perfil.create(user=u.id, matricula=usuario_login.matricula,
-                        idusuario=usuario.id)
-                messages.success(request, 'Usuário registrado com sucesso! ' +
+                perfil = Perfil.objects.create(user=u, \
+                        matricula=usuario.matricula, \
+                        idusuario=usuario.id, itenspagina=5)
+
+                messages.success(request, 'Usuário registrado com sucesso! ' + \
                         'Utilize o formulário abaixo para fazer login.')
                 return redirect('accounts:usuario_login')
             except:
                 messages.error(request, 'Usuário não cadastrado no sistema SCA!')
         else:
             if User.objects.filter(username=request.POST.get('username')):
-                messages.error(request, 'Matrícula já registrada!')
+                messages.error(request, 'Esta matrícula já está registrada!')
             if (request.POST.get('password') != request.POST.get('new_password1')):
-                messages.error(request, 'Senhas diferentes!')
+                messages.error(request, 'As senhas digitadas são diferentes!')
             if len(request.POST.get('password')) < 8:
-                messages.error(request, 'Senha não está com o comprimento mínimo de 8 caracteres!')
-
+                messages.error(request, 'A senha não está com o comprimento mínimo de 8 caracteres!')
+            if len(re.findall(r"[A-Z]", request.POST.get('password'))) < 1:
+                messages.error(request, 'A senha deve possuir no mínimo 1 letra maiúscula!')
+            if len(re.findall(r"[0-9]", request.POST.get('password'))) < 1:
+                messages.error(request, 'A senha deve possuir no mínimo 1 número!')
+#            if len(re.findall(r"[~`!@#$%^&*()_+=-{};:'><]", request.POST.get('password'))) < 1:
+#                messages.error(request, 'Senha tem que ter no mínimo 1 caracter especial')
     else:
         form = UsuarioForm()
 

@@ -1,26 +1,28 @@
 
 class DatabaseRouter(object):
-    """Determina como rotear chamadas de banco de dados para os modelos"""
+    """
+    Determina como rotear chamadas de banco de dados para os modelos
+    """
 
     def db_for_read(self, model, **hints):
 
-        """Todas as operações de leitura do app accounts são enviadas ao modelo `default`"""
+        # Todas as operações de leitura do app accounts são enviadas ao modelo default
         if model._meta.app_label == 'accounts':
             return 'default'
-        """Todas as operações de leitura do app cadd são enviadas ao modelo `default`"""
+        # Todas as operações de leitura do app cadd são enviadas ao modelo default
         if model._meta.app_label == 'cadd':
             return 'default'
-        """Todas as operações de leitura do app sca são enviadas ao modelo `sca`"""
+        # Todas as operações de leitura do app sca são enviadas ao modelo sca
         if model._meta.app_label == 'sca':
             return 'sca'
         return None
 
     def db_for_write(self, model, **hints):
 
-        """Todas as operações de escrita do app accounts são enviadas ao modelo `default`"""
+        # Todas as operações de escrita do app accounts são enviadas ao modelo default
         if model._meta.app_label == 'accounts':
             return 'default'
-        """Todas as operações de escrita do app cadd são enviadas ao modelo `default`"""
+        # Todas as operações de escrita do app cadd são enviadas ao modelo default
         if model._meta.app_label == 'cadd':
             return 'default'
         return None

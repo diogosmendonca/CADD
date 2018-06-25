@@ -1105,3 +1105,41 @@ table tbody tr td:first-child
 {
 	display: none;
 }
+.faixa-criticidade-iframe-avaliacao
+{
+	margin: 0px 20px 0px 0px;
+	padding: 15px;
+	border-radius: 0px;
+	border: 1px solid #000;
+	width: 80%;
+}
+.bloco-avaliacao
+{
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin: 5px 0px;
+	padding: 10px;
+}
+.titulo-avaliacao
+{
+	font-size: 14pt;
+}
+
+/******************************/
+/********* TelaInicialMembro **/
+/******************************/
+
+.lista-comissoes-pagina-inicial
+{
+	border: 1px solid #ccc;
+	margin: 0px 10px 20px;
+	padding: 10px;
+	border-radius: 5px;
+}
+.comissoes-titulo
+{
+	font-family: Consolas;
+	font-weight: bold;
+	font-size: 14pt;
+	color: #006bb3;
+}

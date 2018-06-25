@@ -14,7 +14,7 @@ from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
                     Convocacao, Documento, Perfil
 from sca.models import Aluno, Disciplina, Itemhistoricoescolar, Versaocurso, \
                     Curso, Disciplinasoriginais, Blocoequivalencia, \
-                    Disciplinasequivalentes
+                    Disciplinasequivalentes, Curso
 
 # Funções gerais
 from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
@@ -23,8 +23,9 @@ from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
                     reprovacoes_faixa_vermelha_demais_cursos, \
                     formula_inicial_faixa_laranja, formula_final_faixa_laranja, \
                     formula_faixa_vermelha, max_creditos, max_creditos_preta, \
-                    linhas_por_pagina, nome_sigla_curso, versao_curso, vida_academica, \
-                    excluir_arquivo
+                    linhas_por_pagina, nome_sigla_curso, versao_curso, \
+                    vida_academica, excluir_arquivo, periodo_atual, \
+                    proximo_periodo
 
 # Create your views here.
 
@@ -48,7 +49,8 @@ def editar_parametros(request):
                 form.save()
                 messages.success(request, 'Parâmetro salvo com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('home')
     else:
         if registros != 0:
@@ -77,7 +79,8 @@ def nova_comissao(request):
                 form.save()
                 messages.success(request, 'Comissão salva com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_comissoes')
     else:
         form = ComissaoForm()
@@ -94,9 +97,10 @@ def lista_comissoes(request):
     """
 
     usuario = Perfil.objects.get(user=request.user.id)
+    # Paginação
     linhas = linhas_por_pagina(usuario.idusuario)
     comissoes_list = Comissao.objects.all()
-    paginator = Paginator(comissoes_list, linhas) # Paginação
+    paginator = Paginator(comissoes_list, linhas)
     page = request.GET.get('page')
     comissoes = paginator.get_page(page)
 
@@ -116,7 +120,8 @@ def excluir_comissao(request, id_comissao):
         comissao.delete()
         messages.success(request, 'A exclusão foi realizada!')
     except:
-        messages.error(request, 'A exclusão não foi realizada! Para isso, exclua primeiramente seus membros.')
+        messages.error(request, 'A exclusão não foi realizada! Para isso, ' + \
+                        'exclua primeiramente seus membros.')
 
     return redirect('cadd:lista_comissoes')
 
@@ -134,7 +139,8 @@ def editar_comissao(request, id_comissao):
                 form.save()
                 messages.success(request, 'Comissão salva com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_comissoes')
     else:
         form = ComissaoForm(instance=comissao)
@@ -163,7 +169,8 @@ def novo_membro(request, id_comissao):
                 form.save()
                 messages.success(request, 'Membro salvo com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_membros', id_comissao)
     else:
         form = MembroForm()
@@ -208,7 +215,8 @@ def excluir_membro(request, id_membro, id_comissao):
         membro.save()
         messages.success(request, 'Membro desativado com sucesso!')
     except:
-        messages.error(request, 'Houve algum problema técnico e a desativamento não foi realizado!')
+        messages.error(request, 'Houve algum problema técnico e o ' + \
+                'desativamento não foi realizado!')
 
     return redirect('cadd:lista_membros', id_comissao)
 
@@ -226,7 +234,8 @@ def editar_membro(request, id_membro, id_comissao):
                 form.save()
                 messages.success(request, 'Membro salvo com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_membros', id_comissao)
     else:
         form = MembroForm(instance=membro)
@@ -235,181 +244,6 @@ def editar_membro(request, id_membro, id_comissao):
                         'form': form,
                         'id_comissao': id_comissao,
                         'ativoComissoes': True
-                    })
-
-
-# Horários
-@login_required
-def novo_horario(request):
-    """
-    Função para a criação de uma nova previsão de horário
-    """
-
-    if request.method == 'POST':
-        form = HorarioForm(request.POST)
-        if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, 'Horário salvo com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
-            return redirect('cadd:lista_horarios')
-    else:
-        form = HorarioForm()
-
-    return render(request, 'cadd/novo_horario.html', {
-                        'form': form,
-                        'ativoHorarios': True
-                    })
-
-@login_required
-def lista_horarios(request):
-    """
-    Função para a listagem das previsões de horário
-    """
-
-    usuario = Perfil.objects.get(user=request.user.id)
-    linhas = linhas_por_pagina(usuario.idusuario)
-    membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao')
-    comissoes = Comissao.objects.filter(id__in=membro).values_list('curso')
-    horarios_list = Horario.objects.filter(curso__in=comissoes)
-    paginator = Paginator(horarios_list, linhas) # Paginação
-    page = request.GET.get('page')
-    horarios = paginator.get_page(page)
-
-    return render(request, 'cadd/lista_horarios.html', {
-                        'horarios': horarios,
-                        'ativoHorarios': True
-                    })
-
-@login_required
-def excluir_horario(request, id_horario):
-    """
-    Função para a exclusão de uma previsão de horário
-    """
-
-    horario = Horario.objects.get(id=id_horario)
-    try:
-        horario.delete()
-        messages.success(request, 'A exclusão foi realizada!')
-    except:
-        messages.error(request, 'A exclusão não foi realizada! Para isso, exclua primeiramente seus itens de horário.')
-
-    return redirect('cadd:lista_horarios')
-
-@login_required
-def editar_horario(request, id_horario):
-    """
-    Função para a edição de uma previsão de horário
-    """
-
-    horario = get_object_or_404(Horario, id=id_horario)
-    if request.method == 'POST':
-        form = HorarioForm(request.POST, instance=horario)
-        if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, 'Horário salvo com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
-            return redirect('cadd:lista_horarios')
-    else:
-        form = HorarioForm(instance=horario)
-
-    return render(request, 'cadd/novo_horario.html', {
-                        'form': form,
-                        'ativoHorarios': True
-                    })
-
-
-# Itens de Horário
-@login_required
-def novo_itemhorario(request, id_horario):
-    """
-    Função para a criação de uma novo item em uma previsão de horário
-    """
-
-    if request.method == 'POST':
-        form = ItemHorarioForm(request.POST)
-        if form.is_valid():
-            horario = Horario.objects.get(id=id_horario)
-            f = form.save(commit=False)
-            f.horario = horario
-            try:
-                f.save()
-                messages.success(request, 'Item de horário salvo com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
-            return redirect('cadd:lista_itenshorario', id_horario)
-    else:
-        form = ItemHorarioForm()
-
-    return render(request, 'cadd/novo_itemhorario.html', {
-                        'form': form,
-                        'id_horario': id_horario,
-                        'ativoHorarios': True
-                    })
-
-@login_required
-def lista_itenshorario(request, id_horario):
-    """
-    Função para a listagem dos itens cadastrados em uma previsão de horário
-    """
-
-    usuario = Perfil.objects.get(user=request.user.id)
-    linhas = linhas_por_pagina(usuario.idusuario)
-    itenshorario_list = ItemHorario.objects.all().filter(horario=id_horario).order_by('periodo', 'disciplina', 'turma')
-    paginator = Paginator(itenshorario_list, linhas) # Paginação
-    page = request.GET.get('page')
-    itenshorario = paginator.get_page(page)
-    # objeto horário anteriormente requisitado
-    horario = Horario.objects.get(id__exact=id_horario)
-
-    return render(request, 'cadd/lista_itenshorario.html', {
-                        'itenshorario': itenshorario,
-                        'id_horario': id_horario,
-                        'horario': horario,
-                        'ativoHorarios': True
-                    })
-
-@login_required
-def excluir_itemhorario(request, id_itemhorario, id_horario):
-    """
-    Função para a exclusão de um item de uma previsão de horário
-    """
-
-    itemhorario = ItemHorario.objects.get(id=id_itemhorario)
-    try:
-        itemhorario.delete()
-        messages.success(request, 'A exclusão foi realizada!')
-    except:
-        messages.error(request, 'Houve algum problema técnico e a exclusão não foi realizada!')
-
-    return redirect('cadd:lista_itenshorario', id_horario)
-
-@login_required
-def editar_itemhorario(request, id_itemhorario, id_horario):
-    """
-    Função para a edição de item de uma previsão de horário
-    """
-
-    itemhorario = get_object_or_404(ItemHorario, id=id_itemhorario)
-    if request.method == 'POST':
-        form = ItemHorarioForm(request.POST, instance=itemhorario)
-        if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, 'Item de horário salvo com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
-            return redirect('cadd:lista_itenshorario', id_horario)
-    else:
-        form = ItemHorarioForm(instance=itemhorario)
-
-    return render(request, 'cadd/novo_itemhorario.html', {
-                        'form': form,
-                        'id_horario': id_horario,
-                        'ativoHorarios': True
                     })
 
 
@@ -427,7 +261,8 @@ def nova_reuniao(request):
                 form.save()
                 messages.success(request, 'Reunião salva com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_reunioes')
     else:
         form = ReuniaoForm()
@@ -467,7 +302,8 @@ def excluir_reuniao(request, id_reuniao):
         reuniao.save()
         messages.success(request, 'Reunião cancelada com sucesso!')
     except:
-        messages.error(request, 'Houve algum problema técnico e a cancelamento não foi realizado!')
+        messages.error(request, 'Houve algum problema técnico e o ' + \
+                    'cancelamento não foi realizado!')
 
     return redirect('cadd:lista_reunioes')
 
@@ -485,7 +321,8 @@ def editar_reuniao(request, id_reuniao):
                 form.save()
                 messages.success(request, 'Reunião salva com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_reunioes')
     else:
         form = ReuniaoForm(instance=reuniao)
@@ -515,7 +352,8 @@ def novo_convocado(request, id_reuniao):
                 f.save()
                 messages.success(request, 'Convocado salvo com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_convocados', id_reuniao)
     else:
         form = ConvocadoForm()
@@ -533,9 +371,9 @@ def lista_convocados(request, id_reuniao):
     """
 
     usuario = Perfil.objects.get(user=request.user.id)
+    # Paginação
     linhas = linhas_por_pagina(usuario.idusuario)
     convocados_list = Convocacao.objects.filter(reuniao=id_reuniao)
-    # Paginação
     paginator = Paginator(convocados_list, linhas)
     page = request.GET.get('page')
     convocados = paginator.get_page(page)
@@ -560,7 +398,8 @@ def excluir_convocado(request, id_convocado, id_reuniao):
         convocado.delete()
         messages.success(request, 'A exclusão foi realizada!')
     except:
-        messages.error(request, 'Houve algum problema técnico e a exclusão não foi realizada!')
+        messages.error(request, 'Houve algum problema técnico e a exclusão ' + \
+                        'não foi realizada!')
 
     return redirect('cadd:lista_convocados', id_reuniao)
 
@@ -578,7 +417,8 @@ def editar_convocado(request, id_convocado, id_reuniao):
                 form.save()
                 messages.success(request, 'Convocado salvo com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_convocados', id_reuniao)
     else:
         form = ConvocadoForm(instance=convocado)
@@ -588,6 +428,201 @@ def editar_convocado(request, id_convocado, id_reuniao):
                         'id_reuniao': id_reuniao,
                         'ativoReunioes': True
                     })
+
+
+# Horários
+@login_required
+def novo_horario(request):
+    """
+    Função para a criação de uma nova previsão de horário
+    """
+
+    proxPeriodo = proximo_periodo(1)
+    if request.method == 'POST':
+        form = HorarioForm(request.POST)
+        if form.is_valid():
+            f = form.save(commit=False)
+            f.ano = proxPeriodo[0]
+            f.periodo = proxPeriodo[1]
+            try:
+                form.save()
+                messages.success(request, 'Horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
+            return redirect('cadd:lista_horarios')
+    else:
+        form = HorarioForm()
+
+    return render(request, 'cadd/novo_horario.html', {
+                        'form': form,
+                        'ativoHorarios': True
+                    })
+
+@login_required
+def lista_horarios(request):
+    """
+    Função para a listagem das previsões de horário
+    """
+
+    proxPeriodo = proximo_periodo(1)
+    usuario = Perfil.objects.get(user=request.user.id)
+    # Paginação
+    linhas = linhas_por_pagina(usuario.idusuario)
+    membro = Membro.objects.filter(
+                        professor=usuario.idusuario
+                    ).values_list('comissao')
+    comissoes = Comissao.objects.filter(id__in=membro).values_list('curso')
+    horarios_list = Horario.objects.filter(
+                        curso__in=comissoes, ano=proxPeriodo[0], \
+                        periodo=proxPeriodo[1])
+    paginator = Paginator(horarios_list, linhas)
+    page = request.GET.get('page')
+    horarios = paginator.get_page(page)
+
+    return render(request, 'cadd/lista_horarios.html', {
+                        'horarios': horarios,
+                        'ativoHorarios': True
+                    })
+
+@login_required
+def excluir_horario(request, id_horario):
+    """
+    Função para a exclusão de uma previsão de horário
+    """
+
+    horario = Horario.objects.get(id=id_horario)
+    try:
+        horario.delete()
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'A exclusão não foi realizada! Para isso, ' + \
+                        'exclua primeiramente seus itens de horário.')
+
+    return redirect('cadd:lista_horarios')
+
+@login_required
+def editar_horario(request, id_horario):
+    """
+    Função para a edição de uma previsão de horário
+    """
+
+    horario = get_object_or_404(Horario, id=id_horario)
+    if request.method == 'POST':
+        form = HorarioForm(request.POST, instance=horario)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
+            return redirect('cadd:lista_horarios')
+    else:
+        form = HorarioForm(instance=horario)
+
+    return render(request, 'cadd/novo_horario.html', {
+                        'form': form,
+                        'ativoHorarios': True
+                    })
+
+
+# Itens de Horário
+@login_required
+def novo_itemhorario(request, id_horario):
+    """
+    Função para a criação de uma novo item em uma previsão de horário
+    """
+
+    if request.method == 'POST':
+        form = ItemHorarioForm(request.POST)
+        if form.is_valid():
+            horario = Horario.objects.get(id=id_horario)
+            f = form.save(commit=False)
+            f.horario = horario
+            try:
+                f.save()
+                messages.success(request, 'Item de horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
+            return redirect('cadd:lista_itenshorario', id_horario)
+    else:
+        form = ItemHorarioForm()
+
+    return render(request, 'cadd/novo_itemhorario.html', {
+                        'form': form,
+                        'id_horario': id_horario,
+                        'ativoHorarios': True
+                    })
+
+@login_required
+def lista_itenshorario(request, id_horario):
+    """
+    Função para a listagem dos itens cadastrados em uma previsão de horário
+    """
+
+    usuario = Perfil.objects.get(user=request.user.id)
+    # Paginação
+    linhas = linhas_por_pagina(usuario.idusuario)
+    itenshorario_list = ItemHorario.objects.filter(
+                        horario=id_horario
+                    ).order_by('periodo', 'disciplina', 'turma')
+    paginator = Paginator(itenshorario_list, linhas)
+    page = request.GET.get('page')
+    itenshorario = paginator.get_page(page)
+    # objeto horário anteriormente requisitado
+    horario = Horario.objects.get(id__exact=id_horario)
+
+    return render(request, 'cadd/lista_itenshorario.html', {
+                        'itenshorario': itenshorario,
+                        'id_horario': id_horario,
+                        'horario': horario,
+                        'ativoHorarios': True
+                    })
+
+@login_required
+def excluir_itemhorario(request, id_itemhorario, id_horario):
+    """
+    Função para a exclusão de um item de uma previsão de horário
+    """
+
+    itemhorario = ItemHorario.objects.get(id=id_itemhorario)
+    try:
+        itemhorario.delete()
+        messages.success(request, 'A exclusão foi realizada!')
+    except:
+        messages.error(request, 'Houve algum problema técnico e a exclusão ' + \
+                        'não foi realizada!')
+
+    return redirect('cadd:lista_itenshorario', id_horario)
+
+@login_required
+def editar_itemhorario(request, id_itemhorario, id_horario):
+    """
+    Função para a edição de item de uma previsão de horário
+    """
+
+    itemhorario = get_object_or_404(ItemHorario, id=id_itemhorario)
+    if request.method == 'POST':
+        form = ItemHorarioForm(request.POST, instance=itemhorario)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Item de horário salvo com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
+            return redirect('cadd:lista_itenshorario', id_horario)
+    else:
+        form = ItemHorarioForm(instance=itemhorario)
+
+    return render(request, 'cadd/novo_itemhorario.html', {
+                        'form': form,
+                        'id_horario': id_horario,
+                        'ativoHorarios': True
+                    })
+
 
 # Documentos
 @login_required
@@ -603,7 +638,8 @@ def novo_documento(request):
                 form.save()
                 messages.success(request, 'Documento salvo com sucesso!')
             except:
-                messages.error(request, 'Houve algum problema técnico e a salvamento não foi realizado!')
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             return redirect('cadd:lista_documentos')
     else:
         form = DocumentoForm()
@@ -644,21 +680,10 @@ def excluir_documento(request, id_documento):
         excluir_arquivo(documento.indice)
         messages.success(request, 'A exclusão foi realizada!')
     except:
-        messages.error(request, 'Houve algum problema técnico e a exclusão não foi realizada!')
+        messages.error(request, 'Houve algum problema técnico e a exclusão ' + \
+                'não foi realizada!')
 
     return redirect('cadd:lista_documentos')
-
-#@login_required
-#def visualizar_documento(request, id_documento):
-#    """
-#    Função para a visualização de um documento cadastrado
-#    """
-#
-#    doc = get_object_or_404(Documento, id=id_documento)
-#    return render(request, 'cadd/visualiza_documento.html', {
-#                        'doc': doc,
-#                        'ativoDocumentos': True
-#                    })
 
 
 #Planos de estudo
@@ -673,13 +698,15 @@ def lista_planos(request):
     planosFuturos = ""
     itensFuturos = ""
     avaliacao = ""
+
+    usuario = Perfil.objects.get(user=request.user.id)
     try:
-        planoAtual = Plano.objects.get(aluno=request.user.first_name)
+        planoAtual = Plano.objects.get(aluno=usuario.idusuario)
         if planoAtual:
             itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
-            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)  #.order_by(ano, periodo)
+            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)
         if planosFuturos:
-            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)   #.order_by(planofuturo)
+            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)
     except:
         pass
 
@@ -704,33 +731,35 @@ def novo_plano_previa(request):
 
     prerequisitos = ''
 
+    usuario = Perfil.objects.get(user=request.user.id)
+    periodoAtual = periodo_atual()
+    proxPeriodo = proximo_periodo(1)
     # processamento da vida acadêmica do aluno logado
-    vidaacademica = vida_academica(request)
+    vidaacademica = vida_academica(usuario.idusuario)
     # Verificação do nome do curso, versão do curso e faixa de criticidade
-    nomecurso = nome_sigla_curso(request.user.first_name)[0]
-    versaocurso = versao_curso(request)
+    curso = nome_sigla_curso(usuario.idusuario)
+    nomecurso = curso[0]
+    versaocurso = versao_curso(usuario.idusuario)
     criticidade = vidaacademica[4]
     maxcreditos = vidaacademica[5]
     periodos = vidaacademica[6]
     plano = 0
 
-    aluno = Aluno.objects.get(id=request.user.first_name)
+    aluno = Aluno.objects.get(id=usuario.idusuario)
     # Prévias e afins
-    previas = list(ItemHorario.objects.all().values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0])) #falta separar por ano e periodo
+    horario = Horario.objects.filter(ano=proxPeriodo[0], periodo=proxPeriodo[1], curso=curso[2])
+    previas = list(ItemHorario.objects.filter(horario__in=horario).values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0]))
     previas.sort()
     podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
-    listaHorarios = ('07:00', '07:55', '08:50', '09:55', '10:50', '11:45', \
-                     '12:40', '13:35', '14:30', '15:35', '16:30', '17:25', \
-                     '18:20', '19:10', '20:00', '21:00', '21:50')
 
     if request.method == 'POST':
         disciplinas = request.POST.get('discip')
         if disciplinas:
             disciplinas = disciplinas.split("_")
             try:
-                plano = Plano.objects.get(ano=2018, periodo=1, aluno=aluno)
+                plano = Plano.objects.get(ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
             except:
-                plano = Plano.objects.create(ano=2018, periodo=1, situacao='M', aluno=aluno)
+                plano = Plano.objects.create(ano=proxPeriodo[0], periodo=proxPeriodo[1], situacao='M', aluno=aluno, avaliacao=Null)
             for d in disciplinas:
                 disc = int(d)
                 itemhorario = ItemHorario.objects.get(id=disc)
@@ -740,7 +769,6 @@ def novo_plano_previa(request):
                         'ativoPlanos': True,
                         'ativoPlanos2': True,
                         'podeLecionarnoPeriodo': podeLecionarnoPeriodo,
-                        'listaHorarios': listaHorarios,
                         'criticidade': criticidade,
                         'maxcreditos': maxcreditos,
                         'nomecurso': nomecurso,
@@ -800,16 +828,23 @@ def lista_planos_avaliar(request):
     """
 
     usuario = Perfil.objects.get(user=request.user.id)
-#    matricula = request.user.username
-    siglacurso = nome_sigla_curso(usuario.idusuario)[1]
+    periodoAtual = periodo_atual()
+    proxperiodo = proximo_periodo(1)
 
-#    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao', flat=True)
+    comissoes = list(Comissao.objects.using('default').filter(id__in=membro).values_list('curso', flat=True))
+    cursos = Curso.objects.using('sca').filter(id__in=comissoes).values_list('versaocurso', flat=True)
+    versoes = Versaocurso.objects.using('sca').filter(curso__in=cursos)
+    # Para saber os alunos que ainda estão cursando
+    itens = Itemhistoricoescolar.objects.using('sca').filter(ano=periodoAtual[0], periodo=periodoAtual[1] - 1).values_list('historico_escolar', flat=True)
+
+    planos = list(Plano.objects.using('default').filter(ano=proxperiodo[0],periodo=proxperiodo[1],situacao='M').values_list('aluno', flat=True))
+
+    alunos = Aluno.objects.using('sca').filter(historico__in=itens, versaocurso__in=versoes, id__in=planos).order_by('nome')
 
     return render(request, 'cadd/lista_plano_estudos_avaliar.html', {
                         'ativoPlanos': True,
-#                        'matricula': matricula,
-                        'siglacurso': siglacurso,
-#                        'aluno': aluno,
+                        'alunos': alunos,
                     })
 
 @login_required
@@ -837,15 +872,18 @@ def avalia_plano(request, id_aluno):
     periodos = vidaacademica[6]
     reprovadas = vidaacademica[3]
     versaocurso = versao_curso(id_aluno)
+    proxperiodo = proximo_periodo(1)
 
     # Planos atual e futuro para visualização
     try:
-        planoAtual = Plano.objects.get(aluno=id_aluno, ano=2018, periodo=1)
+        planoAtual = Plano.objects.get(aluno=id_aluno, ano=proxperiodo[0],
+                        periodo=proxperiodo[1])
         if planoAtual:
             itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
-            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)  #.order_by(ano, periodo)
+            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)
         if planosFuturos:
-            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)   #.order_by(planofuturo)
+            itensFuturos = ItemPlanoFuturo.objects.filter(
+                        planofuturo__in=planosFuturos)
     except:
         pass
 
@@ -857,7 +895,12 @@ def avalia_plano(request, id_aluno):
         if t_avaliacao:
             planoAtual.avaliacao = t_avaliacao
             planoAtual.situacao = 'A'
-            planoAtual.save()
+            try:
+                planoAtual.save()
+                messages.success(request, 'Avaliação salva com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
 
     return render(request, 'cadd/avalia_plano_estudos.html', {
                         'aluno': aluno,
@@ -870,4 +913,5 @@ def avalia_plano(request, id_aluno):
                         'planosFuturos': planosFuturos,
                         'itensFuturos': itensFuturos,
                         'avaliacao': avaliacao,
+                        'id_aluno': id_aluno,
                     })

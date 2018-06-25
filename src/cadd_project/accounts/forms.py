@@ -36,7 +36,7 @@ class UsuarioForm(forms.ModelForm):
             raise forms.ValidationError("Senha tem que ter no mínimo 1 letra maiúscula!")
         if len(re.findall(r"[0-9]", self.cleaned_data.get('password'))) < 1:
             raise forms.ValidationError("Senha tem que ter no mínimo 1 número!")
-        if len(re.findall(r"[~`!@#$%^&*()_+=-{};:'><]", self.cleaned_data.get('password'))) < 1:
-            raise forms.ValidationError("Senha tem que ter no mínimo 1 caracter especial")
+#        if len(re.findall(r"[~`!@#$%^&*()_+=-{};:'><]", self.cleaned_data.get('password'))) < 1:
+#            raise forms.ValidationError("Senha tem que ter no mínimo 1 caracter especial")
 
         return self.cleaned_data

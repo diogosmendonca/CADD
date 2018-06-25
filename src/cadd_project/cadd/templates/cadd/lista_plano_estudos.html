@@ -8,15 +8,15 @@
   </div>
   <div class="row">
     <div class="col-3">
-      <button type="button" class="botao-padrao botao-{% if planoAtual %}desabilitado{% else %}azul{% endif %}" onclick="window.location.href='{% if planoAtual %}#{% else %}{% url 'cadd:novo_plano_previa' %}{% endif %}'">Cadastrar Plano</button><br>
-      <button type="button" class="botao-padrao botao-{% if planoAtual %}azul{% else %}desabilitado{% endif %}" onclick="window.location.href='{% if planoAtual %}{% url 'cadd:novo_plano_previa' %}{% else %}#{% endif %}'">Editar Plano</button><br>
+      <button type="button" class="botao-padrao botao-{% if planoAtual %}desabilitado{% else %}azul{% endif %}" style="width: 170px;" onclick="window.location.href='{% if planoAtual %}#{% else %}{% url 'cadd:novo_plano_previa' %}{% endif %}'">Cadastrar Plano</button><br>
+      <button type="button" class="botao-padrao botao-{% if planoAtual %}azul{% else %}desabilitado{% endif %}" style="width: 170px;" onclick="window.location.href='{% if planoAtual %}{% url 'cadd:novo_plano_previa' %}{% else %}#{% endif %}'">Editar Plano</button><br>
 <!--      <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_previa' %}'">Cadastrar Prévia</button><br>
       <button type="button" class="botao-padrao botao-azul" onclick="window.location.href='{% url 'cadd:novo_plano_futuro' %}'">Cadastrar Futuro</button><br>  -->
       <span class="status_plano_titulo">Status:</span>
-      <span class="status_plano_{% if planoAtual %}{% else %}nao_{% endif %}cadastrado">{% if planoAtual %}{{ planoAtual.get_situacao_display }}{% else %}Não Cadastrado{% endif %}</span><br>
-      <button type="button" class="botao-padrao botao-desabilitado">Download PDF</button><br>
-      <button type="button" class="botao-padrao botao-desabilitado">Enviar por E-mail</button><br>
-      <button type="button" class="botao-padrao botao-desabilitado">Imprimir</button><br>
+      <span class="status_plano_{% if planoAtual %}{% else %}nao_{% endif %}cadastrado">{% if planoAtual %}{{ planoAtual.get_situacao_display }}{% else %}Não Cadastrado{% endif %}</span><br><br>
+      <button type="button" class="botao-padrao botao-desabilitado" style="width: 170px;">Download PDF</button><br>
+      <button type="button" class="botao-padrao botao-desabilitado" style="width: 170px;">Enviar por E-mail</button><br>
+      <button type="button" class="botao-padrao botao-desabilitado" style="width: 170px;">Imprimir</button><br>
     </div>
     <div class="col-5">
       {% if planoAtual %}
@@ -83,18 +83,11 @@
     </div>
     {% if avaliacao %}
     <div class="col-4">
-      <div class="row">
-        <div id="accordion" class="col-11p quadro-periodos quadro">
-          <div class="card">
-            <div class="card-header" id="headingOne">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  <span class="card-header-text"> Avaliação da Comissão </span>
-                </button>
-            </div>
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-              {{ avaliacao }}
-            </div>
-          </div>
+      <div class="bloco-avaliacao" >
+        <span class="titulo-pagina titulo-avaliacao"> Avaliação da Comissão</span>
+        <hr>
+        <div class="form-group">
+          <span>{{ avaliacao }}</span>
         </div>
       </div>
     </div>

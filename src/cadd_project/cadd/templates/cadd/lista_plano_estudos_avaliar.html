@@ -2,85 +2,74 @@
 {% load widget_tweaks %}
 
 {% block body %}
-<div class="main-content">
-  <div class="row alinhamento-central">
-    <span class="titulo-pagina"><< Avaliação dos Plano de Estudos >></span>
+  <div class="main-content">
+    <div class="row alinhamento-central">
+      <span class="titulo-pagina">&lt;&lt;  Avaliação dos Plano de Estudos &gt;&gt;</span>
+    </div>
+    {% if messages %}
+    <div class="row alinhamento-central">
+      <div class="alert alert-danger" role="alert">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if alunos %}
+    <div class="row">
+      <div class="col-3">
+        <div class="row">
+          <div class="col-11 cabecalho-quadros">
+            <span>Planos de Estudos {{ proxperiodo }}</span>
+          </div>
+        </div>
+        <div class="row">
+          <div id="accordion" class="col-11p">
+            <div class="card">
+              <div class="card-header" id="headingAlunos">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#Alunoscard" aria-expanded="true" aria-controls="Alunoscard">
+                  <span class="card-header-text"> Alunos </span>
+                </button>
+              </div>
+              <div id="Alunoscard" class="collapse show" aria-labelledby="headingAlunos" data-parent="#accordion">
+                <div class="card-body" id="Alunos">
+                  {% for a in alunos %}
+                  <div class="row disciplina-previa" id="{{ a.id }}" onclick="exibirpreencherIframe('{% url 'cadd:avalia_plano' a.id %}')">
+                    <div class="col-12 disciplina-previa-detalhes">
+                      <div class="detalhes-completos">
+                        <span class="disciplina-previa-label-nome">Aluno: </span>
+                        <span class="disciplina-previa-nome">{% filter force_escape|upper %}{{ a.nome }}{% endfilter %}</span><br />
+                        <span class="disciplina-previa-label-codigo">Matrícula: </span>
+                        <span class="disciplina-previa-codigo">{{ a.matricula }}</span><br />
+                        <span class="disciplina-previa-label-codigo">Versão do curso: </span>
+                        <span class="disciplina-previa-codigo">{{ a.versaocurso.numero }}</span><br />
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-9">
+        <div id ="iframe-documento">
+          <iframe name="interno" id="interno" width="950" height="600" frameborder="0" src=""></iframe>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="row">
-    <div class="col-3">
-      <div class="row">
-        <div class="col-11 cabecalho-quadros">
-          <span>Planos de Estudos 2018.1</span>
-        </div>
-      </div>
-      <div class="row">
-        <div id="accordion" class="col-11p">
-          <!-- BCC -->
-          <div class="card">
-            <div class="card-header" id="headingBCC">
-              <button class="btn btn-link" data-toggle="collapse" data-target="#BCCcard" aria-expanded="true" aria-controls="BCCcard">
-                <span class="card-header-text"> BCC </span>
-              </button>
-            </div>
-            <div id="BCCcard" class="collapse show" aria-labelledby="headingBCC" data-parent="#accordion">
-              <div class="card-body" id="BCC">
-
-
-
-                <div class="row disciplina-previa" id="{{ a.id }}208" onclick="mostrarIframe()">
-                  <div class="col-10 disciplina-previa-detalhes">
-                    <div class="detalhes-completos">
-                      <span class="disciplina-previa-label-nome">Aluno: </span>
-                      <span class="disciplina-previa-nome">{% filter force_escape|upper|truncatechars:31 %}{{ a.nome }}JOSÉ AMÉRICO RODRIGUES{% endfilter %}</span><br />
-                      <span class="disciplina-previa-label-codigo">Matrícula: </span>
-                      <span class="disciplina-previa-codigo">{{ a.matricula }}1421991WEB</span><br />
-                      <span class="disciplina-previa-label-codigo">Versão do curso: </span>
-                      <span class="disciplina-previa-codigo">{{ a.versaocurso }}2014</span><br />
-                    </div>
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </div>
-          <!-- WEB -->
-          <div class="card">
-            <div class="card-header" id="headingWEB">
-              <button class="btn btn-link" data-toggle="collapse" data-target="#WEBcard" aria-expanded="true" aria-controls="WEBcard">
-                <span class="card-header-text"> WEB </span>
-              </button>
-            </div>
-            <div id="WEBcard" class="collapse" aria-labelledby="headingWEB" data-parent="#accordion">
-              <div class="card-body" id="WEB">
-
-
-
-                <div class="row disciplina-previa" id="{{ a.id }}" onclick="exibeAluno(event)">
-                  <div class="col-10 disciplina-previa-detalhes">
-                    <div class="detalhes-completos">
-                      <span class="disciplina-previa-label-nome">Aluno: </span>
-                      <span class="disciplina-previa-nome">{% filter force_escape|upper|truncatechars:31 %}{{ a.nome }}{% endfilter %}</span><br />
-                      <span class="disciplina-previa-label-codigo">Matrícula: </span>
-                      <span class="disciplina-previa-codigo">{{ a.matricula }}</span><br />
-                      <span class="disciplina-previa-label-codigo">Versão do curso: </span>
-                      <span class="disciplina-previa-codigo">{{ a.versaocurso }}</span><br />
-                    </div>
-                  </div>
-                </div>
-
-
-
-              </div>
-            </div>
-          </div>
-        </div>
+  {% else %}
+  <div class="row alinhamento-central">
+    <div class="form-group">
+      <div class="alert alert-danger" role="alert">
+        <p>Não há nenhum plano a ser avaliado!</p>
       </div>
     </div>
-    <div class="col-9">
-      <div id ="iframe-documento">
-        <iframe name="interno" width="950" height="600" frameborder="0" src="{% url 'cadd:avalia_plano' 208 %}"></iframe>
-      </div>
-    </div>
+  </div>
+  {% endif %}
+  <div class="row alinhamento-central">
+    <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
   </div>
 {% endblock %}

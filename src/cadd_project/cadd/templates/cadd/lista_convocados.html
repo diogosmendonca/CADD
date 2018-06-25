@@ -22,7 +22,7 @@
             <th colspan="2">Aluno</th>
             <th>Presente</th>
             <th>Envio de e-mail</th>
-            <th colspan="2" style="textalign:center">Ações</th>
+            <th colspan="5" style="textalign:center">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -31,9 +31,11 @@
             <td colspan="2">{{ c.aluno }}</td>
             <td>{{ c.presente|yesno }}</td>
             <td>{{ c.envioemail|yesno }}</td>
-            <td colspan="2">
+            <td colspan="5">
               <a href="{% url 'cadd:editar_convocado' c.id id_reuniao %}" class="btn btn-info botao-padrao">Editar</a>
               <button type="button" class="btn botao-padrao botao-vermelho" data-toggle="modal" data-target="#excluirModal" onclick="preencherModal('{% url 'cadd:excluir_convocado' c.id id_reuniao %}')">Desconvocar</button>
+              <a href="#" class="btn botao-padrao botao-desabilitado">Dar Presença</a>
+              <a href="#" class="btn botao-padrao botao-desabilitado">Preencher Atendimento</a>
             </td>
           </tr>
           {% endfor %}

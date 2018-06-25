@@ -10,25 +10,38 @@ from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
 # Função para se saber o tipo do usuário logado
 def tipo_usuario(matricula, registro):
     """
-    Função que retorna o tipo de usuário por meio da ROLE do SCA e usuário logado
+    Função que retorna o tipo de usuário por meio da ROLE do SCA e
+    usuário logado
     """
 
     # Pesquisa na tabela de usuários do SCA o usuário a ser registrado
     usuario = Users.objects.using('sca').get(login__iexact=matricula)
-    # Caso seja realizado um get na tabela N:N o resultado já sai para a tabela apropriada
-    # Nesse caso, necessitou saber quais são as ids das roles do SCA
-    idProfProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_PROFESSOR')
-    idAlunoProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_ALUNO')
-    idAdminProfile = UserProfile.objects.using('sca').get(type__iexact='ROLE_SECAD')
+    # Caso seja realizado um get na tabela N:N o resultado já sai para a tabela
+    # apropriada. Nesse caso, necessitou saber quais são as ids das roles do SCA
+    idProfProfile = UserProfile.objects.using('sca').get(
+                        type__iexact='ROLE_PROFESSOR'
+                    )
+    idAlunoProfile = UserProfile.objects.using('sca').get(
+                        type__iexact='ROLE_ALUNO'
+                    )
+    idAdminProfile = UserProfile.objects.using('sca').get(
+                        type__iexact='ROLE_SECAD'
+                    )
     # Caso seu perfil no SCA seja de role SECAD e não seja para registro...
     if registro == 0:
-        if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAdminProfile).exists():
+        if Useruserprofile.objects.using('sca').filter(
+                        user=usuario, userprofile=idAdminProfile
+                    ).exists():
             return 'Admin'
     # Caso seu perfil no SCA seja de role Professor
-    if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idProfProfile).exists():
+    if Useruserprofile.objects.using('sca').filter(
+                        user=usuario, userprofile=idProfProfile
+                    ).exists():
         return 'Prof'
     # Caso seu perfil no SCA seja de role Aluno
-    if Useruserprofile.objects.using('sca').filter(user=usuario, userprofile=idAlunoProfile).exists():
+    if Useruserprofile.objects.using('sca').filter(
+                        user=usuario, userprofile=idAlunoProfile
+                    ).exists():
         return 'Aluno'
 
     return ''
@@ -183,7 +196,7 @@ def periodo_atual():
         periodo = 1
     else:
         periodo = 2
-    retorno = ano, periodo
+    retorno = ano, periodo, str(ano) + "." + str(periodo)
 
     return retorno
 
@@ -202,7 +215,7 @@ def proximo_periodo(periodos):
     else:
         periodo = 1
         ano = ano + (tperiodos // 2)
-    retorno = ano, periodo
+    retorno = ano, periodo,  str(ano) + "." + str(periodo)
 
     return retorno
 
@@ -224,7 +237,7 @@ def nome_sigla_curso(id_aluno):
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     t_curso = Curso.objects.using('sca').get(id=aluno.versaocurso.curso.id)
     nomecurso = t_curso.nome + " (" + t_curso.sigla + ")"
-    retorno = nomecurso, t_curso.sigla
+    retorno = nomecurso, t_curso.sigla, t_curso.id
 
     return retorno
 
@@ -345,7 +358,7 @@ def vida_academica(id_aluno):
     formulainiciallaranja = formula_inicial_faixa_laranja()
     formulafinallaranja = formula_final_faixa_laranja()
     formulavermelha = formula_faixa_vermelha()
-    periodos = periodos - trancamentos - 1
+    periodos = periodos - trancamentos
     N = periodomin / 2
     if periodos < eval(formulainiciallaranja): # 2 * N:
         integralizacaot = 0

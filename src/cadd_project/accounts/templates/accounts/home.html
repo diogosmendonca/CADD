@@ -25,9 +25,10 @@
 
   {% if 'Prof' in tipo %}
   {% if comissoes %}
-  <div class="row">
-    <div class="lista-reunioes-pagina-inicial col-4">
-      <span class="reunioes-titulo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Membro da(s) comissão(ões):</span>
+  <div class="row alinhamento-central">
+    <div class="lista-comissoes-pagina-inicial col-5"">
+      <span class="comissoes-titulo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Membro da(s) comissão(ões):</span>
+      <hr>
       {% for c in comissoes %}
       <div class="col-12">
         <span class="reunioes-linha">
