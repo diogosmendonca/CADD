@@ -226,8 +226,11 @@ def versao_curso(id_aluno):
 
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     versaocurso = aluno.versaocurso.numero
+    cargahorariaoptativas = aluno.versaocurso.cargahorariaoptativas
+    cargahorariaativcomp = aluno.versaocurso.cargahorariaativcomp
+    retorno = versaocurso, cargahorariaoptativas, cargahorariaativcomp
 
-    return versaocurso
+    return retorno
 
 def nome_sigla_curso(id_aluno):
     """
@@ -281,6 +284,7 @@ def vida_academica(id_aluno):
     integralizacaot = 0
 #    equivalentes = 0
     numcriticidade = 0
+    cargaeletivas = 0
 
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     nomeAluno = aluno.nome
@@ -295,9 +299,11 @@ def vida_academica(id_aluno):
             periodo = h.periodo
             periodos = periodos + 1
 
-        # Verificação das disciplinas cursadas e aprovadas
-        if h.situacao in (0, 4, 7, 8, 9, 12):
+        # Verificação das disciplinas cursadas, matriculadas e aprovadas
+        if h.situacao in (0, 4, 7, 8, 9, 10, 12):
             t_aprovadas.append(disc)
+            if h.disciplina.optativa:
+                cargaeletivas = cargaeletivas + h.disciplina.cargahoraria
             # Verificação das disciplinas equivalentes (original -> equivalente)
             original = Disciplinasoriginais.objects.using('sca').filter(disciplinasoriginais=disc)
             bloco = Blocoequivalencia.objects.using('sca').filter(id__in=original)
@@ -387,6 +393,7 @@ def vida_academica(id_aluno):
         criticidade = 'PRETA'
 
     retorno = t_aprovadas, t_reprovacoes, t_reprovadas, t_discreprovadas, \
-                    criticidade, maxcreditos, periodos, nomeAluno
+                    criticidade, maxcreditos, periodos, nomeAluno, \
+                    trancamentos, cargaeletivas
 
     return retorno

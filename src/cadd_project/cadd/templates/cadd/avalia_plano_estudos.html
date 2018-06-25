@@ -33,6 +33,12 @@
               <span>{{ periodoatual }}</span><br />
               <span class="criticidade-status">Períodos cursados: </span>
               <span>{{ periodos }}</span><br />
+              <span class="criticidade-status">Trancamentos totais: </span>
+              <span>{{ trancamentos }}</span><br />
+              <span class="criticidade-status">Optativas: </span>
+              <span>{{ cargaeletivas }}/{{ totaleletivas }} horas-aula</span><br />
+              <span class="criticidade-status">Atividades Complementares: </span>
+              <span>{{ cargaatividades }}0/{{ totalatividades }} horas</span><br />
               {% if reprovadas %}
               <span class="criticidade-status">Reprovações:</span><br />
               {% for r in reprovadas %}

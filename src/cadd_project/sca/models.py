@@ -935,10 +935,16 @@ class Versaocurso(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-#    cargahorariaminativcomp = models.TextField(db_column='cargaHorariaMinAitvComp',
-#                    blank=True, null=True)
-#    cargahorariaminoptativas = models.TextField(db_column='cargaHorariaMinOptativas',
-#                    blank=True, null=True)
+    cargahorariaativcomp = models.TextField(
+                    db_column='cargaHorariaMinAitvComp',
+                    blank=True,
+                    null=True
+                )
+    cargahorariaoptativas = models.TextField(
+                    db_column='cargaHorariaMinOptativas',
+                    blank=True,
+                    null=True
+                )
     numero = models.CharField(
                     max_length=255,
                     blank=True,

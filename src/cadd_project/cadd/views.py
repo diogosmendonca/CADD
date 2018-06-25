@@ -703,14 +703,13 @@ def lista_planos(request):
     try:
         planoAtual = Plano.objects.get(aluno=usuario.idusuario)
         if planoAtual:
+            avaliacao = planoAtual.avaliacao
             itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
             planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)
         if planosFuturos:
             itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)
     except:
         pass
-
-    avaliacao = planoAtual.avaliacao
 
     return render(request, 'cadd/lista_plano_estudos.html', {
                         'ativoPlanos': True,
@@ -726,8 +725,9 @@ def novo_plano_previa(request):
     """
     Função para a criação de um novo plano de estudos para o
     próximo semestre
+
+    TODO: Faltam os pré-requisitos na ajuda à criação do plano
     """
-    """TODO: Faltam os pré-requisitos na ajuda à criação do plano"""
 
     prerequisitos = ''
 
@@ -745,35 +745,59 @@ def novo_plano_previa(request):
     periodos = vidaacademica[6]
     plano = 0
 
-    aluno = Aluno.objects.get(id=usuario.idusuario)
     # Prévias e afins
-    horario = Horario.objects.filter(ano=proxPeriodo[0], periodo=proxPeriodo[1], curso=curso[2])
-    previas = list(ItemHorario.objects.filter(horario__in=horario).values_list('disciplina', flat=True).exclude(disciplina__in=vidaacademica[0]))
+    horario = Horario.objects.filter(
+                    ano=proxPeriodo[0], periodo=proxPeriodo[1], curso=curso[2]
+                )
+    previas = list(ItemHorario.objects.filter(
+                    horario__in=horario).values_list(
+                    'disciplina', flat=True).exclude(
+                    disciplina__in=vidaacademica[0])
+                )
+    # Ordenação do resultado
     previas.sort()
-    podeLecionarnoPeriodo = ItemHorario.objects.filter(disciplina__in=previas).order_by('diasemana') #.exclude(disciplina__in=lecionadas)    #filter(disciplina=lecionadas[0])
+    podeLecionar = ItemHorario.objects.filter(
+                    disciplina__in=previas).order_by('diasemana', 'periodo')
 
+    aluno = Aluno.objects.get(id=usuario.idusuario)
+
+    planot = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
+    itenst = ItemPlanoAtual.objects.filter(plano=planot).values_list('id')
     if request.method == 'POST':
         disciplinas = request.POST.get('discip')
         if disciplinas:
             disciplinas = disciplinas.split("_")
             try:
-                plano = Plano.objects.get(ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
+                plano = get_object_or_404(
+                    Plano, ano=proxPeriodo[0],
+                    periodo=proxPeriodo[1], aluno=aluno
+                )
+                plano.situacao='M'
+                plano.avaliacao=''
+                plano.save()
             except:
-                plano = Plano.objects.create(ano=proxPeriodo[0], periodo=proxPeriodo[1], situacao='M', aluno=aluno, avaliacao=Null)
+                plano = Plano.objects.create(
+                    ano=proxPeriodo[0], periodo=proxPeriodo[1], situacao='M',
+                    aluno=aluno
+                )
             for d in disciplinas:
                 disc = int(d)
                 itemhorario = ItemHorario.objects.get(id=disc)
-                i = ItemPlanoAtual.objects.create(plano=plano, itemhorario=itemhorario)
+                i = ItemPlanoAtual.objects.create(
+                    plano=plano, itemhorario=itemhorario
+                )
 
     return render(request, 'cadd/novo_plano_estudos_atual.html', {
                         'ativoPlanos': True,
                         'ativoPlanos2': True,
-                        'podeLecionarnoPeriodo': podeLecionarnoPeriodo,
+                        'podeLecionar': podeLecionar,
                         'criticidade': criticidade,
                         'maxcreditos': maxcreditos,
                         'nomecurso': nomecurso,
-                        'versaocurso': versaocurso,
+                        'versaocurso': versaocurso[0],
                         'periodos': periodos,
+                        'planot': planot,
+                        'itenst': itenst,
                     })
 
 @login_required
@@ -781,24 +805,26 @@ def novo_plano_futuro(request):
     """
     Função para a criação de um novo plano de estudos para os
     semestres subsequentes
+
+    TODO: Falta ver as disciplinas da prévia e seus equivalentes
     """
-    """TODO: Falta ver as disciplinas da prévia e seus equivalentes"""
 
     prerequisitos = ''
 
+    usuario = Perfil.objects.get(user=request.user.id)
     # processamento da vida acadêmica do aluno logado
-    vidaacademica = vida_academica(request)
+    vidaacademica = vida_academica(usuario.idusuario)
     # Verificação do nome do curso, versão do curso e faixa de criticidade
-    versaocurso = versao_curso(request)
+    versaocurso = versao_curso(usuario.idusuario)
     criticidade = vidaacademica[4]
     maxcreditos = vidaacademica[5]
     periodos = vidaacademica[6]
     plano = 1
 
     # Prévias e afins
-    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.last_name)
+    aluno = Aluno.objects.using('sca').get(nome__exact=request.user.username)
     aprovadas = vidaacademica[0]
-    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso).order_by('optativa', 'departamento')
+    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso[0]).order_by('optativa', 'departamento')
 
 #    if request.method == 'POST':
 #        disciplinas = request.POST.get('discip')
@@ -858,6 +884,8 @@ def avalia_plano(request, id_aluno):
     versaocurso = ""
     criticidade = ""
     periodos = ""
+    trancamentos = ""
+    cargaeletivas = ""
     reprovadas = ""
     planoAtual = ""
     itensAtual = ""
@@ -872,6 +900,8 @@ def avalia_plano(request, id_aluno):
     periodos = vidaacademica[6]
     reprovadas = vidaacademica[3]
     versaocurso = versao_curso(id_aluno)
+    trancamentos = vidaacademica[8]
+    cargaeletivas = vidaacademica[9]
     proxperiodo = proximo_periodo(1)
 
     # Planos atual e futuro para visualização
@@ -904,8 +934,12 @@ def avalia_plano(request, id_aluno):
 
     return render(request, 'cadd/avalia_plano_estudos.html', {
                         'aluno': aluno,
-                        'versaocurso': versaocurso,
+                        'versaocurso': versaocurso[0],
                         'periodos': periodos,
+                        'trancamentos': trancamentos,
+                        'cargaeletivas': cargaeletivas,
+                        'totaleletivas': versaocurso[1],
+                        'totalatividades': versaocurso[2],
                         'criticidade': criticidade,
                         'reprovadas': reprovadas,
                         'planoAtual': planoAtual,

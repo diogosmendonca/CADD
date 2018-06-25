@@ -4,7 +4,7 @@
 {% block body %}
 <div class="main-content">
   <div class="row alinhamento-central">
-    <span class="titulo-pagina"><< Plano de Estudos >></span>
+    <span class="titulo-pagina">&lt;&lt; Plano de Estudos &gt;&gt;</span>
   </div>
   <div class="row">
     <div class="col-3">
@@ -30,7 +30,7 @@
           <div class="card">
             <div class="card-header" id="headingOne">
                 <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <span class="card-header-text"> {{ planoAtual.ano }}.{{ planoAtual.periodo }} </span>
+                  <span class="card-header-text"> {{ planoAtual.ano }}.{{ planoAtual.periodo }} </span>
                 </button>
             </div>
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
@@ -38,7 +38,16 @@
                 <ul id="collapseOneList" class="collapseList">
                   {% for i in itensAtual %}
                   <li id="{{ i.itemhorario.disciplina.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                    ({{ i.itemhorario.disciplina.codigo }}) {{ i.itemhorario.disciplina.nome }}
+                    <div class="detalhes-completos">
+                      <span class="disciplina-previa-label-nome">{{ i.itemhorario.disciplina.nome }} ({{ i.itemhorario.disciplina.codigo }})</span><br />
+                      {% if i.itemhorario.diasemana == 7 or i.itemhorario.diasemana == 8 %}
+                      <span class="disciplina-previa-nome">{{ i.itemhorario.get_diasemana_display }}</span><br />
+                      {% else %}
+                      <span class="disciplina-previa-nome">{{ i.itemhorario.get_diasemana_display }},</span>
+                      <span class="disciplina-previa-nome">{{ i.itemhorario.inicio }}h</span> às
+                      <span class="disciplina-previa-nome">{{ i.itemhorario.fim }}h</span>
+                      {% endif %}
+                    </div>
                   </li>
                   {% endfor %}
                 </ul>

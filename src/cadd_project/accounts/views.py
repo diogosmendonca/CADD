@@ -156,6 +156,9 @@ def home(request):
     criticidade = ""
     periodos = ""
     reprovadas = ""
+    trancamentos = ""
+    cargaeletivas = ""
+    cargaatividades = ""
 
     usuario = Perfil.objects.get(user=request.user.id)
     tipousuario = tipo_usuario(usuario.matricula,0)
@@ -173,11 +176,12 @@ def home(request):
         vidaacademica = vida_academica(usuario.idusuario)
         reprovadas = vidaacademica[3]
         # Verificação do nome do curso, versão, faixa de criticidade e periodos
-#        matricula = request.user.username
         nomecurso = nome_sigla_curso(usuario.idusuario)[0]
         versaocurso = versao_curso(usuario.idusuario)
         criticidade = vidaacademica[4]
         periodos = vidaacademica[6]
+        trancamentos = vidaacademica[8]
+        cargaeletivas = vidaacademica[9]
         # Convocação para alguma reunião
         if not convocacao:
             messages.error(request, 'Aluno(a), você não possui nenhuma reunião agendada!')
@@ -188,10 +192,13 @@ def home(request):
                     'membro': membro,
                     'comissoes': comissoes,
                     'reunioes': reunioes,
-#                    'matricula': matricula,
                     'nomecurso': nomecurso,
-                    'versaocurso':versaocurso,
+                    'versaocurso': versaocurso[0],
                     'periodos': periodos,
+                    'trancamentos': trancamentos,
+                    'cargaeletivas': cargaeletivas,
+                    'totaleletivas': versaocurso[1],
+                    'totalatividades': versaocurso[2],
                     'criticidade': criticidade,
-                    'reprovadas': reprovadas
+                    'reprovadas': reprovadas,
                 })
