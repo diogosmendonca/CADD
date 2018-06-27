@@ -57,7 +57,7 @@
             <div class="card">
               <div class="card-header" id="headingOne">
                 <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  <span class="card-header-text"> 2018.1 </span>
+                  <span class="card-header-text"> 2019.1 </span>
                 </button>
               </div>
               <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
@@ -73,7 +73,7 @@
             <div class="card">
               <div class="card-header" id="headingTwo">
                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  <span class="card-header-text"> 2018.2 </span>
+                  <span class="card-header-text"> 2019.2 </span>
                 </button>
               </div>
               <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
@@ -88,7 +88,7 @@
             <div class="card">
               <div class="card-header" id="headingThree">
                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <span class="card-header-text"> 2019.1 </span>
+                  <span class="card-header-text"> 2020.1 </span>
                 </button>
               </div>
               <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
@@ -106,10 +106,11 @@
         <div class="form-group">
           <form class="" action="" method="post">
             {% csrf_token %}
-            <input type="hidden" id="plano" name="plano" value="{{ plano }}">
-            <input type="hidden" id="discip" name="discip">
+<!--            <input type="hidden" id="plano" name="plano" value="{{ plano }}"> -->
+            <input type="text" id="discip" name="discip">
             <div id="salvar-futuro">
               <br>
+              <a href="{% url 'cadd:novo_plano_previa' %}" class="btn botao-padrao">Voltar a Etapa 1</a>
               <button type="submit" onclick="preencherDisciplinas()" class="botao-padrao botao-verde">Salvar Plano de Estudos Futuro</button>
             </div>
           </form>

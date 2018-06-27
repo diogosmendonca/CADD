@@ -105,13 +105,12 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle{% if ativoRelatorios %} active{% endif %}" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">RELATÓRIOS</a>
                 <div class="dropdown-menu" aria-labelledby="dropdown07">
-                  <a class="dropdown-item" href="#">SITUAÇÃO DOS ALUNOS</a>
-                  <a class="dropdown-item" href="#">CONFLITOS DE HORÁRIOS</a>
-                  <a class="dropdown-item" href="#">ATAS DAS REUNIÕES</a>
-                  <a class="dropdown-item" href="#">ACOMPANHAMENTOS</a>
-                  <a class="dropdown-item" href="#">AUSÊNCIA ÀS REUNIÕES</a>
-                  <a class="dropdown-item" href="#">CASOS EXCEPCIONAIS</a>
-                  <a class="dropdown-item" href="#">MEMORANDO DE CONTINUIDADE DOS ESTUDOS</a>
+                  <a class="dropdown-item" href="{% url 'cadd:relatorio_situacao' %}">SITUAÇÃO DOS ALUNOS</a>
+                  <a class="dropdown-item" href="{% url 'cadd:relatorio_conflitos' %}">CONFLITOS DE HORÁRIOS</a>
+                  <a class="dropdown-item" href="{% url 'cadd:relatorio_ata' %}">ATAS DAS REUNIÕES</a>
+                  <a class="dropdown-item" href="{% url 'cadd:relatorio_atendimentos' %}">ACOMPANHAMENTOS</a>
+                  <a class="dropdown-item" href="{% url 'cadd:relatorio_ausencia' %}">AUSÊNCIA ÀS REUNIÕES</a>
+                  <a class="dropdown-item" href="{% url 'cadd:relatorio_excepcionais' %}">CASOS EXCEPCIONAIS</a>
                 </div>
               </li>
             </ul>

@@ -1143,3 +1143,25 @@ table tbody tr td:first-child
 	font-size: 14pt;
 	color: #006bb3;
 }
+#collapseOne
+{
+	position: relative;
+}
+#collapseOneList
+{
+	display: contents;
+}
+
+
+.pagina-em-desenvolvimento
+{
+	border: 1px solid #006bb3;
+	width: 400px;
+	margin: 150px auto;
+	padding: 50px;
+	border-radius: 10px;
+	color: #006bb3;
+	font-size: 14pt;
+	font-family: Consolas;
+	font-weight: bold;
+}

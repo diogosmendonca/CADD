@@ -158,7 +158,9 @@ def home(request):
     reprovadas = ""
     trancamentos = ""
     cargaeletivas = ""
+    totaleletivas = ""
     cargaatividades = ""
+    totalatividades = ""
 
     usuario = Perfil.objects.get(user=request.user.id)
     tipousuario = tipo_usuario(usuario.matricula,0)
@@ -177,7 +179,10 @@ def home(request):
         reprovadas = vidaacademica[3]
         # Verificação do nome do curso, versão, faixa de criticidade e periodos
         nomecurso = nome_sigla_curso(usuario.idusuario)[0]
-        versaocurso = versao_curso(usuario.idusuario)
+        t_versaocurso = versao_curso(usuario.idusuario)
+        versaocurso = t_versaocurso[0]
+        totaleletivas = t_versaocurso[1]
+        totalatividades = t_versaocurso[2]
         criticidade = vidaacademica[4]
         periodos = vidaacademica[6]
         trancamentos = vidaacademica[8]
@@ -193,12 +198,12 @@ def home(request):
                     'comissoes': comissoes,
                     'reunioes': reunioes,
                     'nomecurso': nomecurso,
-                    'versaocurso': versaocurso[0],
+                    'versaocurso': versaocurso,
                     'periodos': periodos,
                     'trancamentos': trancamentos,
                     'cargaeletivas': cargaeletivas,
-                    'totaleletivas': versaocurso[1],
-                    'totalatividades': versaocurso[2],
+                    'totaleletivas': totaleletivas,
+                    'totalatividades': totalatividades,
                     'criticidade': criticidade,
                     'reprovadas': reprovadas,
                 })

@@ -29,6 +29,7 @@ from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
 
 # Create your views here.
 
+########################### Perfil Administrador ###############################
 # Configurações do sistema
 @login_required
 def editar_parametros(request):
@@ -247,6 +248,7 @@ def editar_membro(request, id_membro, id_comissao):
                     })
 
 
+########################### Perfil Membro da CADD ##############################
 # Reuniões
 @login_required
 def nova_reuniao(request):
@@ -686,6 +688,51 @@ def excluir_documento(request, id_documento):
     return redirect('cadd:lista_documentos')
 
 
+# Relatórios
+@login_required
+def relatorio_situacao(request):
+
+    return render(request, 'cadd/relatorio_situacao.html', {
+                        'ativoRelatorios': True
+                    })
+
+@login_required
+def relatorio_conflitos(request):
+
+    return render(request, 'cadd/relatorio_conflitos.html', {
+                        'ativoRelatorios': True
+                    })
+
+@login_required
+def relatorio_ata(request):
+
+    return render(request, 'cadd/relatorio_ata.html', {
+                        'ativoRelatorios': True
+                    })
+
+@login_required
+def relatorio_atendimentos(request):
+
+    return render(request, 'cadd/relatorio_atendimentos.html', {
+                        'ativoRelatorios': True
+                    })
+
+@login_required
+def relatorio_ausencia(request):
+
+    return render(request, 'cadd/relatorio_ausencia.html', {
+                        'ativoRelatorios': True
+                    })
+
+@login_required
+def relatorio_excepcionais(request):
+
+    return render(request, 'cadd/relatorio_excepcionais.html', {
+                        'ativoRelatorios': True
+                    })
+
+
+############################## Perfil Aluno ###################################
 #Planos de estudo
 @login_required
 def lista_planos(request):
@@ -744,6 +791,7 @@ def novo_plano_previa(request):
     maxcreditos = vidaacademica[5]
     periodos = vidaacademica[6]
     plano = 0
+    continua = False
 
     # Prévias e afins
     horario = Horario.objects.filter(
@@ -762,7 +810,10 @@ def novo_plano_previa(request):
     aluno = Aluno.objects.get(id=usuario.idusuario)
 
     planot = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
-    itenst = ItemPlanoAtual.objects.filter(plano=planot).values_list('id')
+    if planot:
+        continua = True
+        itenst = ItemPlanoAtual.objects.filter(plano=planot).values_list('id')
+
     if request.method == 'POST':
         disciplinas = request.POST.get('discip')
         if disciplinas:
@@ -798,6 +849,7 @@ def novo_plano_previa(request):
                         'periodos': periodos,
                         'planot': planot,
                         'itenst': itenst,
+                        'continua': continua,
                     })
 
 @login_required
@@ -820,22 +872,32 @@ def novo_plano_futuro(request):
     maxcreditos = vidaacademica[5]
     periodos = vidaacademica[6]
     plano = 1
+    proxPeriodo = proximo_periodo(1)
+    plano = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=usuario.idusuario)
 
     # Prévias e afins
     aluno = Aluno.objects.using('sca').get(nome__exact=request.user.username)
     aprovadas = vidaacademica[0]
-    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(versaocurso=aluno.versaocurso[0]).order_by('optativa', 'departamento')
+    aLecionar = Disciplina.objects.using('sca').exclude(
+                    id__in=aprovadas).filter(versaocurso=aluno.versaocurso
+                ).order_by('optativa', 'departamento')
+
+#    listaperiodos = [proximo_periodo(x + 2) for x in range(10)]
+#    for i in xrange(2, 12, 1):
+#        listaperiodos.append(proximo_periodo(i))
 
 #    if request.method == 'POST':
+#        planos = request.POST.get('planos')
 #        disciplinas = request.POST.get('discip')
 #        if disciplinas:
-#            plano = 1
+#            plano = Plano
 #            disciplinas = disciplinas.split("_")
 #            for d in disciplinas:
-#                ano = 2018
-#                periodo = 1
-#                disc = int(d)
-#                plano = PlanoFuturo.objects.create(ano=ano, periodo=periodo, plano=plano)
+#                ano = d[0:3]
+#                periodo = d[5:5]
+#                disci = d[7:]
+#                disc = disci
+#                planoF = PlanoFuturo.objects.create(ano=ano, periodo=periodo, plano=plano)
 #                i = ItemPlanoFuturo.objects.create(planofuturo=plano, disciplina=disc)
 
 #        return redirect('cadd:lista_planos')
@@ -844,7 +906,8 @@ def novo_plano_futuro(request):
                         'ativoPlanos': True,
                         'ativoPlanos3': True,
                         'aLecionar': aLecionar,
-                        'plano': plano
+                        'plano': plano,
+#                        'listaperiodos': listaperiodos,
                     })
 
 @login_required
