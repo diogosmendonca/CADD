@@ -144,16 +144,16 @@ def formula_faixa_vermelha():
 
     return formula
 
-def max_creditos_preta():
+def min_creditos_preta():
     """
-    Função que retorna a quantidade máxima de créditos por semana para um
+    Função que retorna a quantidade mínima de créditos por semana para um
     aluno que esteja na faixa de criticidade preta
     """
 
     creditos = 20
     registros = Parametros.objects.get(pk=1)
     if registros != 0:
-        creditos = registros.maxcreditosporperiodopreta
+        creditos = registros.mincreditosporperiodopreta
 
     return creditos
 
@@ -285,6 +285,8 @@ def vida_academica(id_aluno):
 #    equivalentes = 0
     numcriticidade = 0
     cargaeletivas = 0
+    mincreditos = 0
+    maxcreditos = 28
 
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     nomeAluno = aluno.nome
@@ -379,9 +381,8 @@ def vida_academica(id_aluno):
     # no período
     numcriticidade = max(reprovacoest, integralizacaot)
     if numcriticidade == 3:
-        maxcreditos = max_creditos_preta()
-    else:
-        maxcreditos = max_creditos()
+        mincreditos = min_creditos_preta()
+    maxcreditos = max_creditos()
 
     if numcriticidade == 0:
         criticidade = 'AZUL'
@@ -393,7 +394,7 @@ def vida_academica(id_aluno):
         criticidade = 'PRETA'
 
     retorno = t_aprovadas, t_reprovacoes, t_reprovadas, t_discreprovadas, \
-                    criticidade, maxcreditos, periodos, nomeAluno, \
+                    criticidade, mincreditos, maxcreditos, periodos, nomeAluno, \
                     trancamentos, cargaeletivas
 
     return retorno

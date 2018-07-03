@@ -4,15 +4,18 @@
   <div class="row alinhamento-central">
     <span class="titulo-pagina">&lt;&lt; Lista de Comissões &gt;&gt;</span>
   </div>
+  {# Caso haja mensagens, as exibe #}
   {% if messages %}
   <div class="row alinhamento-central">
     <div class="alert alert-danger" role="alert">
+      {# Loop para a exibição de todas as mensagens #}
       {% for message in messages %}
         {{ message }}
       {% endfor %}
     </div>
   </div>
   {% endif %}
+  {# Caso haja pelo menos uma comissão cadastrada #}
   {% if comissoes %}
   <div class="row alinhamento-central">
     <div class="form-group">
@@ -25,13 +28,20 @@
           </tr>
         </thead>
         <tbody>
+          {# Loop para a exibição de todas as comissões #}
           {% for c in comissoes %}
           <tr>
             <td colspan="2">{{ c.descricao }}</td>
-            <td colspan="2">{{ c.curso }}</td>
+            <td colspan="2">{{ c.nome }}</td>
             <td colspan="2">
               <a href="{% url 'cadd:editar_comissao' c.id %}" class="btn btn-info botao-padrao">Editar</a>
+              {# Caso não haja membros na comissão, habilita a exclusão da mesma #}
+              {% if c.contagem == 0 %}
               <button type="button" class="btn botao-padrao botao-vermelho" data-toggle="modal" data-target="#excluirModal" onclick="preencherModal('{% url 'cadd:excluir_comissao' c.id %}')">Excluir</button>
+              {# Senão, desabilita o botão de exclusão #}
+              {% else %}
+              <a href="#" class="btn botao-padrao botao-desabilitado">Excluir</a>
+              {% endif %}
               <a href="{% url 'cadd:lista_membros' c.id %}" class="btn botao-padrao botao-azul">Editar Membros</a>
             </td>
           </tr>
@@ -43,6 +53,7 @@
   <div class="row alinhamento-central">
     <div class="pagination">
       <span class="step-links">
+        {# Caso haja mais de uma página de resultados, habilita os botões conforme o necessário #}
         {% if comissoes.has_previous %}
         <a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
         <a href="?page={{ comissoes.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
@@ -52,6 +63,7 @@
           Página {{ comissoes.number }} de {{ comissoes.paginator.num_pages }}
         </span>
 
+        {# Caso haja mais de uma página de resultados, habilita os botões (idem acima) #}
         {% if comissoes.has_next %}
         <a href="?page={{ comissoes.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
         <a href="?page={{ comissoes.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
@@ -59,6 +71,7 @@
       </span>
     </div>
   </div>
+  {# Caso não haja nenhuma comissão cadastrada, exibe mensagem #}
   {% else %}
   <div class="row alinhamento-central">
     <div class="form-group">

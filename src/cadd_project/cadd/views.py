@@ -17,12 +17,7 @@ from sca.models import Aluno, Disciplina, Itemhistoricoescolar, Versaocurso, \
                     Disciplinasequivalentes, Curso
 
 # Funções gerais
-from .utils import reprovacoes_faixa_laranja_cursos_8_periodos, \
-                    reprovacoes_faixa_vermelha_cursos_8_periodos, \
-                    reprovacoes_faixa_laranja_demais_cursos, \
-                    reprovacoes_faixa_vermelha_demais_cursos, \
-                    formula_inicial_faixa_laranja, formula_final_faixa_laranja, \
-                    formula_faixa_vermelha, max_creditos, max_creditos_preta, \
+from .utils import max_creditos, min_creditos_preta, \
                     linhas_por_pagina, nome_sigla_curso, versao_curso, \
                     vida_academica, excluir_arquivo, periodo_atual, \
                     proximo_periodo
@@ -53,6 +48,20 @@ def editar_parametros(request):
                 messages.error(request, 'Houve algum problema técnico e o ' + \
                         'salvamento não foi realizado!')
             return redirect('home')
+        else:
+            # Verifica as críticas aos campos de reprovação
+            if (request.POST.get('reprovacurso8periodosvermelha') <=
+                    request.POST.get('reprovacurso8periodoslaranja')):
+                messages.error(request,
+                    "As reprovações da faixa vermelha para cursos com 8 ou " + \
+                    "mais períodos devem ser maiores que as da faixa laranja!"
+                )
+            if (request.POST.get('reprovademaiscursosvermelha') <=
+                    request.POST.get('reprovademaiscursoslaranja')):
+                messages.error(request,
+                    "As reprovações da faixa vermelha para os demais cursos " + \
+                    "devem ser maiores que as da faixa laranja!"
+                )
     else:
         if registros != 0:
             parametros = get_object_or_404(Parametros, id=1)
@@ -83,6 +92,9 @@ def nova_comissao(request):
                 messages.error(request, 'Houve algum problema técnico e o ' + \
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_comissoes')
+        else:
+            messages.error(request, 'A comissão para um curso é unica, ' + \
+                        'utilize-se de outro curso para cadastro!')
     else:
         form = ComissaoForm()
 
@@ -100,7 +112,14 @@ def lista_comissoes(request):
     usuario = Perfil.objects.get(user=request.user.id)
     # Paginação
     linhas = linhas_por_pagina(usuario.idusuario)
-    comissoes_list = Comissao.objects.all()
+#    comissoes_list = Comissao.objects.select_related('curso')
+#    SQL = "SELECT c.id, c.descricao, cur.nome, " + \
+#            "FROM cadddb.comissao c, scadb.curso cur, cadddb.membro m " + \
+#            "WHERE c.curso_id=cur.id and m.comissao_id=c.id " + \
+#            "GROUP BY c.curso_id" #+ \
+#            "ORDER BY descricao"
+#    comissoes_list = Comissao.objects.raw(SQL)
+    comissoes_list = list(Comissao.comissoes_membros_sql())
     paginator = Paginator(comissoes_list, linhas)
     page = request.GET.get('page')
     comissoes = paginator.get_page(page)

@@ -28,12 +28,17 @@ class UsuarioForm(forms.ModelForm):
     def clean(self):
         if User.objects.filter(username=self.cleaned_data.get('username')):
             raise forms.ValidationError("Matrícula já registrada!")
-        if (self.cleaned_data.get('password') != self.cleaned_data.get('new_password1')):
+        if (self.cleaned_data.get('password') !=
+                self.cleaned_data.get('new_password1')):
             raise forms.ValidationError("Senhas diferentes!")
         if len(self.cleaned_data.get('password')) < 8:
-            raise forms.ValidationError("Senha tem que ter no mínimo 8 caracteres!")
+            raise forms.ValidationError(
+                    "Senha tem que ter no mínimo 8 caracteres!"
+                )
         if len(re.findall(r"[A-Z]", self.cleaned_data.get('password'))) < 1:
-            raise forms.ValidationError("Senha tem que ter no mínimo 1 letra maiúscula!")
+            raise forms.ValidationError(
+                    "Senha tem que ter no mínimo 1 letra maiúscula!"
+                )
         if len(re.findall(r"[0-9]", self.cleaned_data.get('password'))) < 1:
             raise forms.ValidationError("Senha tem que ter no mínimo 1 número!")
 #        if len(re.findall(r"[~`!@#$%^&*()_+=-{};:'><]", self.cleaned_data.get('password'))) < 1:

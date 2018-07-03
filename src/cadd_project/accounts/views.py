@@ -29,6 +29,9 @@ def usuario_registrar(request):
                 usuario_login = Users.objects.using('sca').get(
                             login__iexact=request.POST.get('username')
                         )
+                # Verifica se o usuário a ser criado é um professor ou um
+                # usuário. Isto é necessário para saber o id do aluno ou o id
+                # do professor nas consultas
                 if 'Prof' in tipo_usuario(request.POST.get('username'), 0):
                     usuario = Professor.objects.using('sca').get(
                             matricula__iexact=request.POST.get('username')
@@ -37,11 +40,13 @@ def usuario_registrar(request):
                     usuario = Aluno.objects.using('sca').get(
                             matricula__iexact=request.POST.get('username')
                         )
+                # Altera os campos necessários e salva o novo usuário
                 u = form.save(commit=False)
                 u.set_password(u.password)
                 u.username = usuario_login.nome
                 u.email = usuario_login.email
                 u.save()
+                # Cria o perfil do usuário (extensão de User)
                 perfil = Perfil.objects.create(user=u, \
                         matricula=usuario.matricula, \
                         idusuario=usuario.id, itenspagina=5)
@@ -52,18 +57,34 @@ def usuario_registrar(request):
             except:
                 messages.error(request, 'Usuário não cadastrado no sistema SCA!')
         else:
+            # Verifica se o usuário a ser criado já existe na tabela User do
+            # sistema (autenticação)
             if User.objects.filter(username=request.POST.get('username')):
                 messages.error(request, 'Esta matrícula já está registrada!')
+            # Verifica as críticas aos campos de senha
             if (request.POST.get('password') != request.POST.get('new_password1')):
                 messages.error(request, 'As senhas digitadas são diferentes!')
+            # Verificação do comprimento da senha com no mínimo 8 caracteres
             if len(request.POST.get('password')) < 8:
-                messages.error(request, 'A senha não está com o comprimento mínimo de 8 caracteres!')
+                messages.error(request,
+                    'A senha não está com o comprimento mínimo de 8 caracteres!'
+                )
+            # Verificação de pelo menos 1 letra maiúscula
             if len(re.findall(r"[A-Z]", request.POST.get('password'))) < 1:
-                messages.error(request, 'A senha deve possuir no mínimo 1 letra maiúscula!')
+                messages.error(request,
+                    'A senha deve possuir no mínimo 1 letra maiúscula!'
+                )
+            # Verificação de pelo menos 1 número
             if len(re.findall(r"[0-9]", request.POST.get('password'))) < 1:
-                messages.error(request, 'A senha deve possuir no mínimo 1 número!')
-#            if len(re.findall(r"[~`!@#$%^&*()_+=-{};:'><]", request.POST.get('password'))) < 1:
-#                messages.error(request, 'Senha tem que ter no mínimo 1 caracter especial')
+                messages.error(request,
+                    'A senha deve possuir no mínimo 1 número!'
+                )
+            # Verificação de pelo menos 1 caracter especial
+#            if len(re.findall(r"[~`!@#$%^&*()_+=-{};:'><]",
+#                        request.POST.get('password'))) < 1:
+#                messages.error(request,
+#                    'Senha tem que ter no mínimo 1 caracter especial'
+#                )
     else:
         form = UsuarioForm()
 
@@ -82,15 +103,22 @@ def usuario_login(request):
         password = request.POST.get('password')
         usuario = Perfil.objects.get(matricula=username)
 
-
         user = authenticate(username=usuario.user.username, password=password)
-        if user:
-            if Users.objects.using('sca').get(login__iexact=username):
-                login(request, user)
-                tipo = tipo_usuario(usuario.matricula, 0)
+        if user is not None:
+            if user.is_active:
+                if Users.objects.using('sca').get(login__iexact=username):
+                    login(request, user)
+                    tipo = tipo_usuario(usuario.matricula, 0)
+                    # Redirecione para a página inicial
+                    return redirect(request.GET.get('next', '/'))
+                else:
+                    messages.error(request, 'Usuário não cadastrado ou senha inválida!')
 
-            return redirect(request.GET.get('next', '/'))
+            else:
+                # Retorna uma mensagem de erro de 'conta desabilitada' .
+                messages.error(request, 'Usuário desabilitado no sistema!')
         else:
+            # Retorna uma mensagem de erro 'login inválido'.
             messages.error(request, 'Usuário não cadastrado ou senha inválida!')
 
     return render(request, 'accounts/login.html')
@@ -112,7 +140,10 @@ def usuario_perfil(request):
 
     perfil = get_object_or_404(Perfil, user=request.user.id)
     if request.method == 'POST':
+        # Formulário para a alteração da senha
         form = PasswordChangeForm(request.user, request.POST)
+        # Formulário para a alteração da quantidade de linhas por página
+        # da tabela Perfil
         form2 = PerfilForm(request.POST, instance=perfil)
         if form.is_valid():
             user = form.save()
@@ -120,6 +151,9 @@ def usuario_perfil(request):
             messages.success(request, 'Senha alterada com sucesso!')
             return redirect('accounts:usuario_perfil')
         else:
+            # Foi utilizada esta crítica abaixo para que não se misturasse as
+            # mensagens de erro da alteração de senha e da alteração da
+            # quantidade de linhas por página
             if not form2.is_valid():
                 messages.error(request, 'Não foi possível alterar a sua senha!')
 
@@ -128,6 +162,7 @@ def usuario_perfil(request):
             messages.success(request, 'Parâmetro alterado com sucesso!')
             return redirect('accounts:usuario_perfil')
         else:
+            # Idem acima
             if not form.is_valid():
                 messages.error(request, 'Não foi possível alterar o parâmetro!')
     else:
@@ -146,6 +181,7 @@ def home(request):
     Função de saída para a tela inicial do sistema
     """
 
+    # Variáveis
     membro = ""
     comissoes = ""
     convocacao = ""
@@ -163,7 +199,9 @@ def home(request):
     totalatividades = ""
 
     usuario = Perfil.objects.get(user=request.user.id)
+    # Verifica o tipo do usuário logado
     tipousuario = tipo_usuario(usuario.matricula,0)
+    # Caso seja um professor
     if 'Prof' in tipousuario:
         membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao')
         comissoes = Comissao.objects.filter(id__in=membro)

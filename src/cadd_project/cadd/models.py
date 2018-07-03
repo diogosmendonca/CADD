@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, connection, transaction
+from collections import namedtuple
+
 from django.utils import timezone
 
 # Create your models here.
@@ -26,16 +28,51 @@ class Comissao(models.Model):
                 )
     # Armazena a id do curso correspondente
     # Relacionamento com a tabela Curso do banco de dados SCA
-    curso = models.ForeignKey(
+    curso = models.OneToOneField(
                     'sca.Curso',
                     models.DO_NOTHING,
                     blank=False,
-                    null=False
+                    null=False,
+                    related_name='comissao_curso'
                 )
 
     # Função que retorna uma descrição para cada objeto comissão
     def __str__(self):
         return self.descricao
+
+    # Função que retorna uma consulta customizada entre as tabelas Comissao,
+    # Membro e curso para que na visualização da lista de comissões o botão
+    # de exclusão possa estar em uma das seguintes situações, conforme o campo
+    # contagem:
+    #    Habilitado: contagem == 0
+    #    Desabilitado: contagem > 0
+    def comissoes_membros_sql():
+
+        # Criação do cursor e execução por meio da SQl customizada
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT	" + \
+            "   c.id, c.descricao, cur.nome, count(m.id) as 'contagem'" + \
+            "FROM " + \
+            "   (" + \
+            "       cadddb.comissao c " + \
+            "       INNER JOIN scadb.curso cur " + \
+            "       ON c.curso_id=cur.id" + \
+            "   )" + \
+            "   LEFT JOIN cadddb.membro m " + \
+            "   ON c.id=m.comissao_id " + \
+            "GROUP BY " + \
+            "   c.curso_id " + \
+            "ORDER BY " + \
+            "   descricao"
+        )
+
+        # Return all rows from a cursor as a namedtuple
+        desc = cursor.description
+        nt_result = namedtuple('Result', [col[0] for col in desc])
+        row = [nt_result(*row) for row in cursor.fetchall()]
+
+        return row
 
     class Meta:
         managed = True
@@ -69,7 +106,8 @@ class Membro(models.Model):
                     'Comissao',
                     models.PROTECT,
                     blank=False,
-                    null=False
+                    null=False,
+                    related_name='membro_comissao'
                 )
     # Armazena a id do professor correspondente
     # Relacionamento com a tabela Professor do banco de dados SCA
@@ -626,9 +664,9 @@ class Parametros(models.Model):
                     null=False,
                     default='4 * N - 3'
                 )
-    # Armazena a quantidade máxima de créditos das disciplinas por semana
+    # Armazena a quantidade mínima de créditos das disciplinas por semana
     # que um aluno na faixa de criticidade preta pode ter
-    maxcreditosporperiodopreta = models.PositiveSmallIntegerField(
+    mincreditosporperiodopreta = models.PositiveSmallIntegerField(
                     blank=False,
                     null=False,
                     default=20
@@ -677,6 +715,7 @@ class Perfil(models.Model):
     user = models.OneToOneField(
                     User,
                     models.PROTECT,
+                    unique=True,
                     related_name='profile'
                 )
     # Armazena a matrícula seja do aluno ou professor

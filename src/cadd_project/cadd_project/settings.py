@@ -43,6 +43,21 @@ INSTALLED_APPS = [
     'sca.apps.ScaConfig',
 ]
 
+# Configurações de e-mails
+#EMAIL_HOST = 'smtp.sendgrid.net'
+#EMAIL_PORT = 587
+#EMAIL_HOST_USER = 'testsite_app'
+#EMAIL_HOST_PASSWORD = 'mys3cr3tp4ssw0rd'
+#EMAIL_USE_TLS = True
+#DEFAULT_FROM_EMAIL = 'TestSite Team <noreply@example.com>'
+
+#from django.core.mail import send_mail
+
+#send_mail('subject', 'body of the message', 'sender@example.com', ['receiver1@example.com', 'receiver2@example.com'])
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -128,7 +143,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

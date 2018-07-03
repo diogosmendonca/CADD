@@ -26,7 +26,7 @@ class ParametrosForm(forms.ModelForm):
                     'step': 1,
                     'empty_label': 'Selecione a quantidade de reprovações'
                 }),
-            'reprovademaiscursoslaranja': NumberInput(attrs={
+            'reprovacurso8periodosvermelha': NumberInput(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
                     'min': 1,
@@ -34,7 +34,7 @@ class ParametrosForm(forms.ModelForm):
                     'step': 1,
                     'empty_label': 'Selecione a quantidade de reprovações'
                 }),
-            'reprovacurso8periodosvermelha': NumberInput(attrs={
+            'reprovademaiscursoslaranja': NumberInput(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
                     'min': 1,
@@ -63,11 +63,11 @@ class ParametrosForm(forms.ModelForm):
                     'data-rules': 'required',
                     'placeholder': 'Informe a fórmula para cálculo'
                 }),
-            'maxcreditosporperiodopreta': NumberInput(attrs={
+            'mincreditosporperiodopreta': NumberInput(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
                     'min': 1, 'max': 50, 'step': 1,
-                    'empty_label': 'Selecione o máximo de créditos por período'
+                    'empty_label': 'Selecione o mínimo de créditos por período'
                 }),
             'maxcreditosporperiodo': NumberInput(attrs={
                     'class': 'form-control',
@@ -76,6 +76,22 @@ class ParametrosForm(forms.ModelForm):
                     'empty_label': 'Selecione o máximo de créditos por período'
                 }),
         }
+
+    def clean(self):
+        if (self.cleaned_data.get('reprovacurso8periodosvermelha') <=
+                self.cleaned_data.get('reprovacurso8periodoslaranja')):
+            raise forms.ValidationError(
+                    "As reprovações da faixa vermelha para cursos com 8 ou " + \
+                    "mais períodos devem ser maiores que as da faixa laranja!"
+                )
+        if (self.cleaned_data.get('reprovademaiscursosvermelha') <=
+                self.cleaned_data.get('reprovademaiscursoslaranja')):
+            raise forms.ValidationError(
+                    "As reprovações da faixa vermelha para os demais cursos " + \
+                    "devem ser maiores que as da faixa laranja!"
+                )
+
+        return self.cleaned_data
 
 
 class PerfilForm(forms.ModelForm):

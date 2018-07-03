@@ -15,13 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from django.conf.urls.static import static
 
 from accounts import urls as accounts_urls
 from cadd import urls as cadd_urls
 from accounts import views
 
 from . import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -29,8 +30,14 @@ urlpatterns = [
     path('accounts/', include(accounts_urls, namespace='accounts')),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
+
+#    path('password_reset/', auth_views.password_reset, name='password_reset'),
+#    path('password_reset/done/', auth_views.password_reset_done, name='password_reset_done'),
+#    path('reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/',
+#        auth_views.password_reset_confirm, name='password_reset_confirm'),
+#    path('reset/done/', auth_views.password_reset_complete, name='password_reset_complete'),
+    path('', include('django.contrib.auth.urls')),
 ]
 
-urlpatterns += static(
-    settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
-    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + \
+                static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

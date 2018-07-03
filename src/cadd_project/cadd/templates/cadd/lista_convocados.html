@@ -4,15 +4,18 @@
   <div class="row alinhamento-central">
     <span class="titulo-pagina">&lt;&lt; Lista de Convocados reunião na {{ reuniao }} &gt;&gt;</span>
   </div>
+  {# Caso haja mensagens, as exibe #}
   {% if messages %}
   <div class="row alinhamento-central">
     <div class="alert alert-danger" role="alert">
+      {# Loop para a exibição de todas as mensagens #}
       {% for message in messages %}
         {{ message }}
       {% endfor %}
     </div>
   </div>
   {% endif %}
+  {# Caso haja pelo menos um convocado cadastrado #}
   {% if convocados %}
   <div class="row alinhamento-central">
     <div class="form-group">
@@ -26,9 +29,11 @@
           </tr>
         </thead>
         <tbody>
+          {# Loop para a exibição de todos os convocados #}
           {% for c in convocados %}
           <tr>
             <td colspan="2">{{ c.aluno }}</td>
+            {# Converte a presença em Sim e Não #}
             <td>{{ c.presente|yesno }}</td>
             <td>{{ c.envioemail|yesno }}</td>
             <td colspan="5">
@@ -46,6 +51,7 @@
   <div class="row alinhamento-central">
     <div class="pagination">
         <span class="step-links">
+          {# Caso haja mais de uma página de resultados, habilita os botões conforme o necessário #}
             {% if convocados.has_previous %}
                 <a href="?page=1" class="btn btn-info">Primeiro</a>
                 <a href="?page={{ convocados.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
@@ -55,6 +61,7 @@
                 Página {{ convocados.number }} de {{ convocados.paginator.num_pages }}
             </span>
 
+            {# Caso haja mais de uma página de resultados, habilita os botões (idem acima) #}
             {% if convocados.has_next %}
                 <a href="?page={{ convocados.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
                 <a href="?page={{ convocados.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
@@ -62,6 +69,7 @@
         </span>
     </div>
   </div>
+  {# Caso não haja nenhum convocado cadastrado, exibe mensagem #}
   {% else %}
   <div class="row alinhamento-central">
     <div class="form-group">

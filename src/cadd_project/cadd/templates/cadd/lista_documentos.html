@@ -4,15 +4,18 @@
   <div class="row alinhamento-central">
     <span class="titulo-pagina">&lt;&lt; Lista de Documentos &gt;&gt;</span>
   </div>
+  {# Caso haja mensagens, as exibe #}
   {% if messages %}
   <div class="row alinhamento-central">
     <div class="alert alert-danger" role="alert">
+      {# Loop para a exibição de todas as mensagens #}
       {% for message in messages %}
         {{ message }}
       {% endfor %}
     </div>
   </div>
   {% endif %}
+  {# Caso haja pelo menos um documento cadastrado #}
   {% if documentos %}
   <div class="row">
     <div class="col-7">
@@ -27,6 +30,7 @@
               </tr>
             </thead>
             <tbody>
+              {# Loop para a exibição de todos os documentos anexados #}
               {% for d in documentos %}
               <tr>
                 <td colspan="2">{{ d.aluno }}</td>
@@ -41,6 +45,7 @@
           </table>
           <div class="pagination">
             <span class="step-links">
+              {# Caso haja mais de uma página de resultados, habilita os botões conforme o necessário #}
             	{% if documentos.has_previous %}
             	<a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
             	<a href="?page={{ documentos.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
@@ -50,6 +55,7 @@
             	  Página {{ documentos.number }} de {{ documentos.paginator.num_pages }}
             	</span>
 
+              {# Caso haja mais de uma página de resultados, habilita os botões (idem acima) #}
             	{% if documentos.has_next %}
             	<a href="?page={{ documentos.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
             	<a href="?page={{ documentos.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
@@ -61,12 +67,14 @@
         <a href="{% url 'cadd:novo_documento' %}" class="btn botao-padrao botao-azul" role="button">Adicionar documento</a>
       </div>
     </div>
+    {# A visualização dos documentos se dá neste iframe #}
     <div class="col-5">
       <div id ="iframe-documento">
         <iframe name="interno" width="500" height="600" frameborder="1"></iframe>
       </div>
     </div>
   </div>
+  {# Caso não haja nenhum documento cadastrado, exibe mensagem #}
   {% else %}
   <div class="row alinhamento-central">
     <div class="form-group">
