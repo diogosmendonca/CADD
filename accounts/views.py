@@ -26,18 +26,30 @@ def usuario_registrar(request):
         if form.is_valid():
             try:
                 # Pesquisa na tabela Users do SCA se o usuário é registrado
-                usuario_login = Users.objects.using('sca').get(
+#                usuario_login = Users.objects.using('sca').get(
+#                            login__iexact=request.POST.get('username')
+#                        )
+                # Heroku
+                usuario_login = Users.objects.get(
                             login__iexact=request.POST.get('username')
                         )
                 # Verifica se o usuário a ser criado é um professor ou um
                 # usuário. Isto é necessário para saber o id do aluno ou o id
                 # do professor nas consultas
                 if 'Prof' in tipo_usuario(request.POST.get('username'), 0):
-                    usuario = Professor.objects.using('sca').get(
+#                    usuario = Professor.objects.using('sca').get(
+#                            matricula__iexact=request.POST.get('username')
+#                        )
+                    # Heroku
+                    usuario = Professor.objects.get(
                             matricula__iexact=request.POST.get('username')
                         )
                 else:
-                    usuario = Aluno.objects.using('sca').get(
+#                    usuario = Aluno.objects.using('sca').get(
+#                            matricula__iexact=request.POST.get('username')
+#                        )
+                    # Heroku
+                    usuario = Aluno.objects.get(
                             matricula__iexact=request.POST.get('username')
                         )
                 # Altera os campos necessários e salva o novo usuário
@@ -106,7 +118,9 @@ def usuario_login(request):
         user = authenticate(username=usuario.user.username, password=password)
         if user is not None:
             if user.is_active:
-                if Users.objects.using('sca').get(login__iexact=username):
+#                if Users.objects.using('sca').get(login__iexact=username):
+                # Heroku
+                if Users.objects.get(login__iexact=username):
                     login(request, user)
                     tipo = tipo_usuario(usuario.matricula, 0)
                     # Redirecione para a página inicial
