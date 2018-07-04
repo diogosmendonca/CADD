@@ -114,18 +114,6 @@ DATABASES = {
 #        }
 #    },
 
-    # Configurações Heroku
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cadddb e scadb',
-        'USER': 'b2d46d12bf1313',
-        'PASSWORD': 'f55104d2',
-        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
-        'PORT': '3306',
-        'OPTIONS': {
-            'sql_mode': 'traditional',
-        }
-    },
 #    'sca': {
 #        'ENGINE': 'django.db.backends.mysql',
 #        'NAME': 'scadb',
@@ -140,6 +128,30 @@ DATABASES = {
 #            'sql_mode': 'traditional',
 #        }
 #    }
+
+    # Configurações Heroku
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cadddb',
+        'USER': 'b2d46d12bf1313',
+        'PASSWORD': 'f55104d2',
+        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
+        'PORT': '3306',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
+    },
+    'sca': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'scadb',
+        'USER': 'b2d46d12bf1313',
+        'PASSWORD': 'f55104d2',
+        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
+        'PORT': '3306',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
+    }
 }
 
 # Password validation
