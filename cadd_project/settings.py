@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
-#from decouple import config
-#from unipath import Path
+# Configuração Heroku
 import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -100,34 +99,47 @@ WSGI_APPLICATION = 'cadd_project.wsgi.application'
 DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cadddb',
-        'USER': 'root',
-        'PASSWORD': 'root',
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'cadddb',
+#        'USER': 'root',
+#        'PASSWORD': 'root',
 #        'HOST': '172.20.10.2', # celular
-        'HOST': '192.168.1.4', # wifi
+#        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
 #        'HOST': '192.168.1.115', # educandus
-        'PORT': '3311',
+#        'PORT': '3311',
+#        'OPTIONS': {
+#            'sql_mode': 'traditional',
+#        }
+#    },
+
+    # Configurações Heroku
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cadddb e scadb',
+        'USER': 'b2d46d12bf1313',
+        'PASSWORD': 'f55104d2',
+        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
+        'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'traditional',
         }
     },
-    'sca': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'scadb',
-        'USER': 'root',
-        'PASSWORD': 'root',
+#    'sca': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'scadb',
+#        'USER': 'root',
+#        'PASSWORD': 'root',
 #        'HOST': '172.20.10.2', # celular
-        'HOST': '192.168.1.4', # wifi
+#        'HOST': '192.168.1.4', # wifi
 #        'HOST': '192.168.1.25', # cefet
 #        'HOST': '192.168.1.115', # educandus
-        'PORT': '3311',
-        'OPTIONS': {
-            'sql_mode': 'traditional',
-        }
-    }
+#        'PORT': '3311',
+#        'OPTIONS': {
+#            'sql_mode': 'traditional',
+#        }
+#    }
 }
 
 # Password validation
