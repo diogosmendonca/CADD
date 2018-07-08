@@ -116,8 +116,8 @@ class ComissaoForm(forms.ModelForm):
     Classe de uso do sistema para o formulário de comissões de apoio
     """
 
-    def __init__(self,*args,**kwargs):
-        super (ComissaoForm,self ).__init__(*args,**kwargs) # popula o post
+    def __init__(self, *args, **kwargs):
+        super (ComissaoForm, self).__init__(*args, **kwargs) # popula o post
         self.fields['curso'].queryset = \
             Curso.objects.using('sca').distinct().order_by('nome')
         self.fields['curso'].empty_label = 'Selecione o curso'
@@ -144,8 +144,8 @@ class MembroForm(forms.ModelForm):
     comissão de apoio
     """
 
-    def __init__(self,*args,**kwargs):
-        super (MembroForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super (MembroForm, self).__init__(*args, **kwargs)
         self.fields['professor'].queryset = \
             Professor.objects.using('sca').distinct().order_by('nome')
         self.fields['professor'].empty_label = 'Selecione o professor'
@@ -174,10 +174,15 @@ class ReuniaoForm(forms.ModelForm):
     Classe de uso do sistema para o formulário de reuniões
     """
 
-    def __init__(self,*args,**kwargs):
-        super (ReuniaoForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        if 'professor' in kwargs:
+            self.professor = kwargs.pop('professor')
+        super(ReuniaoForm, self).__init__(*args, **kwargs)
+        membro = Membro.objects.filter(
+                            professor=self.professor
+                        ).exclude(ativo=0).values_list('comissao')
         self.fields['comissao'].queryset = \
-            Comissao.objects.distinct().order_by('descricao')
+            Comissao.objects.distinct().order_by('descricao').filter(id__in=membro)
         self.fields['comissao'].empty_label = 'Selecione a comissão de apoio'
 
     class Meta:
@@ -220,8 +225,8 @@ class ConvocadoForm(forms.ModelForm):
     Classe de uso do sistema para o formulário de convocados
     """
 
-    def __init__(self,*args,**kwargs):
-        super (ConvocadoForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super (ConvocadoForm, self).__init__(*args, **kwargs)
         self.fields['aluno'].queryset = \
             Aluno.objects.using('sca').distinct().order_by('nome')
         self.fields['aluno'].empty_label = 'Selecione o aluno'
@@ -254,16 +259,26 @@ class HorarioForm(forms.ModelForm):
     Classe de uso do sistema para o formulário de previsão de horários
     """
 
-    def __init__(self,*args,**kwargs):
-        super (HorarioForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super (HorarioForm, self).__init__(*args, **kwargs)
         self.fields['curso'].queryset = \
             Curso.objects.using('sca').distinct().order_by('nome')
         self.fields['curso'].empty_label = 'Selecione o curso'
 
     class Meta:
         model = Horario
-        exclude = (id, 'ano', 'periodo')
+        exclude = (id, )
         widgets = {
+            'ano': NumberInput(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'min': 2016, 'max': 2050, 'step': 1,
+                    'empty_label': 'Selecione o ano'}
+                ),
+            'periodo': Select(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required'
+                }),
             'curso': Select(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
@@ -278,14 +293,14 @@ class ItemHorarioForm(forms.ModelForm):
     previsão de horário
     """
 
-    def __init__(self,*args,**kwargs):
-        super (ItemHorarioForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super (ItemHorarioForm, self).__init__(*args, **kwargs)
         self.fields['turma'].queryset = \
-            Turma.objects.using('sca').distinct().order_by('codigo')
+            Turma.objects.using('sca').filter(ano=2018, periodo=0).order_by('codigo')
         self.fields['disciplina'].queryset = \
             Disciplina.objects.using('sca').order_by('nome').distinct()   #.values('nome','codigo')
         self.fields['professor'].queryset = \
-            Professor.objects.using('sca').distinct().order_by('nome')
+            Professor.objects.using('sca').order_by('nome').distinct()
         self.fields['periodo'].empty_label = 'Selecione o período'
         self.fields['turma'].empty_label = 'Selecione a turma'
         self.fields['disciplina'].empty_label = 'Selecione a disciplina'
@@ -337,8 +352,8 @@ class DocumentoForm(forms.ModelForm):
     Classe de uso do sistema para o formulário de documentos
     """
 
-    def __init__(self,*args,**kwargs):
-        super (DocumentoForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super (DocumentoForm, self).__init__(*args, **kwargs)
         self.fields['aluno'].queryset = \
             Aluno.objects.using('sca').distinct().order_by('nome')
         self.fields['aluno'].empty_label = 'Selecione o aluno'

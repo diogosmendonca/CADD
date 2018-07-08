@@ -690,8 +690,7 @@ class Perfil(models.Model):
     Classe para estender a Model User padrão do Django adicionando alguns
     campos necessários e criando um perfil para o usuário logado
 
-    TODO: Faltam os campos situacao e formaEvasao
-            não contemplados no esquema
+    TODO: Faltam os campos situacao e formaEvasao não contemplados no esquema
     """
 
     # Constante para a lista da quantidade de itens de uma lista a serem

@@ -275,8 +275,9 @@ def nova_reuniao(request):
     Função para a criação de uma nova reuniao
     """
 
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     if request.method == 'POST':
-        form = ReuniaoForm(request.POST)
+        form = ReuniaoForm(request.POST, professor=professor)
         if form.is_valid():
             try:
                 form.save()
@@ -286,12 +287,13 @@ def nova_reuniao(request):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_reunioes')
     else:
-        form = ReuniaoForm()
+        form = ReuniaoForm(professor=professor)
 
     return render(request, 'cadd/nova_reuniao.html', {
                         'form': form,
                         'ativoReunioes': True
                     })
+
 
 @login_required
 def lista_reunioes(request):
@@ -299,9 +301,13 @@ def lista_reunioes(request):
     Função para a listagem das reuniões agendadas
     """
 
-    usuario = Perfil.objects.get(user=request.user.id)
-    linhas = linhas_por_pagina(usuario.idusuario)
-    reunioes_list = Reuniao.objects.all()
+    professor = Perfil.objects.get(user=request.user.id).idusuario
+    linhas = linhas_por_pagina(professor)
+    membro = Membro.objects.filter(
+                            professor=professor
+                        ).exclude(ativo=0).values_list('comissao')
+    comissao = Comissao.objects.filter(id__in=membro)
+    reunioes_list = Reuniao.objects.filter(comissao__in=comissao)
     paginator = Paginator(reunioes_list, linhas) # Paginação
     page = request.GET.get('page')
     reunioes = paginator.get_page(page)
@@ -334,9 +340,10 @@ def editar_reuniao(request, id_reuniao):
     Função para a edição de uma reunião
     """
 
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     reuniao = get_object_or_404(Reuniao, id=id_reuniao)
     if request.method == 'POST':
-        form = ReuniaoForm(request.POST, instance=reuniao)
+        form = ReuniaoForm(request.POST, instance=reuniao, professor=professor)
         if form.is_valid():
             try:
                 form.save()
@@ -346,7 +353,7 @@ def editar_reuniao(request, id_reuniao):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_reunioes')
     else:
-        form = ReuniaoForm(instance=reuniao)
+        form = ReuniaoForm(instance=reuniao, professor=professor)
 
     return render(request, 'cadd/nova_reuniao.html', {
                         'form': form,
@@ -458,13 +465,13 @@ def novo_horario(request):
     Função para a criação de uma nova previsão de horário
     """
 
-    proxPeriodo = proximo_periodo(1)
+#    proxPeriodo = proximo_periodo(1)
     if request.method == 'POST':
         form = HorarioForm(request.POST)
         if form.is_valid():
-            f = form.save(commit=False)
-            f.ano = proxPeriodo[0]
-            f.periodo = proxPeriodo[1]
+#            f = form.save(commit=False)
+#            f.ano = proxPeriodo[0]
+#            f.periodo = proxPeriodo[1]
             try:
                 form.save()
                 messages.success(request, 'Horário salvo com sucesso!')
@@ -486,17 +493,18 @@ def lista_horarios(request):
     Função para a listagem das previsões de horário
     """
 
-    proxPeriodo = proximo_periodo(1)
-    usuario = Perfil.objects.get(user=request.user.id)
+#    proxPeriodo = proximo_periodo(1)
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     # Paginação
-    linhas = linhas_por_pagina(usuario.idusuario)
+    linhas = linhas_por_pagina(professor)
     membro = Membro.objects.filter(
-                        professor=usuario.idusuario
-                    ).values_list('comissao')
+                        professor=professor
+                    ).exclude(ativo=0).values_list('comissao')
     comissoes = Comissao.objects.filter(id__in=membro).values_list('curso')
-    horarios_list = Horario.objects.filter(
-                        curso__in=comissoes, ano=proxPeriodo[0], \
-                        periodo=proxPeriodo[1])
+    horarios_list = Horario.objects.filter(curso__in=comissoes)
+#    horarios_list = Horario.objects.filter(
+#                        curso__in=comissoes, ano=proxPeriodo[0], \
+#                        periodo=proxPeriodo[1])
     paginator = Paginator(horarios_list, linhas)
     page = request.GET.get('page')
     horarios = paginator.get_page(page)
@@ -588,7 +596,7 @@ def lista_itenshorario(request, id_horario):
     linhas = linhas_por_pagina(usuario.idusuario)
     itenshorario_list = ItemHorario.objects.filter(
                         horario=id_horario
-                    ).order_by('periodo', 'disciplina', 'turma')
+                    ) #.order_by('periodo', 'disciplina', 'turma')
     paginator = Paginator(itenshorario_list, linhas)
     page = request.GET.get('page')
     itenshorario = paginator.get_page(page)

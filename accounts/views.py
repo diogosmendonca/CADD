@@ -112,7 +112,9 @@ def usuario_login(request):
                     # Redirecione para a página inicial
                     return redirect(request.GET.get('next', '/'))
                 else:
-                    messages.error(request, 'Usuário não cadastrado ou senha inválida!')
+                    messages.error(request,
+                            'Usuário não cadastrado ou senha inválida!'
+                        )
 
             else:
                 # Retorna uma mensagem de erro de 'conta desabilitada' .
@@ -145,26 +147,61 @@ def usuario_perfil(request):
         # Formulário para a alteração da quantidade de linhas por página
         # da tabela Perfil
         form2 = PerfilForm(request.POST, instance=perfil)
+
+        # Foi utilizada esta crítica abaixo para que não se misturasse as
+        # mensagens de erro da alteração de senha e da alteração da
+        # quantidade de linhas por página
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, 'Senha alterada com sucesso!')
-            return redirect('accounts:usuario_perfil')
-        else:
-            # Foi utilizada esta crítica abaixo para que não se misturasse as
-            # mensagens de erro da alteração de senha e da alteração da
-            # quantidade de linhas por página
-            if not form2.is_valid():
+            try:
+                # Altera a nova senha
+                user = form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Senha alterada com sucesso!')
+                return redirect('accounts:usuario_perfil')
+            except:
                 messages.error(request, 'Não foi possível alterar a sua senha!')
 
-        if form2.is_valid():
-            outros = form2.save()
-            messages.success(request, 'Parâmetro alterado com sucesso!')
+        elif form2.is_valid():
+            try:
+                outros = form2.save()
+                messages.success(request, 'Parâmetro alterado com sucesso!')
+                return redirect('accounts:usuario_perfil')
+            except:
+                messages.error(request, 'Não foi possível alterar o parãmetro!')
+
+        elif not form.is_valid():
+            # Verifica se o campo senha antiga está correto
+            if not request.user.check_password(request.POST.get('old_password')):
+                messages.error(request,
+                        'A senha antiga digitada não é a correta!'
+                    )
+            # Verifica as críticas aos campos de senha
+            if (request.POST.get('new_password1') !=
+                    request.POST.get('new_password2')):
+                messages.error(request,
+                        'A nova senha e sua confirmação digitada são diferentes!'
+                    )
+            # Verificação do comprimento da senha com no mínimo 8 caracteres
+            if len(request.POST.get('new_password1')) < 8:
+                messages.error(request,
+                    'A nova senha não está com o comprimento mínimo de 8 caracteres!'
+                )
+            # Verificação de pelo menos 1 letra maiúscula
+            if len(re.findall(r"[A-Z]", request.POST.get('new_password1'))) < 1:
+                messages.error(request,
+                    'A nova senha deve possuir no mínimo 1 letra maiúscula!'
+                )
+            # Verificação de pelo menos 1 número
+            if len(re.findall(r"[0-9]", request.POST.get('new_password1'))) < 1:
+                messages.error(request,
+                    'A nova senha deve possuir no mínimo 1 número!'
+                )
             return redirect('accounts:usuario_perfil')
-        else:
-            # Idem acima
-            if not form.is_valid():
-                messages.error(request, 'Não foi possível alterar o parâmetro!')
+#            return render(request, 'accounts/perfil.html', {
+#                                'form': form,
+#                                'form2': form2,
+#                            })
+
     else:
         form = PasswordChangeForm(request.user)
         form2 = PerfilForm(instance=perfil)
@@ -203,10 +240,16 @@ def home(request):
     tipousuario = tipo_usuario(usuario.matricula,0)
     # Caso seja um professor
     if 'Prof' in tipousuario:
-        membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao')
-        comissoes = Comissao.objects.filter(id__in=membro)
-        if not membro:
-            messages.error(request, 'Professor(a), o Sr(a) não está cadastrado(a) em nenhuma comissão de apoio!')
+        membro = Membro.objects.filter(
+                            professor=usuario.idusuario
+                        ).exclude(ativo=0).values_list('comissao')
+        if membro:
+            comissoes = Comissao.objects.filter(id__in=membro)
+        else:
+            messages.error(request,
+                    'Professor(a), o Sr(a) não está cadastrado(a) em nenhuma ' + \
+                        'comissão de apoio!'
+                )
 
     if 'Aluno' in tipousuario:
         convocacao = Convocacao.objects.filter(aluno=usuario.idusuario).values_list('reuniao')

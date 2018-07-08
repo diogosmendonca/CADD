@@ -17,7 +17,7 @@
   </div>
   {% endif %}
 
-  {# Caso seja um administrador #}
+  {# Caso seja um administrador... #}
   {% if tipo == 'Admin' %}
   <div class="row alinhamento-central">
     <div class="background-div">
@@ -50,11 +50,11 @@
 
   {# Caso seja um aluno... #}
   {% if 'Aluno' in tipo %}
-  {# Caso haja pelo menos uma reunião agendada #}
-  {% if reunioes %}
   <div class="row">
     <div class="lista-reunioes-pagina-inicial col-4">
       <span class="reunioes-titulo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reunião(ões):</span>
+      {# Caso haja pelo menos uma reunião agendada #}
+      {% if reunioes %}
       {# Loop para a exibição de todas as reuniões #}
       {% for r in reunioes %}
       {# Somente serão exibidas as que não foram encerradas #}
@@ -71,6 +71,7 @@
       </div>
       {% endif %}
       {% endfor %}
+      {% endif %}
     </div>
     {# Apresentação dos dados da vida acadêmica do aluno logado #}
     <div class="faixa-criticidade-pagina-inicial col-6" style="background-color: {% if criticidade == 'AZUL' %}blue{% elif criticidade == 'LARANJA' %}orange{% elif criticidade == 'VERMELHA' %}red{% else %}gray{% endif %}">
@@ -103,7 +104,6 @@
       </div>
     </div>
   </div>
-  {% endif %}
   {% endif %}
 
   {% if user.is_authenticated == "False" %}

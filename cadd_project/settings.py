@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 # Configuração Heroku
-import django_heroku
+#import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,9 +25,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '2tv7f1**(!cqlhrt69sfi#pj0k0d!qyg#a_6j@!k1jj&hu3x5a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['herokuapp.com']
+ALLOWED_HOSTS = [] #'herokuapp.com'
 
 # Application definition
 INSTALLED_APPS = [
@@ -99,59 +99,55 @@ WSGI_APPLICATION = 'cadd_project.wsgi.application'
 DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
 
 DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'cadddb',
-#        'USER': 'root',
-#        'PASSWORD': 'root',
-#        'HOST': '172.20.10.2', # celular
-#        'HOST': '192.168.1.4', # wifi
-#        'HOST': '192.168.1.25', # cefet
-#        'HOST': '192.168.1.115', # educandus
-#        'PORT': '3311',
-#        'OPTIONS': {
-#            'sql_mode': 'traditional',
-#        }
-#    },
-
-#    'sca': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'scadb',
-#        'USER': 'root',
-#        'PASSWORD': 'root',
-#        'HOST': '172.20.10.2', # celular
-#        'HOST': '192.168.1.4', # wifi
-#        'HOST': '192.168.1.25', # cefet
-#        'HOST': '192.168.1.115', # educandus
-#        'PORT': '3311',
-#        'OPTIONS': {
-#            'sql_mode': 'traditional',
-#        }
-#    }
-
-    # Configurações Heroku
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cadddb',
-        'USER': 'b2d46d12bf1313',
-        'PASSWORD': 'f55104d2',
-        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
-        'PORT': '3306',
+        'USER': 'root',
+        'PASSWORD': 'root',
+#        'HOST': '172.20.10.2', # celular
+        'HOST': '192.168.1.4', # wifi
+        'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
         }
     },
+
     'sca': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'scadb',
-        'USER': 'bfaaafdb61d1ae',
-        'PASSWORD': '2c326a59',
-        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
-        'PORT': '3306',
+        'USER': 'root',
+        'PASSWORD': 'root',
+#        'HOST': '172.20.10.2', # celular
+        'HOST': '192.168.1.4', # wifi
+        'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
         }
     }
+
+    # Configurações Heroku
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'heroku_5a813da293ae6d8',
+#        'USER': 'b2d46d12bf1313',
+#        'PASSWORD': 'f55104d2',
+#        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
+#        'PORT': '3306',
+#        'OPTIONS': {
+#            'sql_mode': 'traditional',
+#        }
+#    },
+#    'sca': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'heroku_a3cfe5b597165a9',
+#        'USER': 'bfaaafdb61d1ae',
+#        'PASSWORD': '2c326a59',
+#        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
+#        'PORT': '3306',
+#        'OPTIONS': {
+#            'sql_mode': 'traditional',
+#        }
+#    }
 }
 
 # Password validation
@@ -203,4 +199,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = '/accounts/login/'
 
-django_heroku.settings(locals())
+#django_heroku.settings(locals())

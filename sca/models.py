@@ -283,8 +283,6 @@ class Departamentoprofessor(models.Model):
 class Disciplina(models.Model):
     """
     Classe importada da tabela disciplina do banco de dados SCA
-
-    TODO: Incluído o campo ehoptativa diferentemente do diagrama de classes
     """
 
     id = models.BigAutoField(
@@ -330,8 +328,8 @@ class Disciplina(models.Model):
                 )
 
     def __str__(self):
-        return self.nome + " (" + self.codigo + ")"  + " (versão do curso: " + \
-                self.versaocurso.numero + ")"
+        return self.nome + " (" + self.codigo + ")" # + " (versão do curso: " + \
+#                self.versaocurso.numero + ")"
 
     class Meta:
         managed = False
