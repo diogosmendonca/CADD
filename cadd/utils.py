@@ -192,7 +192,8 @@ def periodo_atual():
     agora = datetime.now()
     ano = agora.year
     mes = agora.month
-    if mes in [1, 2, 3, 4, 5, 6]:
+    # Mês de início das aulas do semestre
+    if mes in [2, 3, 4, 5, 6, 7]:
         periodo = 1
     else:
         periodo = 2

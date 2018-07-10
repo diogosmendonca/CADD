@@ -53,7 +53,7 @@
           </div>
           <div class="col-5">
             <div class="row">
-              <div class="col-10">
+              <div class="col-12">
                 <span class="usuario-texto">{% if user.is_authenticated %}{{ tipo }} {% endif %}</span>
                 <span class="usuario-autenticado" onclick="mostrarPerfilModal()">{% if user.is_authenticated %}{{ user.username }}{% endif %}</span><br />
                 <a href="{% url 'accounts:usuario_perfil' %}"><span class="logout">Meu Perfil</span></a>

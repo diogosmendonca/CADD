@@ -25,6 +25,7 @@
             <thead>
               <tr>
                 <th colspan="2">Aluno</th>
+                <th>Período</th>
                 <th>Descrição</th>
                 <th colspan="2" style="textalign:center">Ações</th>
               </tr>
@@ -34,9 +35,10 @@
               {% for d in documentos %}
               <tr>
                 <td colspan="2">{{ d.aluno }}</td>
+                <td>{{ d.ano }}.{{ d.periodo }}</td>
                 <td>{{ d.descricao }}</td>
                 <td colspan="2">
-                  <a href="/media/{{ d.indice }}" target="interno" class="btn btn-info botao-padrao" onclick="mostrarIframe()">Visualizar</a>
+                  <a href="/media/{{ d.indice }}" target="interno" class="btn btn-info botao-padrao" onclick="mostrarIframe()">Exibir</a>
                   <button type="button" class="btn botao-padrao botao-vermelho" data-toggle="modal" data-target="#excluirModal" onclick="preencherModal('{% url 'cadd:excluir_documento' d.id %}')">Excluir</button>
                 </td>
               </tr>
@@ -70,7 +72,7 @@
     {# A visualização dos documentos se dá neste iframe #}
     <div class="col-5">
       <div id ="iframe-documento">
-        <iframe name="interno" width="500" height="600" frameborder="1"></iframe>
+        <iframe name="interno" width="520" height="800" frameborder="1"></iframe>
       </div>
     </div>
   </div>

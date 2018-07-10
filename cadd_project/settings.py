@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
-# Configuração Heroku
-#import django_heroku
+#from django.core.mail import send_mail
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +25,7 @@ SECRET_KEY = '2tv7f1**(!cqlhrt69sfi#pj0k0d!qyg#a_6j@!k1jj&hu3x5a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [] #'herokuapp.com'
+ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
@@ -46,20 +44,18 @@ INSTALLED_APPS = [
     'sca.apps.ScaConfig',
 ]
 
-# Configurações de e-mails
+# Configurações de e-mails (não está em produção)
 #EMAIL_HOST = 'smtp.sendgrid.net'
 #EMAIL_PORT = 587
 #EMAIL_HOST_USER = 'testsite_app'
 #EMAIL_HOST_PASSWORD = 'mys3cr3tp4ssw0rd'
 #EMAIL_USE_TLS = True
 #DEFAULT_FROM_EMAIL = 'TestSite Team <noreply@example.com>'
-
-#from django.core.mail import send_mail
-
-#send_mail('subject', 'body of the message', 'sender@example.com', ['receiver1@example.com', 'receiver2@example.com'])
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+# Envio de e-mail propriamente dito (colocar em reuniões)
+#send_mail('subject', 'corpo', 'email', ['receiver1@example.com', 'receiver2@example.com'])
+# During development only
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -98,14 +94,15 @@ WSGI_APPLICATION = 'cadd_project.wsgi.application'
 
 DATABASE_ROUTERS = ['cadd_project.router.DatabaseRouter']
 
+# Configurações de banco devem ser ajustadas para a versão de produção
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cadddb',
         'USER': 'root',
         'PASSWORD': 'root',
-#        'HOST': '172.20.10.2', # celular
-        'HOST': '192.168.1.4', # wifi
+        'HOST': '172.20.10.2', # celular
+#        'HOST': '192.168.1.4', # wifi
         'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
@@ -117,37 +114,13 @@ DATABASES = {
         'NAME': 'scadb',
         'USER': 'root',
         'PASSWORD': 'root',
-#        'HOST': '172.20.10.2', # celular
-        'HOST': '192.168.1.4', # wifi
+        'HOST': '172.20.10.2', # celular
+#        'HOST': '192.168.1.4', # wifi
         'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
         }
     }
-
-    # Configurações Heroku
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'heroku_5a813da293ae6d8',
-#        'USER': 'b2d46d12bf1313',
-#        'PASSWORD': 'f55104d2',
-#        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
-#        'PORT': '3306',
-#        'OPTIONS': {
-#            'sql_mode': 'traditional',
-#        }
-#    },
-#    'sca': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'heroku_a3cfe5b597165a9',
-#        'USER': 'bfaaafdb61d1ae',
-#        'PASSWORD': '2c326a59',
-#        'HOST': 'us-cdbr-iron-east-04.cleardb.net',
-#        'PORT': '3306',
-#        'OPTIONS': {
-#            'sql_mode': 'traditional',
-#        }
-#    }
 }
 
 # Password validation
@@ -188,7 +161,7 @@ FILE_CHARSET="utf-8"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
@@ -198,5 +171,3 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = '/accounts/login/'
-
-#django_heroku.settings(locals())

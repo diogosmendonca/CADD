@@ -112,13 +112,7 @@ def lista_comissoes(request):
     usuario = Perfil.objects.get(user=request.user.id)
     # Paginação
     linhas = linhas_por_pagina(usuario.idusuario)
-#    comissoes_list = Comissao.objects.select_related('curso')
-#    SQL = "SELECT c.id, c.descricao, cur.nome, " + \
-#            "FROM cadddb.comissao c, scadb.curso cur, cadddb.membro m " + \
-#            "WHERE c.curso_id=cur.id and m.comissao_id=c.id " + \
-#            "GROUP BY c.curso_id" #+ \
-#            "ORDER BY descricao"
-#    comissoes_list = Comissao.objects.raw(SQL)
+    # Verifica se há membros em uma Comissão, desabilitando o botão de exclusão
     comissoes_list = list(Comissao.comissoes_membros_sql())
     paginator = Paginator(comissoes_list, linhas)
     page = request.GET.get('page')
@@ -465,10 +459,15 @@ def novo_horario(request):
     Função para a criação de uma nova previsão de horário
     """
 
+    # O comando abaixo foi retirado pois filtrava o horário conforme o próximo
+    # período atual, devido à prévia do horário nem sempre sair antes do término
+    # de um período
 #    proxPeriodo = proximo_periodo(1)
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     if request.method == 'POST':
-        form = HorarioForm(request.POST)
+        form = HorarioForm(request.POST, professor=professor)
         if form.is_valid():
+            # Idem explicação acima
 #            f = form.save(commit=False)
 #            f.ano = proxPeriodo[0]
 #            f.periodo = proxPeriodo[1]
@@ -480,7 +479,7 @@ def novo_horario(request):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_horarios')
     else:
-        form = HorarioForm()
+        form = HorarioForm(professor=professor)
 
     return render(request, 'cadd/novo_horario.html', {
                         'form': form,
@@ -493,6 +492,7 @@ def lista_horarios(request):
     Função para a listagem das previsões de horário
     """
 
+    # Retirada a restrição do semestre subsequente
 #    proxPeriodo = proximo_periodo(1)
     professor = Perfil.objects.get(user=request.user.id).idusuario
     # Paginação
@@ -501,10 +501,11 @@ def lista_horarios(request):
                         professor=professor
                     ).exclude(ativo=0).values_list('comissao')
     comissoes = Comissao.objects.filter(id__in=membro).values_list('curso')
-    horarios_list = Horario.objects.filter(curso__in=comissoes)
+    # Idem explicação acima
 #    horarios_list = Horario.objects.filter(
 #                        curso__in=comissoes, ano=proxPeriodo[0], \
 #                        periodo=proxPeriodo[1])
+    horarios_list = Horario.objects.filter(curso__in=comissoes)
     paginator = Paginator(horarios_list, linhas)
     page = request.GET.get('page')
     horarios = paginator.get_page(page)
@@ -536,9 +537,10 @@ def editar_horario(request, id_horario):
     Função para a edição de uma previsão de horário
     """
 
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     horario = get_object_or_404(Horario, id=id_horario)
     if request.method == 'POST':
-        form = HorarioForm(request.POST, instance=horario)
+        form = HorarioForm(request.POST, instance=horario, professor=professor)
         if form.is_valid():
             try:
                 form.save()
@@ -548,7 +550,7 @@ def editar_horario(request, id_horario):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_horarios')
     else:
-        form = HorarioForm(instance=horario)
+        form = HorarioForm(instance=horario, professor=professor)
 
     return render(request, 'cadd/novo_horario.html', {
                         'form': form,
@@ -596,7 +598,7 @@ def lista_itenshorario(request, id_horario):
     linhas = linhas_por_pagina(usuario.idusuario)
     itenshorario_list = ItemHorario.objects.filter(
                         horario=id_horario
-                    ) #.order_by('periodo', 'disciplina', 'turma')
+                    ).order_by('periodo', 'id')
     paginator = Paginator(itenshorario_list, linhas)
     page = request.GET.get('page')
     itenshorario = paginator.get_page(page)
@@ -650,6 +652,123 @@ def editar_itemhorario(request, id_itemhorario, id_horario):
                         'form': form,
                         'id_horario': id_horario,
                         'ativoHorarios': True
+                    })
+
+
+# Avaliação dos Planos de Estudo cadastrados
+@login_required
+def lista_planos_avaliar(request):
+    """
+    Função para a listagem dos alunos e seus planos de estudo cadastrados
+    """
+
+    usuario = Perfil.objects.get(user=request.user.id)
+    periodoAtual = periodo_atual()
+    proxperiodo = proximo_periodo(1)
+
+    membro = Membro.objects.filter(
+                                professor=usuario.idusuario
+                            ).values_list('comissao', flat=True)
+    comissoes = list(Comissao.objects.using('default').filter(
+                                id__in=membro
+                            ).values_list('curso', flat=True))
+    cursos = Curso.objects.using('sca').filter(
+                                id__in=comissoes
+                            ).values_list('versaocurso', flat=True)
+    versoes = Versaocurso.objects.using('sca').filter(curso__in=cursos)
+    # Para saber os alunos que ainda estão cursando
+    itens = Itemhistoricoescolar.objects.using('sca').filter(
+                                ano=periodoAtual[0], periodo=periodoAtual[1] # - 1
+                            ).values_list('historico_escolar', flat=True)
+
+    planos = list(Plano.objects.using('default').filter(
+                                ano=proxperiodo[0], periodo=proxperiodo[1], situacao='M'
+                            ).values_list('aluno', flat=True))
+
+    alunos = Aluno.objects.using('sca').filter(
+                                historico__in=itens, versaocurso__in=versoes, id__in=planos
+                            ).order_by('nome')
+
+    return render(request, 'cadd/lista_plano_estudos_avaliar.html', {
+                        'ativoPlanos': True,
+                        'alunos': alunos,
+                    })
+
+@login_required
+def avalia_plano(request, id_aluno):
+    """
+    Função para a avaliação do plano de estudos dos alunos pelos membros
+    das comissões
+    """
+
+    # Variáveis
+    versaocurso = ""
+    criticidade = ""
+    periodos = ""
+    trancamentos = ""
+    cargaeletivas = ""
+    reprovadas = ""
+    planoAtual = ""
+    itensAtual = ""
+    planosFuturos = ""
+    itensFuturos = ""
+    avaliacao = ""
+    # Processamento da vida acadêmica do aluno logado e obtidos o nome do aluno,
+    # versão do curso, faixa de criticidade, periodos, disciplinas reprovadas
+    vidaacademica = vida_academica(id_aluno)
+    aluno = vidaacademica[7]
+    criticidade = vidaacademica[4]
+    periodos = vidaacademica[6]
+    reprovadas = vidaacademica[3]
+    versaocurso = versao_curso(id_aluno)
+    trancamentos = vidaacademica[9]
+    cargaeletivas = vidaacademica[10]
+    proxperiodo = proximo_periodo(1)
+
+    # Planos atual e futuro para visualização
+    try:
+        planoAtual = Plano.objects.get(aluno=id_aluno, ano=proxperiodo[0],
+                        periodo=proxperiodo[1])
+        if planoAtual:
+            itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
+            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)
+        if planosFuturos:
+            itensFuturos = ItemPlanoFuturo.objects.filter(
+                        planofuturo__in=planosFuturos)
+    except:
+        pass
+
+    if planoAtual.avaliacao:
+        avaliacao = planoAtual.avaliacao
+
+    if request.method == 'POST':
+        t_avaliacao = request.POST.get('avaliacao')
+        if t_avaliacao:
+            planoAtual.avaliacao = t_avaliacao
+            planoAtual.situacao = 'A'
+            try:
+                planoAtual.save()
+                messages.success(request, 'Avaliação salva com sucesso!')
+            except:
+                messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
+
+    return render(request, 'cadd/avalia_plano_estudos.html', {
+                        'aluno': aluno,
+                        'versaocurso': versaocurso[0],
+                        'periodos': periodos,
+                        'trancamentos': trancamentos,
+                        'cargaeletivas': cargaeletivas,
+                        'totaleletivas': versaocurso[1],
+                        'totalatividades': versaocurso[2],
+                        'criticidade': criticidade,
+                        'reprovadas': reprovadas,
+                        'planoAtual': planoAtual,
+                        'itensAtual': itensAtual,
+                        'planosFuturos': planosFuturos,
+                        'itensFuturos': itensFuturos,
+                        'avaliacao': avaliacao,
+                        'id_aluno': id_aluno,
                     })
 
 
@@ -935,107 +1054,4 @@ def novo_plano_futuro(request):
                         'aLecionar': aLecionar,
                         'plano': plano,
 #                        'listaperiodos': listaperiodos,
-                    })
-
-@login_required
-def lista_planos_avaliar(request):
-    """
-    Função para a listagem dos alunos e seus planos de estudo cadastrados
-    """
-
-    usuario = Perfil.objects.get(user=request.user.id)
-    periodoAtual = periodo_atual()
-    proxperiodo = proximo_periodo(1)
-
-    membro = Membro.objects.filter(professor=usuario.idusuario).values_list('comissao', flat=True)
-    comissoes = list(Comissao.objects.using('default').filter(id__in=membro).values_list('curso', flat=True))
-    cursos = Curso.objects.using('sca').filter(id__in=comissoes).values_list('versaocurso', flat=True)
-    versoes = Versaocurso.objects.using('sca').filter(curso__in=cursos)
-    # Para saber os alunos que ainda estão cursando
-    itens = Itemhistoricoescolar.objects.using('sca').filter(ano=periodoAtual[0], periodo=periodoAtual[1] - 1).values_list('historico_escolar', flat=True)
-
-    planos = list(Plano.objects.using('default').filter(ano=proxperiodo[0],periodo=proxperiodo[1],situacao='M').values_list('aluno', flat=True))
-
-    alunos = Aluno.objects.using('sca').filter(historico__in=itens, versaocurso__in=versoes, id__in=planos).order_by('nome')
-
-    return render(request, 'cadd/lista_plano_estudos_avaliar.html', {
-                        'ativoPlanos': True,
-                        'alunos': alunos,
-                    })
-
-@login_required
-def avalia_plano(request, id_aluno):
-    """
-    Função para a avaliação do plano de estudos dos alunos pelos membros
-    das comissões
-    """
-
-    # Variáveis
-    versaocurso = ""
-    criticidade = ""
-    periodos = ""
-    trancamentos = ""
-    cargaeletivas = ""
-    reprovadas = ""
-    planoAtual = ""
-    itensAtual = ""
-    planosFuturos = ""
-    itensFuturos = ""
-    avaliacao = ""
-    # Processamento da vida acadêmica do aluno logado e obtidos o nome do aluno,
-    # versão do curso, faixa de criticidade, periodos, disciplinas reprovadas
-    vidaacademica = vida_academica(id_aluno)
-    aluno = vidaacademica[7]
-    criticidade = vidaacademica[4]
-    periodos = vidaacademica[6]
-    reprovadas = vidaacademica[3]
-    versaocurso = versao_curso(id_aluno)
-    trancamentos = vidaacademica[8]
-    cargaeletivas = vidaacademica[9]
-    proxperiodo = proximo_periodo(1)
-
-    # Planos atual e futuro para visualização
-    try:
-        planoAtual = Plano.objects.get(aluno=id_aluno, ano=proxperiodo[0],
-                        periodo=proxperiodo[1])
-        if planoAtual:
-            itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
-            planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)
-        if planosFuturos:
-            itensFuturos = ItemPlanoFuturo.objects.filter(
-                        planofuturo__in=planosFuturos)
-    except:
-        pass
-
-    if planoAtual.avaliacao:
-        avaliacao = planoAtual.avaliacao
-
-    if request.method == 'POST':
-        t_avaliacao = request.POST.get('avaliacao')
-        if t_avaliacao:
-            planoAtual.avaliacao = t_avaliacao
-            planoAtual.situacao = 'A'
-            try:
-                planoAtual.save()
-                messages.success(request, 'Avaliação salva com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e o ' + \
-                        'salvamento não foi realizado!')
-
-    return render(request, 'cadd/avalia_plano_estudos.html', {
-                        'aluno': aluno,
-                        'versaocurso': versaocurso[0],
-                        'periodos': periodos,
-                        'trancamentos': trancamentos,
-                        'cargaeletivas': cargaeletivas,
-                        'totaleletivas': versaocurso[1],
-                        'totalatividades': versaocurso[2],
-                        'criticidade': criticidade,
-                        'reprovadas': reprovadas,
-                        'planoAtual': planoAtual,
-                        'itensAtual': itensAtual,
-                        'planosFuturos': planosFuturos,
-                        'itensFuturos': itensFuturos,
-                        'avaliacao': avaliacao,
-                        'id_aluno': id_aluno,
                     })

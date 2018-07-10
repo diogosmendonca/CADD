@@ -14,6 +14,152 @@ PERIODO_CHOICES = (
     (2, '2º semestre'),
 )
 
+class Parametros(models.Model):
+    """
+    Classe de uso do sistema para a guarda dos parâmetros do sistema
+    """
+
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade laranja pode ter oriundo de um
+    # curso de 8 períodos ou mais
+    reprovacurso8periodoslaranja = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=2
+                )
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade laranja pode ter oriundo dos
+    # demais cursos
+    reprovademaiscursoslaranja = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=1
+                )
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade vermelha pode ter oriundo de um
+    # curso de 8 períodos ou mais
+    reprovacurso8periodosvermelha = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=3
+                )
+    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
+    # que um aluno na faixa de criticidade vermelha pode ter oriundo dos
+    # demais cursos
+    reprovademaiscursosvermelha = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=2
+                )
+    # Armazena a fórmula para calcular a quantidade máxima de períodos para
+    # integralização que um aluno na faixa de criticidade laranja pode cursar
+    # (início da faixa)
+    qtdperiodosiniciallaranja = models.CharField(
+                    max_length=10,
+                    blank=False,
+                    null=False,
+                    default='2 * N'
+                )
+    # Armazena a fórmula para calcular a quantidade máxima de períodos para
+    # integralização que um aluno na faixa de criticidade laranja pode cursar
+    # (final da faixa)
+    qtdperiodosfinallaranja = models.CharField(
+                    max_length=10,
+                    blank=False,
+                    null=False,
+                    default='2 * N'
+                )
+    # Armazena a fórmula para calcular a quantidade máxima de períodos para
+    # integralização que um aluno na faixa de criticidade vermelha pode cursar
+    qtdperiodosvermelha = models.CharField(
+                    max_length=10,
+                    blank=False,
+                    null=False,
+                    default='4 * N - 3'
+                )
+    # Armazena a quantidade mínima de créditos das disciplinas por semana
+    # que um aluno na faixa de criticidade preta pode ter
+    mincreditosporperiodopreta = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=20
+                )
+    # Armazena a quantidade máxima de créditos das disciplinas por semana
+    # que um aluno pode ter não estando na faixa de criticidade preta
+    maxcreditosporperiodo = models.PositiveSmallIntegerField(
+                    blank=False,
+                    null=False,
+                    default=28
+                )
+
+    class Meta:
+        managed = True
+        db_table = 'parametros'
+        app_label = 'cadd'
+
+
+class Perfil(models.Model):
+    """
+    Classe para estender a Model User padrão do Django adicionando alguns
+    campos necessários e criando um perfil para o usuário logado
+
+    TODO: Faltam os campos situacao e formaEvasao não contemplados no esquema
+            mas visualizados nas planilhas
+    """
+
+    # Constante para a lista da quantidade de itens de uma lista a serem
+    # visualizados por página
+    ITENSPAGINA_CHOICES = (
+        (None, 'Selecione o total de itens por página'),
+        (5, 5),
+        (10, 10),
+        (15, 15),
+        (20, 20),
+        (25, 25),
+        (30, 30),
+        (35, 35),
+        (40, 40),
+        (45, 45),
+        (50, 50),
+    )
+
+    # Armazena a id do usuário correspondente
+    # Relacionamento com a tabela auth_user do Django
+    user = models.OneToOneField(
+                    User,
+                    models.PROTECT,
+                    unique=True,
+                    related_name='profile'
+                )
+    # Armazena a matrícula seja do aluno ou professor
+    matricula = models.CharField(
+                    max_length=255,
+                    blank=False,
+                    null=False
+                )
+    # Armazena o identificador do usuário logado no banco de dados SCA, podendo
+    # ser um aluno (campo id da tabela Aluno) ou um professor (campo id da
+    # tabela Professor)
+    idusuario = models.BigIntegerField(
+                    blank=False,
+                    null=False,
+                )
+
+    # Armazena a quantidade de itens por página um objeto pode ser listado
+    # (paginação)
+    itenspagina = models.PositiveSmallIntegerField(
+                    choices=ITENSPAGINA_CHOICES,
+                    blank=False,
+                    null=False,
+                    default=5
+                )
+
+    class Meta:
+        managed = True
+        db_table = 'perfil'
+        app_label = 'cadd'
+
+
 class Comissao(models.Model):
     """
     Classe de uso do sistema para o cadastro das comissões
@@ -67,7 +213,7 @@ class Comissao(models.Model):
             "   descricao"
         )
 
-        # Return all rows from a cursor as a namedtuple
+        # Retorna todas as linhas de um cursos como um tupla nomeada
         desc = cursor.description
         nt_result = namedtuple('Result', [col[0] for col in desc])
         row = [nt_result(*row) for row in cursor.fetchall()]
@@ -246,62 +392,6 @@ class Convocacao(models.Model):
         app_label = 'cadd'
 
 
-class Documento(models.Model):
-    """
-    Classe de uso do sistema para a guarda dos documentos escaneados
-    dos alunos
-    """
-
-    # Armazena o ano de referência à documentação salvaguardada
-    ano = models.PositiveSmallIntegerField(
-                    u'Ano',
-                    blank=False,
-                    null=False
-                )
-    # Armazena o perído de referência à documentação salvaguardada
-    periodo = models.PositiveSmallIntegerField(
-                    u'Período',
-                    choices=PERIODO_CHOICES,
-                    blank=False,
-                    default=1,
-                    null=False
-                )
-    # Armazena a descrição da documentação
-    descricao = models.CharField(
-                    u'Descrição',
-                    max_length=50,
-                    blank=False,
-                    null=False
-                )
-    # Armazena o local do sistema de arquivos onde o documento está salvaguardado
-    indice = models.FileField(
-                    u'Índice',
-                    max_length=50,
-                    blank=False,
-                    null=False,
-                    upload_to='documentos/'
-                )
-    # Armazena o timestamp de upload do documento
-    # uploaded_at = models.DateTimeField(auto_now_add=True)
-    # Armazena a id do aluno convocado correspondente
-    # Relacionamento com a tabela Aluno do banco de dados SCA
-    aluno = models.ForeignKey(
-                    'sca.Aluno',
-                    models.DO_NOTHING,
-                    blank=False,
-                    null=False
-                )
-
-    # Função que retorna uma descrição para cada objeto documento
-    def __str__(self):
-        return self.descricao
-
-    class Meta:
-        managed = True
-        db_table = 'documento'
-        app_label = 'cadd'
-
-
 class Horario(models.Model):
     """
     Classe de uso do sistema para a guarda da prévia do horário do
@@ -333,6 +423,35 @@ class Horario(models.Model):
     # Função que retorna uma descrição para cada objeto horário
     def __str__(self):
         return str(self.ano) + '.' + str(self.periodo) + '-' + self.curso.sigla
+
+    # Função que retorna uma consulta customizada entre as tabelas Comissao,
+    # Membro e curso para que na visualização da lista de cursos sejam exibidos
+    # somente os que um membro pode alterar
+    def cursos_membros_sql(professor):
+
+        # Criação do cursor e execução por meio da SQl customizada
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT	" + \
+            "   c.curso_id as 'curso'" + \
+            "FROM " + \
+            "   (" + \
+            "       cadddb.comissao c " + \
+            "       INNER JOIN scadb.curso cur " + \
+            "       ON c.curso_id=cur.id" + \
+            "   )" + \
+            "   LEFT JOIN cadddb.membro m " + \
+            "   ON c.id=m.comissao_id " + \
+            "WHERE " + \
+            "   m.ativo=1 and " + \
+            "   m.professor_id=" + str(professor)
+        )
+
+        # Retorna todas as linhas de cursos como uma lista
+        desc = cursor.description
+        row = [item[0] for item in cursor.fetchall()]
+
+        return row
 
     class Meta:
         managed = True
@@ -449,6 +568,62 @@ class ItemHorario(models.Model):
     class Meta:
         managed = True
         db_table = 'item_horario'
+        app_label = 'cadd'
+
+
+class Documento(models.Model):
+    """
+    Classe de uso do sistema para a guarda dos documentos escaneados
+    dos alunos
+    """
+
+    # Armazena o ano de referência à documentação salvaguardada
+    ano = models.PositiveSmallIntegerField(
+                    u'Ano',
+                    blank=False,
+                    null=False
+                )
+    # Armazena o perído de referência à documentação salvaguardada
+    periodo = models.PositiveSmallIntegerField(
+                    u'Período',
+                    choices=PERIODO_CHOICES,
+                    blank=False,
+                    default=1,
+                    null=False
+                )
+    # Armazena a descrição da documentação
+    descricao = models.CharField(
+                    u'Descrição',
+                    max_length=50,
+                    blank=False,
+                    null=False
+                )
+    # Armazena o local do sistema de arquivos onde o documento está salvaguardado
+    indice = models.FileField(
+                    u'Índice',
+                    max_length=50,
+                    blank=False,
+                    null=False,
+                    upload_to='documentos/'
+                )
+    # Armazena o timestamp de upload do documento
+    # uploaded_at = models.DateTimeField(auto_now_add=True)
+    # Armazena a id do aluno convocado correspondente
+    # Relacionamento com a tabela Aluno do banco de dados SCA
+    aluno = models.ForeignKey(
+                    'sca.Aluno',
+                    models.DO_NOTHING,
+                    blank=False,
+                    null=False
+                )
+
+    # Função que retorna uma descrição para cada objeto documento
+    def __str__(self):
+        return self.descricao
+
+    class Meta:
+        managed = True
+        db_table = 'documento'
         app_label = 'cadd'
 
 
@@ -598,149 +773,4 @@ class ItemPlanoFuturo(models.Model):
     class Meta:
         managed = True
         db_table = 'item_plano_futuro'
-        app_label = 'cadd'
-
-
-class Parametros(models.Model):
-    """
-    Classe de uso do sistema para a guarda dos parâmetros do sistema
-    """
-
-    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
-    # que um aluno na faixa de criticidade laranja pode ter oriundo de um
-    # curso de 8 períodos ou mais
-    reprovacurso8periodoslaranja = models.PositiveSmallIntegerField(
-                    blank=False,
-                    null=False,
-                    default=2
-                )
-    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
-    # que um aluno na faixa de criticidade laranja pode ter oriundo dos
-    # demais cursos
-    reprovademaiscursoslaranja = models.PositiveSmallIntegerField(
-                    blank=False,
-                    null=False,
-                    default=1
-                )
-    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
-    # que um aluno na faixa de criticidade vermelha pode ter oriundo de um
-    # curso de 8 períodos ou mais
-    reprovacurso8periodosvermelha = models.PositiveSmallIntegerField(
-                    blank=False,
-                    null=False,
-                    default=3
-                )
-    # Armazena a quantidade máxima de reprovações em uma mesma disciplina
-    # que um aluno na faixa de criticidade vermelha pode ter oriundo dos
-    # demais cursos
-    reprovademaiscursosvermelha = models.PositiveSmallIntegerField(
-                    blank=False,
-                    null=False,
-                    default=2
-                )
-    # Armazena a fórmula para calcular a quantidade máxima de períodos para
-    # integralização que um aluno na faixa de criticidade laranja pode cursar
-    # (início da faixa)
-    qtdperiodosiniciallaranja = models.CharField(
-                    max_length=10,
-                    blank=False,
-                    null=False,
-                    default='2 * N'
-                )
-    # Armazena a fórmula para calcular a quantidade máxima de períodos para
-    # integralização que um aluno na faixa de criticidade laranja pode cursar
-    # (final da faixa)
-    qtdperiodosfinallaranja = models.CharField(
-                    max_length=10,
-                    blank=False,
-                    null=False,
-                    default='2 * N'
-                )
-    # Armazena a fórmula para calcular a quantidade máxima de períodos para
-    # integralização que um aluno na faixa de criticidade vermelha pode cursar
-    qtdperiodosvermelha = models.CharField(
-                    max_length=10,
-                    blank=False,
-                    null=False,
-                    default='4 * N - 3'
-                )
-    # Armazena a quantidade mínima de créditos das disciplinas por semana
-    # que um aluno na faixa de criticidade preta pode ter
-    mincreditosporperiodopreta = models.PositiveSmallIntegerField(
-                    blank=False,
-                    null=False,
-                    default=20
-                )
-    # Armazena a quantidade máxima de créditos das disciplinas por semana
-    # que um aluno pode ter não estando na faixa de criticidade preta
-    maxcreditosporperiodo = models.PositiveSmallIntegerField(
-                    blank=False,
-                    null=False,
-                    default=28
-                )
-
-    class Meta:
-        managed = True
-        db_table = 'parametros'
-        app_label = 'cadd'
-
-
-class Perfil(models.Model):
-    """
-    Classe para estender a Model User padrão do Django adicionando alguns
-    campos necessários e criando um perfil para o usuário logado
-
-    TODO: Faltam os campos situacao e formaEvasao não contemplados no esquema
-    """
-
-    # Constante para a lista da quantidade de itens de uma lista a serem
-    # visualizados por página
-    ITENSPAGINA_CHOICES = (
-        (None, 'Selecione o total de itens por página'),
-        (5, 5),
-        (10, 10),
-        (15, 15),
-        (20, 20),
-        (25, 25),
-        (30, 30),
-        (35, 35),
-        (40, 40),
-        (45, 45),
-        (50, 50),
-    )
-
-    # Armazena a id do usuário correspondente
-    # Relacionamento com a tabela auth_user do Django
-    user = models.OneToOneField(
-                    User,
-                    models.PROTECT,
-                    unique=True,
-                    related_name='profile'
-                )
-    # Armazena a matrícula seja do aluno ou professor
-    matricula = models.CharField(
-                    max_length=255,
-                    blank=False,
-                    null=False
-                )
-    # Armazena o identificador do usuário logado no banco de dados SCA, podendo
-    # ser um aluno (campo id da tabela Aluno) ou um professor (campo id da
-    # tabela Professor)
-    idusuario = models.BigIntegerField(
-                    blank=False,
-                    null=False,
-                )
-
-    # Armazena a quantidade de itens por página um objeto pode ser listado
-    # (paginação)
-    itenspagina = models.PositiveSmallIntegerField(
-                    choices=ITENSPAGINA_CHOICES,
-                    blank=False,
-                    null=False,
-                    default=5
-                )
-
-    class Meta:
-        managed = True
-        db_table = 'perfil'
         app_label = 'cadd'

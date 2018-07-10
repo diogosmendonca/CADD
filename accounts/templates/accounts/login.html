@@ -54,7 +54,8 @@
                   <input class="form-control ls-login-bg-password input-lg" id="password" name="password" type="password" placeholder="Informe a senha" required>
                 </div>
                 <input type="submit" value="Entrar" class="btn botao-padrao botao-azul"><br />
-                <a href="{% url 'password_reset' %}">Esqueceu a senha?</a><br />
+                {# Não foi concluída a parte de resetar a senha #}
+<!--                <a href="{% url 'password_reset' %}">Esqueceu a senha?</a><br /> -->
                 <a href="{% url 'accounts:usuario_registrar' %}">Não tem registro?</a>
               </form>
             </div>

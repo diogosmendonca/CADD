@@ -150,7 +150,7 @@ def usuario_perfil(request):
 
         # Foi utilizada esta crítica abaixo para que não se misturasse as
         # mensagens de erro da alteração de senha e da alteração da
-        # quantidade de linhas por página
+        # quantidade de linhas por página (por ser multiform)
         if form.is_valid():
             try:
                 # Altera a nova senha
@@ -197,10 +197,6 @@ def usuario_perfil(request):
                     'A nova senha deve possuir no mínimo 1 número!'
                 )
             return redirect('accounts:usuario_perfil')
-#            return render(request, 'accounts/perfil.html', {
-#                                'form': form,
-#                                'form2': form2,
-#                            })
 
     else:
         form = PasswordChangeForm(request.user)
@@ -265,9 +261,9 @@ def home(request):
         totaleletivas = t_versaocurso[1]
         totalatividades = t_versaocurso[2]
         criticidade = vidaacademica[4]
-        periodos = vidaacademica[6]
-        trancamentos = vidaacademica[8]
-        cargaeletivas = vidaacademica[9]
+        periodos = vidaacademica[7]
+        trancamentos = vidaacademica[9]
+        cargaeletivas = vidaacademica[10]
         # Convocação para alguma reunião
         if not convocacao:
             messages.error(request, 'Aluno(a), você não possui nenhuma reunião agendada!')

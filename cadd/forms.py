@@ -260,9 +260,12 @@ class HorarioForm(forms.ModelForm):
     """
 
     def __init__(self, *args, **kwargs):
+        if 'professor' in kwargs:
+            self.professor = kwargs.pop('professor')
         super (HorarioForm, self).__init__(*args, **kwargs)
+        curso = Horario.cursos_membros_sql(self.professor)
         self.fields['curso'].queryset = \
-            Curso.objects.using('sca').distinct().order_by('nome')
+            Curso.objects.using('sca').order_by('nome').filter(id__in=curso)
         self.fields['curso'].empty_label = 'Selecione o curso'
 
     class Meta:
@@ -272,7 +275,7 @@ class HorarioForm(forms.ModelForm):
             'ano': NumberInput(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
-                    'min': 2016, 'max': 2050, 'step': 1,
+                    'min': 2018, 'max': 2050, 'step': 1,
                     'empty_label': 'Selecione o ano'}
                 ),
             'periodo': Select(attrs={
@@ -360,8 +363,18 @@ class DocumentoForm(forms.ModelForm):
 
     class Meta:
         model = Documento
-        exclude = (id, 'ano', 'periodo')
+        exclude = (id, )
         widgets = {
+            'ano': NumberInput(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required',
+                    'min': 2018, 'max': 2050, 'step': 1,
+                    'empty_label': 'Selecione o ano'}
+                ),
+            'periodo': Select(attrs={
+                    'class': 'form-control',
+                    'data-rules': 'required'
+                }),
             'descricao': TextInput(attrs={
                     'class': 'form-control',
                     'data-rules': 'required',
