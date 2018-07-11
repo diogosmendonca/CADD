@@ -14,6 +14,31 @@
   </div>
   {% endif %}
   {% if horarios %}
+  {% if copiabotoes %}
+  <div class="row alinhamento-central">
+    <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
+    <a href="{% url 'cadd:novo_horario' %}" class="btn botao-padrao botao-azul" role="button">Adicionar horario</a>
+  </div>
+  <div class="row alinhamento-central">
+    <div class="pagination">
+      <span class="step-links">
+        {% if horarios.has_previous %}
+        <a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
+        <a href="?page={{ horarios.previous_page_number }}" class="btn btn-info">Anterior</a>
+        {% endif %}
+
+        <span class="current">
+          Página {{ horarios.number }} de {{ horarios.paginator.num_pages }}
+        </span>
+
+        {% if horarios.has_next %}
+        <a href="?page={{ horarios.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
+        <a href="?page={{ horarios.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+  {% endif %}
   <div class="row alinhamento-central">
     <div class="form-group">
       <table class="table table-striped table-condensed">

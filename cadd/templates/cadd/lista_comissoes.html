@@ -17,6 +17,33 @@
   {% endif %}
   {# Caso haja pelo menos uma comissão cadastrada #}
   {% if comissoes %}
+  {% if copiabotoes %}
+  <div class="row alinhamento-central">
+    <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
+    <a href="{% url 'cadd:nova_comissao' %}" class="btn botao-padrao botao-azul" role="button">Adicionar comissão</a>
+  </div>
+  <div class="row alinhamento-central">
+    <div class="pagination">
+      <span class="step-links">
+        {# Caso haja mais de uma página de resultados, habilita os botões conforme o necessário #}
+        {% if comissoes.has_previous %}
+        <a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
+        <a href="?page={{ comissoes.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
+        {% endif %}
+
+        <span class="current">
+          Página {{ comissoes.number }} de {{ comissoes.paginator.num_pages }}
+        </span>
+
+        {# Caso haja mais de uma página de resultados, habilita os botões (idem acima) #}
+        {% if comissoes.has_next %}
+        <a href="?page={{ comissoes.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
+        <a href="?page={{ comissoes.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+  {% endif %}
   <div class="row alinhamento-central">
     <div class="form-group">
       <table class="table table-striped table-condensed">

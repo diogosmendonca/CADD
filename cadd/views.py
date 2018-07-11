@@ -120,7 +120,8 @@ def lista_comissoes(request):
 
     return render(request, 'cadd/lista_comissoes.html', {
                         'comissoes': comissoes,
-                        'ativoComissoes': True
+                        'ativoComissoes': True,
+                        'copiabotoes': len(comissoes_list) >= 10 and linhas >= 10
                     })
 
 @login_required
@@ -214,7 +215,8 @@ def lista_membros(request, id_comissao):
                         'membros': membros,
                         'id_comissao': id_comissao,
                         'comissao': comissao,
-                        'ativoComissoes': True
+                        'ativoComissoes': True,
+                        'copiabotoes': membros_list.count() >= 10 and linhas >= 10
                     })
 
 @login_required
@@ -308,7 +310,8 @@ def lista_reunioes(request):
 
     return render(request, 'cadd/lista_reunioes.html', {
                         'reunioes': reunioes,
-                        'ativoReunioes': True
+                        'ativoReunioes': True,
+                        'copiabotoes': reunioes_list.count() >= 10 and linhas >= 10
                     })
 
 @login_required
@@ -362,8 +365,9 @@ def novo_convocado(request, id_reuniao):
     Função para a cadastro de um convocado para uma reunião específica
     """
 
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     if request.method == 'POST':
-        form = ConvocadoForm(request.POST)
+        form = ConvocadoForm(request.POST, professor=professor)
         if form.is_valid():
             reuniao = Reuniao.objects.get(id=id_reuniao)
             f = form.save(commit=False)
@@ -378,7 +382,7 @@ def novo_convocado(request, id_reuniao):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_convocados', id_reuniao)
     else:
-        form = ConvocadoForm()
+        form = ConvocadoForm(professor=professor)
 
     return render(request, 'cadd/novo_convocado.html', {
                         'form': form,
@@ -406,7 +410,8 @@ def lista_convocados(request, id_reuniao):
                         'convocados': convocados,
                         'id_reuniao': id_reuniao,
                         'reuniao': reuniao,
-                        'ativoReunioes': True
+                        'ativoReunioes': True,
+                        'copiabotoes': convocados_list.count() >= 10 and linhas >= 10
                     })
 
 @login_required
@@ -431,9 +436,10 @@ def editar_convocado(request, id_convocado, id_reuniao):
     Função para a edição de um convocado para uma reuniao específica
     """
 
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     convocado = get_object_or_404(Convocacao, id=id_convocado)
     if request.method == 'POST':
-        form = ConvocadoForm(request.POST, instance=convocado)
+        form = ConvocadoForm(request.POST, instance=convocado, professor=professor)
         if form.is_valid():
             try:
                 form.save()
@@ -443,7 +449,7 @@ def editar_convocado(request, id_convocado, id_reuniao):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_convocados', id_reuniao)
     else:
-        form = ConvocadoForm(instance=convocado)
+        form = ConvocadoForm(instance=convocado, professor=professor)
 
     return render(request, 'cadd/novo_convocado.html', {
                         'form': form,
@@ -505,15 +511,19 @@ def lista_horarios(request):
 #    horarios_list = Horario.objects.filter(
 #                        curso__in=comissoes, ano=proxPeriodo[0], \
 #                        periodo=proxPeriodo[1])
-    horarios_list = Horario.objects.filter(curso__in=comissoes)
+    horarios_list = Horario.objects.filter(
+                        curso__in=comissoes
+                    ).order_by('ano', 'periodo')
     paginator = Paginator(horarios_list, linhas)
     page = request.GET.get('page')
     horarios = paginator.get_page(page)
 
     return render(request, 'cadd/lista_horarios.html', {
                         'horarios': horarios,
-                        'ativoHorarios': True
+                        'ativoHorarios': True,
+                        'copiabotoes': horarios_list.count() >= 10 and linhas >= 10
                     })
+
 
 @login_required
 def excluir_horario(request, id_horario):
@@ -609,7 +619,8 @@ def lista_itenshorario(request, id_horario):
                         'itenshorario': itenshorario,
                         'id_horario': id_horario,
                         'horario': horario,
-                        'ativoHorarios': True
+                        'ativoHorarios': True,
+                        'copiabotoes': itenshorario_list.count() >= 10 and linhas >= 10
                     })
 
 @login_required
@@ -678,7 +689,7 @@ def lista_planos_avaliar(request):
     versoes = Versaocurso.objects.using('sca').filter(curso__in=cursos)
     # Para saber os alunos que ainda estão cursando
     itens = Itemhistoricoescolar.objects.using('sca').filter(
-                                ano=periodoAtual[0], periodo=periodoAtual[1] # - 1
+                                ano=periodoAtual[0], periodo=periodoAtual[1] - 1
                             ).values_list('historico_escolar', flat=True)
 
     planos = list(Plano.objects.using('default').filter(
@@ -779,8 +790,9 @@ def novo_documento(request):
     Função para o cadastro de um novo documento
     """
 
+    professor = Perfil.objects.get(user=request.user.id).idusuario
     if request.method == 'POST':
-        form = DocumentoForm(request.POST, request.FILES)
+        form = DocumentoForm(request.POST, request.FILES, professor=professor)
         if form.is_valid():
             try:
                 form.save()
@@ -790,7 +802,7 @@ def novo_documento(request):
                         'salvamento não foi realizado!')
             return redirect('cadd:lista_documentos')
     else:
-        form = DocumentoForm()
+        form = DocumentoForm(professor=professor)
 
     return render(request, 'cadd/novo_documento.html', {
                         'form': form,
@@ -813,7 +825,8 @@ def lista_documentos(request):
 
     return render(request, 'cadd/lista_documentos.html', {
                         'documentos': documentos,
-                        'ativoDocumentos': True
+                        'ativoDocumentos': True,
+                        'copiabotoes': documentos_list.count() >= 10 and linhas >= 10
                     })
 
 @login_required
@@ -892,9 +905,10 @@ def lista_planos(request):
     itensFuturos = ""
     avaliacao = ""
 
+    proxPeriodo = proximo_periodo(1)
     usuario = Perfil.objects.get(user=request.user.id)
     try:
-        planoAtual = Plano.objects.get(aluno=usuario.idusuario)
+        planoAtual = Plano.objects.get(aluno=usuario.idusuario, ano=proxPeriodo[0], periodo=proxPeriodo[1])
         if planoAtual:
             avaliacao = planoAtual.avaliacao
             itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
@@ -934,55 +948,64 @@ def novo_plano_previa(request):
     nomecurso = curso[0]
     versaocurso = versao_curso(usuario.idusuario)
     criticidade = vidaacademica[4]
-    maxcreditos = vidaacademica[5]
-    periodos = vidaacademica[6]
-    plano = 0
+    maxcreditos = vidaacademica[6]
+    periodos = vidaacademica[7]
     continua = False
+#    itenst = 0
 
     # Prévias e afins
     horario = Horario.objects.filter(
-                    ano=proxPeriodo[0], periodo=proxPeriodo[1], curso=curso[2]
-                )
+                            ano=proxPeriodo[0], periodo=proxPeriodo[1], curso=curso[2]
+                        )
     previas = list(ItemHorario.objects.filter(
-                    horario__in=horario).values_list(
-                    'disciplina', flat=True).exclude(
-                    disciplina__in=vidaacademica[0])
-                )
+                            horario__in=horario).values_list(
+                            'disciplina', flat=True).exclude(
+                            disciplina__in=vidaacademica[0])
+                        )
     # Ordenação do resultado
     previas.sort()
     podeLecionar = ItemHorario.objects.filter(
-                    disciplina__in=previas).order_by('diasemana', 'periodo')
+                            disciplina__in=previas
+                        ).order_by('diasemana', 'periodo')
 
     aluno = Aluno.objects.get(id=usuario.idusuario)
 
-    planot = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
-    if planot:
+    plano = Plano.objects.filter(ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
+    if plano:
         continua = True
-        itenst = ItemPlanoAtual.objects.filter(plano=planot).values_list('id')
+#        itenst = ItemPlanoAtual.objects.filter(plano=planot).values_list('id')
 
     if request.method == 'POST':
         disciplinas = request.POST.get('discip')
         if disciplinas:
             disciplinas = disciplinas.split("_")
-            try:
-                plano = get_object_or_404(
-                    Plano, ano=proxPeriodo[0],
-                    periodo=proxPeriodo[1], aluno=aluno
-                )
-                plano.situacao='M'
-                plano.avaliacao=''
-                plano.save()
-            except:
-                plano = Plano.objects.create(
-                    ano=proxPeriodo[0], periodo=proxPeriodo[1], situacao='M',
-                    aluno=aluno
-                )
+            if continua:
+                try:
+                    plano = get_object_or_404(
+                        Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno
+                    )
+                    plano.situacao = 'M'
+                    plano.avaliacao = Null
+                    plano.save()
+                except:
+                    pass
+            else:
+                try:
+                    plano = Plano.objects.create(
+                        ano=proxPeriodo[0], periodo=proxPeriodo[1], situacao='M',
+                        aluno=aluno
+                    )
+                except:
+                    pass
             for d in disciplinas:
                 disc = int(d)
                 itemhorario = ItemHorario.objects.get(id=disc)
                 i = ItemPlanoAtual.objects.create(
                     plano=plano, itemhorario=itemhorario
                 )
+    # Realizada novamente a conferência quando da criação de um novo plano
+    if plano:
+        continua = True
 
     return render(request, 'cadd/novo_plano_estudos_atual.html', {
                         'ativoPlanos': True,
@@ -993,8 +1016,6 @@ def novo_plano_previa(request):
                         'nomecurso': nomecurso,
                         'versaocurso': versaocurso[0],
                         'periodos': periodos,
-                        'planot': planot,
-                        'itenst': itenst,
                         'continua': continua,
                     })
 
@@ -1015,8 +1036,8 @@ def novo_plano_futuro(request):
     # Verificação do nome do curso, versão do curso e faixa de criticidade
     versaocurso = versao_curso(usuario.idusuario)
     criticidade = vidaacademica[4]
-    maxcreditos = vidaacademica[5]
-    periodos = vidaacademica[6]
+    maxcreditos = vidaacademica[6]
+    periodos = vidaacademica[7]
     plano = 1
     proxPeriodo = proximo_periodo(1)
     plano = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=usuario.idusuario)

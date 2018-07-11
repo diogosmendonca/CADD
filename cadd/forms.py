@@ -6,7 +6,8 @@ from django.forms import TextInput, Textarea, Select, CheckboxInput, \
 
 from .models import Parametros, Comissao, Membro, Horario, ItemHorario, Plano, \
                     ItemPlanoAtual, Reuniao, Convocacao, Documento, Perfil
-from sca.models import Curso, Professor, Turma, Disciplina, Aluno
+from sca.models import Curso, Professor, Turma, Disciplina, Aluno, Versaocurso
+from cadd.utils import periodo_atual
 
 class ParametrosForm(forms.ModelForm):
     """
@@ -226,9 +227,22 @@ class ConvocadoForm(forms.ModelForm):
     """
 
     def __init__(self, *args, **kwargs):
+        if 'professor' in kwargs:
+            self.professor = kwargs.pop('professor')
         super (ConvocadoForm, self).__init__(*args, **kwargs)
+        membro = Membro.objects.filter(
+                            professor=self.professor
+                        ).exclude(ativo=0).values_list('comissao')
+        comissao = list(Comissao.objects.filter(
+                            id__in=membro
+                        ).distinct().values_list('curso'))
+        versao = Versaocurso.objects.using('sca').filter(
+                            curso__in=comissao
+                        ).values_list('id')
         self.fields['aluno'].queryset = \
-            Aluno.objects.using('sca').distinct().order_by('nome')
+            Aluno.objects.using('sca').filter(
+                            versaocurso__in=versao
+                        ).distinct().order_by('nome')
         self.fields['aluno'].empty_label = 'Selecione o aluno'
 
     class Meta:
@@ -297,11 +311,17 @@ class ItemHorarioForm(forms.ModelForm):
     """
 
     def __init__(self, *args, **kwargs):
+        periodoAtual = periodo_atual()
         super (ItemHorarioForm, self).__init__(*args, **kwargs)
         self.fields['turma'].queryset = \
-            Turma.objects.using('sca').filter(ano=2018, periodo=0).order_by('codigo')
+            Turma.objects.using('sca').filter(
+                            ano=periodoAtual[0], periodo=periodoAtual[1] - 1
+                        ).order_by('codigo')
+        versoesativas = Versaocurso.objects.using('sca').exclude(situacao=0)
         self.fields['disciplina'].queryset = \
-            Disciplina.objects.using('sca').order_by('nome').distinct()   #.values('nome','codigo')
+            Disciplina.objects.using('sca').filter(
+                            versaocurso__in=versoesativas
+                        ).order_by('nome').distinct()
         self.fields['professor'].queryset = \
             Professor.objects.using('sca').order_by('nome').distinct()
         self.fields['periodo'].empty_label = 'Selecione o período'
@@ -350,15 +370,44 @@ class ItemHorarioForm(forms.ModelForm):
         }
 
 
+class AvaliaPlanoForm(forms.ModelForm):
+    """
+    Classe de uso do sistema para o formulário de avaliação plano de estudos
+    """
+
+    class Meta:
+        model = Plano
+        fields = ['avaliacao']
+        widgets = {
+            'avaliacao': Textarea(attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Informe a avaliação'
+                })
+        }
+
+
 class DocumentoForm(forms.ModelForm):
     """
     Classe de uso do sistema para o formulário de documentos
     """
 
     def __init__(self, *args, **kwargs):
+        if 'professor' in kwargs:
+            self.professor = kwargs.pop('professor')
         super (DocumentoForm, self).__init__(*args, **kwargs)
+        membro = Membro.objects.filter(
+                            professor=self.professor
+                        ).exclude(ativo=0).values_list('comissao')
+        comissao = list(Comissao.objects.filter(
+                            id__in=membro
+                        ).distinct().values_list('curso'))
+        versao = Versaocurso.objects.using('sca').filter(
+                            curso__in=comissao
+                        ).values_list('id')
         self.fields['aluno'].queryset = \
-            Aluno.objects.using('sca').distinct().order_by('nome')
+            Aluno.objects.using('sca').filter(
+                            versaocurso__in=versao
+                        ).distinct().order_by('nome')
         self.fields['aluno'].empty_label = 'Selecione o aluno'
 
     class Meta:
@@ -369,8 +418,8 @@ class DocumentoForm(forms.ModelForm):
                     'class': 'form-control',
                     'data-rules': 'required',
                     'min': 2018, 'max': 2050, 'step': 1,
-                    'empty_label': 'Selecione o ano'}
-                ),
+                    'empty_label': 'Selecione o ano'
+                }),
             'periodo': Select(attrs={
                     'class': 'form-control',
                     'data-rules': 'required'
@@ -390,20 +439,4 @@ class DocumentoForm(forms.ModelForm):
 #                    'data-rules': 'required',
 #                    'placeholder': 'Informe o arquivo a ser upladed'
 #                }),
-        }
-
-
-class AvaliaPlanoForm(forms.ModelForm):
-    """
-    Classe de uso do sistema para o formulário de avaliação plano de estudos
-    """
-
-    class Meta:
-        model = Plano
-        fields = ['avaliacao']
-        widgets = {
-            'avaliacao': Textarea(attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Informe a avaliação'
-                })
         }

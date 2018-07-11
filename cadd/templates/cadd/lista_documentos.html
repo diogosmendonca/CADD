@@ -17,6 +17,37 @@
   {% endif %}
   {# Caso haja pelo menos um documento cadastrado #}
   {% if documentos %}
+  {% if copiabotoes %}
+  <div class="row">
+    <div class="col-7">
+      <div class="row alinhamento-central">
+        <a href="{% url 'home' %}" class="btn botao-padrao">Voltar</a>
+        <a href="{% url 'cadd:novo_documento' %}" class="btn botao-padrao botao-azul" role="button">Adicionar documento</a>
+      </div>
+      <div class="row alinhamento-central">
+        <div class="pagination">
+          <span class="step-links">
+            {# Caso haja mais de uma página de resultados, habilita os botões conforme o necessário #}
+            {% if documentos.has_previous %}
+            <a href="?page=1" class="btn btn-info botao-padrao">Primeiro</a>
+            <a href="?page={{ documentos.previous_page_number }}" class="btn btn-info botao-padrao">Anterior</a>
+            {% endif %}
+
+            <span class="current">
+              Página {{ documentos.number }} de {{ documentos.paginator.num_pages }}
+            </span>
+
+            {# Caso haja mais de uma página de resultados, habilita os botões (idem acima) #}
+            {% if documentos.has_next %}
+            <a href="?page={{ documentos.next_page_number }}" class="btn btn-info botao-padrao">Próximo</a>
+            <a href="?page={{ documentos.paginator.num_pages }}" class="btn btn-info botao-padrao">Último</a>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div class="row">
     <div class="col-7">
       <div class="row alinhamento-central">

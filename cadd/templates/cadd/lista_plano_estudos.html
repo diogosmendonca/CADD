@@ -39,7 +39,7 @@
                   {% for i in itensAtual %}
                   <li id="{{ i.itemhorario.disciplina.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
                     <div class="detalhes-completos">
-                      <span class="disciplina-previa-label-nome">{{ i.itemhorario.disciplina.nome }} ({{ i.itemhorario.disciplina.codigo }})</span><br />
+                      <span class="disciplina-previa-label-nome">{% filter force_escape|upper %}{{ i.itemhorario.disciplina.nome }}{% endfilter %} ({{ i.itemhorario.disciplina.codigo }})</span><br />
                       {% if i.itemhorario.diasemana == 7 or i.itemhorario.diasemana == 8 %}
                       <span class="disciplina-previa-nome">{{ i.itemhorario.get_diasemana_display }}</span><br />
                       {% else %}

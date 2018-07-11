@@ -341,7 +341,7 @@ class Reuniao(models.Model):
 
     # Função que retorna uma descrição para cada objeto reunião
     def __str__(self):
-        return self.local + " em " + str(self.data.strftime('%d/%m/%Y')) + \
+        return self.local.upper() + " em " + str(self.data.strftime('%d/%m/%Y')) + \
                     " às " + str(self.inicio.strftime('%H:%M')) + "h"
 
     class Meta:
@@ -422,7 +422,7 @@ class Horario(models.Model):
 
     # Função que retorna uma descrição para cada objeto horário
     def __str__(self):
-        return str(self.ano) + '.' + str(self.periodo) + '-' + self.curso.sigla
+        return str(self.ano) + '.' + str(self.periodo) + '-' + self.curso.sigla.upper()
 
     # Função que retorna uma consulta customizada entre as tabelas Comissao,
     # Membro e curso para que na visualização da lista de cursos sejam exibidos
@@ -619,7 +619,7 @@ class Documento(models.Model):
 
     # Função que retorna uma descrição para cada objeto documento
     def __str__(self):
-        return self.descricao
+        return self.descricao.upper()
 
     class Meta:
         managed = True

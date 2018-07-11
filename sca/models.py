@@ -82,7 +82,7 @@ class Aluno(models.Model):
                 )
 
     def __str__(self):
-        return self.nome
+        return self.nome.upper()
 
     class Meta:
         managed = False
@@ -174,7 +174,7 @@ class Curso(models.Model):
                 )
 
     def __str__(self):
-        return self.nome
+        return self.nome.upper()
 
     class Meta:
         managed = False
@@ -224,7 +224,7 @@ class Departamento(models.Model):
                 )
 
     def __str__(self):
-        return self.nome
+        return self.nome.upper()
 
     class Meta:
         managed = False
@@ -328,8 +328,8 @@ class Disciplina(models.Model):
                 )
 
     def __str__(self):
-        return self.nome + " (" + self.codigo + ")" # + " (versão do curso: " + \
-#                self.versaocurso.numero + ")"
+        return self.nome.upper() + " (" + self.codigo + ")" # + \
+#                " (versão do curso: " + self.versaocurso.numero + ")"
 
     class Meta:
         managed = False
@@ -602,7 +602,7 @@ class Professor(models.Model):
                 )
 
     def __str__(self):
-        return self.nome
+        return self.nome.upper()
 
     class Meta:
         managed = False
