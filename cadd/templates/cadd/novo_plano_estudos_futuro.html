@@ -54,15 +54,16 @@
         </div>
         <div class="row">
           <div id="accordion" class="col-11p quadro-periodos quadro">
+            {% for p in listaperiodos %}
             <div class="card">
-              <div class="card-header" id="headingOne">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  <span class="card-header-text"> 2019.1 </span>
+              <div class="card-header" id="heading{{ p.0 }}{{ p.1 }}">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ p.0 }}{{ p.1 }}" aria-expanded="true" aria-controls="collapse{{ p.0 }}{{ p.1 }}">
+                  <span class="card-header-text"> {{ p.2 }} </span>
                 </button>
               </div>
-              <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+              <div id="collapse{{ p.0 }}{{ p.1 }}" class="collapse{% if forloop.counter == 1 %} show{% endif %}" aria-labelledby="heading{{ p.0 }}{{ p.1 }}" data-parent="#accordion">
                 <div class="card-body-integralizacao">
-                  <ul id="collapseOneList" class="collapseList lista-de-disciplinas">
+                  <ul id="collapse{{ p.0 }}{{ p.1 }}List" class="collapseList lista-de-disciplinas">
                     <li class="receptor-disciplina" ondrop="drop(event)" ondragover="allowDrop(event)" >
                       <span id="text-return" ondrop="dropparent(event)">SOLTAR DISCIPLINA AQUI</span>
                     </li>
@@ -70,44 +71,13 @@
                 </div>
               </div>
             </div>
-            <div class="card">
-              <div class="card-header" id="headingTwo">
-                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  <span class="card-header-text"> 2019.2 </span>
-                </button>
-              </div>
-              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                <div class="card-body-integralizacao">
-                  <ul id="collapseTwoList" class="collapseList lista-de-disciplinas">
-                    <li class="receptor-disciplina" ondrop="drop(event)" ondragover="allowDrop(event)" >
-                      <span id="text-return" ondrop="dropparent(event)">SOLTAR DISCIPLINA AQUI</span>
-                    </li>
-                  </ul>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header" id="headingThree">
-                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <span class="card-header-text"> 2020.1 </span>
-                </button>
-              </div>
-              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                <div class="card-body-integralizacao">
-                  <ul id="collapseThreeList" class="collapseList lista-de-disciplinas">
-                    <li class="receptor-disciplina" ondrop="drop(event)" ondragover="allowDrop(event)" >
-                      <span id="text-return" ondrop="dropparent(event)">SOLTAR DISCIPLINA AQUI</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            {% endfor %}
           </div>
         </div>
         <div class="form-group">
           <form class="" action="" method="post">
             {% csrf_token %}
-<!--            <input type="hidden" id="plano" name="plano" value="{{ plano }}"> -->
-            <input type="text" id="discip" name="discip">
+            <input type="hidden" id="discip" name="discip">
             <div id="salvar-futuro">
               <br>
               <a href="{% url 'cadd:novo_plano_previa' %}" class="btn botao-padrao">Voltar a Etapa 1</a>

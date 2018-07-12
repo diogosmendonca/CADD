@@ -36,7 +36,7 @@ function preencherDisciplinas(){
     listaDeItens = listaDeDisciplinas[i].getElementsByClassName("item_disc_disciplinas");
     for (y = 0; y < listaDeItens.length; y++) {
       var hiddenText = document.getElementById("discip").value;
-      document.getElementById("discip").value = ((hiddenText!="") ? "_" : "") + periodo.trim() + "#" + listaDeItens[y].id  // + "_";
+      document.getElementById("discip").value = ((hiddenText!="") ? "_" : "") + periodo.trim() + "#" + listaDeItens[y].id;
     }
   }
 }

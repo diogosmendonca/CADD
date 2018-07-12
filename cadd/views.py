@@ -680,24 +680,28 @@ def lista_planos_avaliar(request):
     membro = Membro.objects.filter(
                                 professor=usuario.idusuario
                             ).values_list('comissao', flat=True)
-    comissoes = list(Comissao.objects.using('default').filter(
+    # Para saber as comissões que o membro logado faz parte
+    comissoes = list(Comissao.objects.filter(
                                 id__in=membro
                             ).values_list('curso', flat=True))
+    # Para saber os cursos que o membro logado pode atuar
     cursos = Curso.objects.using('sca').filter(
                                 id__in=comissoes
                             ).values_list('versaocurso', flat=True)
+    # Para saber as versões de cursos que o membro logado pode atuar
     versoes = Versaocurso.objects.using('sca').filter(curso__in=cursos)
     # Para saber os alunos que ainda estão cursando
     itens = Itemhistoricoescolar.objects.using('sca').filter(
                                 ano=periodoAtual[0], periodo=periodoAtual[1] - 1
                             ).values_list('historico_escolar', flat=True)
-
-    planos = list(Plano.objects.using('default').filter(
-                                ano=proxperiodo[0], periodo=proxperiodo[1], situacao='M'
+    # Para saber os alunos cujo plano de estudos encontra-se cadastrado e em
+    # situação 'Montado' para o próximo semestre
+    planos = list(Plano.objects.using('default').filter(ano=proxperiodo[0],
+                                periodo=proxperiodo[1], situacao='M'
                             ).values_list('aluno', flat=True))
-
-    alunos = Aluno.objects.using('sca').filter(
-                                historico__in=itens, versaocurso__in=versoes, id__in=planos
+    # Dados dos alunos com a junção das informações selecionadas
+    alunos = Aluno.objects.using('sca').filter(historico__in=itens,
+                                versaocurso__in=versoes, id__in=planos
                             ).order_by('nome')
 
     return render(request, 'cadd/lista_plano_estudos_avaliar.html', {
@@ -727,9 +731,9 @@ def avalia_plano(request, id_aluno):
     # Processamento da vida acadêmica do aluno logado e obtidos o nome do aluno,
     # versão do curso, faixa de criticidade, periodos, disciplinas reprovadas
     vidaacademica = vida_academica(id_aluno)
-    aluno = vidaacademica[7]
+    aluno = vidaacademica[8]
     criticidade = vidaacademica[4]
-    periodos = vidaacademica[6]
+    periodos = vidaacademica[7]
     reprovadas = vidaacademica[3]
     versaocurso = versao_curso(id_aluno)
     trancamentos = vidaacademica[9]
@@ -908,13 +912,17 @@ def lista_planos(request):
     proxPeriodo = proximo_periodo(1)
     usuario = Perfil.objects.get(user=request.user.id)
     try:
-        planoAtual = Plano.objects.get(aluno=usuario.idusuario, ano=proxPeriodo[0], periodo=proxPeriodo[1])
+        planoAtual = Plano.objects.get(aluno=usuario.idusuario,
+                        ano=proxPeriodo[0], periodo=proxPeriodo[1]
+                    )
         if planoAtual:
             avaliacao = planoAtual.avaliacao
             itensAtual = ItemPlanoAtual.objects.filter(plano=planoAtual)
             planosFuturos = PlanoFuturo.objects.filter(plano=planoAtual)
         if planosFuturos:
-            itensFuturos = ItemPlanoFuturo.objects.filter(planofuturo__in=planosFuturos)
+            itensFuturos = ItemPlanoFuturo.objects.filter(
+                        planofuturo__in=planosFuturos
+                    )
     except:
         pass
 
@@ -951,11 +959,10 @@ def novo_plano_previa(request):
     maxcreditos = vidaacademica[6]
     periodos = vidaacademica[7]
     continua = False
-#    itenst = 0
 
     # Prévias e afins
-    horario = Horario.objects.filter(
-                            ano=proxPeriodo[0], periodo=proxPeriodo[1], curso=curso[2]
+    horario = Horario.objects.filter(ano=proxPeriodo[0], periodo=proxPeriodo[1],
+                            curso=curso[2]
                         )
     previas = list(ItemHorario.objects.filter(
                             horario__in=horario).values_list(
@@ -970,7 +977,9 @@ def novo_plano_previa(request):
 
     aluno = Aluno.objects.get(id=usuario.idusuario)
 
-    plano = Plano.objects.filter(ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno)
+    plano = Plano.objects.filter(ano=proxPeriodo[0], periodo=proxPeriodo[1],
+                            aluno=aluno
+                        )
     if plano:
         continua = True
 #        itenst = ItemPlanoAtual.objects.filter(plano=planot).values_list('id')
@@ -981,9 +990,9 @@ def novo_plano_previa(request):
             disciplinas = disciplinas.split("_")
             if continua:
                 try:
-                    plano = get_object_or_404(
-                        Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=aluno
-                    )
+                    plano = get_object_or_404(Plano, ano=proxPeriodo[0],
+                            periodo=proxPeriodo[1], aluno=aluno
+                        )
                     plano.situacao = 'M'
                     plano.avaliacao = Null
                     plano.save()
@@ -991,10 +1000,9 @@ def novo_plano_previa(request):
                     pass
             else:
                 try:
-                    plano = Plano.objects.create(
-                        ano=proxPeriodo[0], periodo=proxPeriodo[1], situacao='M',
-                        aluno=aluno
-                    )
+                    plano = Plano.objects.create(ano=proxPeriodo[0],
+                            periodo=proxPeriodo[1], situacao='M', aluno=aluno
+                        )
                 except:
                     pass
             for d in disciplinas:
@@ -1038,41 +1046,48 @@ def novo_plano_futuro(request):
     criticidade = vidaacademica[4]
     maxcreditos = vidaacademica[6]
     periodos = vidaacademica[7]
-    plano = 1
     proxPeriodo = proximo_periodo(1)
-    plano = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1], aluno=usuario.idusuario)
+    plano = get_object_or_404(Plano, ano=proxPeriodo[0], periodo=proxPeriodo[1],
+                            aluno=usuario.idusuario
+                        )
 
     # Prévias e afins
     aluno = Aluno.objects.using('sca').get(nome__exact=request.user.username)
     aprovadas = vidaacademica[0]
-    aLecionar = Disciplina.objects.using('sca').exclude(
-                    id__in=aprovadas).filter(versaocurso=aluno.versaocurso
-                ).order_by('optativa', 'departamento')
+    aLecionar = Disciplina.objects.using('sca').exclude(id__in=aprovadas).filter(
+                            versaocurso=aluno.versaocurso
+                        ).order_by('optativa', 'departamento')
 
-#    listaperiodos = [proximo_periodo(x + 2) for x in range(10)]
-#    for i in xrange(2, 12, 1):
-#        listaperiodos.append(proximo_periodo(i))
+    # Criação dos planos futuros conforme inclusão do aluno
+    listaperiodos = [proximo_periodo(x + 2) for x in range(6)]
 
-#    if request.method == 'POST':
-#        planos = request.POST.get('planos')
-#        disciplinas = request.POST.get('discip')
-#        if disciplinas:
-#            plano = Plano
-#            disciplinas = disciplinas.split("_")
-#            for d in disciplinas:
-#                ano = d[0:3]
-#                periodo = d[5:5]
-#                disci = d[7:]
-#                disc = disci
-#                planoF = PlanoFuturo.objects.create(ano=ano, periodo=periodo, plano=plano)
-#                i = ItemPlanoFuturo.objects.create(planofuturo=plano, disciplina=disc)
+    if request.method == 'POST':
+        disciplinas = request.POST.get('discip')
+        if disciplinas:
+            disciplinas = disciplinas.split("_")
+            for d in disciplinas:
+                ano = d[0:4]
+                periodo = d[5:6]
+                disc = d[7:]
+                disciplina = Disciplina.objects.using('sca').get(id=disc)
+                try:
+                    planofuturo = PlanoFuturo.objects.get(
+                            ano=ano, periodo=periodo, plano=plano
+                        )
+                except:
+                    planofuturo = PlanoFuturo.objects.create(
+                            ano=ano, periodo=periodo, plano=plano
+                        )
+                i = ItemPlanoFuturo.objects.create(
+                            planofuturo=planofuturo, disciplina=disciplina
+                        )
 
-#        return redirect('cadd:lista_planos')
+            return redirect('cadd:lista_planos')
 
     return render(request, 'cadd/novo_plano_estudos_futuro.html', {
                         'ativoPlanos': True,
                         'ativoPlanos3': True,
                         'aLecionar': aLecionar,
                         'plano': plano,
-#                        'listaperiodos': listaperiodos,
+                        'listaperiodos': listaperiodos,
                     })
