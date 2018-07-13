@@ -42,7 +42,7 @@
               {% if reprovadas %}
               <span class="criticidade-status">Reprovações:</span><br />
               {% for r in reprovadas %}
-              &nbsp;&nbsp;<span class="disciplina-previa-nome">{{ r }}</span><br />
+              &nbsp;&nbsp;<span class="disciplina-previa-nome">{% filter force_escape|upper %}{{ r }}{% endfilter %}</span><br />
               {% endfor %}
               {% endif %}
             </div>
@@ -67,7 +67,7 @@
                       <ul id="collapseOneList" class="collapseList">
                         {% for i in itensAtual %}
                         <li id="{{ i.itemhorario.disciplina.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                          ({{ i.itemhorario.disciplina.codigo }}) {{ i.itemhorario.disciplina.nome }}
+                          {% filter force_escape|upper %}({{ i.itemhorario.disciplina.codigo }}) {{ i.itemhorario.disciplina.nome }}{% endfilter %}
                         </li>
                         {% endfor %}
                       </ul>
@@ -90,7 +90,7 @@
                         {% for j in itensFuturos %}
                         {% if j.planofuturo == a %}
                         <li id="{{ j.disciplina.codigo }}" class="item_disc_disciplinas item_disc_disciplinas_faixa_vermelha">
-                          ({{ j.disciplina.codigo }}) {{ j.disciplina.nome }}
+                          {% filter force_escape|upper %}({{ j.disciplina.codigo }}) {{ j.disciplina.nome }}{% endfilter %}
                         </li>
                         {% endif %}
                         {% endfor %}

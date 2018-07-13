@@ -678,7 +678,7 @@ def lista_planos_avaliar(request):
     proxperiodo = proximo_periodo(1)
 
     membro = Membro.objects.filter(
-                                professor=usuario.idusuario
+                                professor=usuario.idusuario, ativo=1
                             ).values_list('comissao', flat=True)
     # Para saber as comissões que o membro logado faz parte
     comissoes = list(Comissao.objects.filter(
@@ -687,7 +687,7 @@ def lista_planos_avaliar(request):
     # Para saber os cursos que o membro logado pode atuar
     cursos = Curso.objects.using('sca').filter(
                                 id__in=comissoes
-                            ).values_list('versaocurso', flat=True)
+                            ).values_list('id', flat=True)
     # Para saber as versões de cursos que o membro logado pode atuar
     versoes = Versaocurso.objects.using('sca').filter(curso__in=cursos)
     # Para saber os alunos que ainda estão cursando
@@ -941,7 +941,7 @@ def novo_plano_previa(request):
     Função para a criação de um novo plano de estudos para o
     próximo semestre
 
-    TODO: Faltam os pré-requisitos na ajuda à criação do plano
+    TODO: Falta verificar os pré-requisitos na ajuda à criação do plano
     """
 
     prerequisitos = ''
@@ -994,17 +994,21 @@ def novo_plano_previa(request):
                             periodo=proxPeriodo[1], aluno=aluno
                         )
                     plano.situacao = 'M'
-                    plano.avaliacao = Null
+                    plano.avaliacao = ''
                     plano.save()
+                    messages.success(request, 'Plano Atual salvo com sucesso!')
                 except:
-                    pass
+                    messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
             else:
                 try:
                     plano = Plano.objects.create(ano=proxPeriodo[0],
                             periodo=proxPeriodo[1], situacao='M', aluno=aluno
                         )
+                    messages.success(request, 'Plano Atual criado com sucesso!')
                 except:
-                    pass
+                    messages.error(request, 'Houve algum problema técnico e a ' + \
+                        'criação do plano não foi realizada!')
             for d in disciplinas:
                 disc = int(d)
                 itemhorario = ItemHorario.objects.get(id=disc)

@@ -265,25 +265,23 @@ def vida_academica(id_aluno):
     """
     Função que retorna a quantidade máxima de reprovações em uma disciplina
     para cálculo da faixa de criticidade do aluno logado
+
+    TODO: Falta filtrar o item por ano e periodo nos itens de historico
     """
-    """TODO: Falta filtrar o item por ano e periodo nos itens de historico"""
 
     # Variáveis
-#    t_lecionadas = []
     t_aprovadas = []
     t_equivalentes = []
     t_original = []
     t_reprovacoes = []
     t_reprovadas = []
     t_discreprovadas = []
-#    ano = 0
     periodo = -1
     periodos = 0
     trancamentos = 0
     maxreprovacoes = 0
     reprovacoest = 0
     integralizacaot = 0
-#    equivalentes = 0
     numcriticidade = 0
     cargaeletivas = 0
     mincreditos = 0
@@ -292,11 +290,11 @@ def vida_academica(id_aluno):
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
     nomeAluno = aluno.nome
     # TODO
-    historico = Itemhistoricoescolar.objects.using('sca').filter(historico_escolar=aluno.historico)
+    historico = Itemhistoricoescolar.objects.using('sca').filter(
+                            historico_escolar=aluno.historico
+                        )
     for h in historico:
         disc = h.disciplina.id
-#        if ano != h.ano:
-#            ano = h.ano
         # Verificação dos períodos cursados
         if periodo != h.periodo:
             periodo = h.periodo
@@ -305,47 +303,57 @@ def vida_academica(id_aluno):
         # Verificação das disciplinas cursadas, matriculadas e aprovadas
         if h.situacao in (0, 4, 7, 8, 9, 10, 12):
             t_aprovadas.append(disc)
-            if h.disciplina.optativa:
-                cargaeletivas = cargaeletivas + h.disciplina.cargahoraria
+            # Verifica se a disciplina é optativa e calcula a carga horária
+            # O campo optativa é do tipo bit
+            if h.disciplina.optativa == b'\x01':
+                cargaeletivas += h.disciplina.cargahoraria
             # Verificação das disciplinas equivalentes (original -> equivalente)
-            original = Disciplinasoriginais.objects.using('sca').filter(disciplinasoriginais=disc)
+            original = Disciplinasoriginais.objects.using('sca').filter(
+                            disciplinasoriginais=disc
+                        )
             bloco = Blocoequivalencia.objects.using('sca').filter(id__in=original)
-            t_equivalentes = list(Disciplinasequivalentes.objects.using('sca').filter(bloco__in=bloco).values_list('disciplinasequivalentes', flat=True))
-#            equivalentes += len(t_equivalentes)
+            t_equivalentes = list(Disciplinasequivalentes.objects.using(
+                            'sca').filter(bloco__in=bloco).values_list(
+                            'disciplinasequivalentes', flat=True)
+                        )
             t_aprovadas.extend(t_equivalentes)
             # Verificação das disciplinas equivalentes (equivalente -> original)
-            t_equivalentes = Disciplinasequivalentes.objects.using('sca').filter(disciplinasequivalentes=disc)
-            bloco = Blocoequivalencia.objects.using('sca').filter(id__in=t_equivalentes)
-            t_original = list(Disciplinasoriginais.objects.using('sca').filter(bloco__in=bloco).values_list('disciplinasoriginais', flat=True))
-#            equivalentes += len(original)
+            t_equivalentes = Disciplinasequivalentes.objects.using(
+                            'sca').filter(disciplinasequivalentes=disc)
+            bloco = Blocoequivalencia.objects.using('sca').filter(
+                            id__in=t_equivalentes
+                        )
+            t_original = list(Disciplinasoriginais.objects.using('sca').filter(
+                            bloco__in=bloco).values_list(
+                            'disciplinasoriginais', flat=True)
+                        )
             t_aprovadas.extend(t_original)
 
         # Verificação das disciplinas reprovadas e reprovações
         elif h.situacao in (1, 2, 11):
             try:
-                t_reprovacoes[t_reprovadas.index(disc)] = t_reprovacoes[t_reprovadas.index(disc)] + 1
+                t_reprovacoes[t_reprovadas.index(disc)] = \
+                            t_reprovacoes[t_reprovadas.index(disc)] + 1
             except:
                 t_reprovadas.append(disc)
-                t_discreprovadas.append(h.disciplina.nome + " (" + h.disciplina.codigo + ")")
+                t_discreprovadas.append(h.disciplina.nome + " (" +
+                            h.disciplina.codigo + ")")
                 t_reprovacoes.append(1)
 
         # Verificação dos trancamentos totais
         elif h.situacao == 6:
             trancamentos = trancamentos + 1
 
-        # Adiciona a disciplina cursada
-#        t_lecionadas.append(disc)
-
     # Ordenação das disciplinas
     t_aprovadas.sort()
-#    t_lecionadas.sort()
 
-    # Visualização das disciplinas reprovadas e suas reprovações
+    # Visualização das disciplinas reprovadas e qtd de reprovações
     for x in range(len(t_discreprovadas)):
         t_discreprovadas[x] = t_discreprovadas[x] + " - " + str(t_reprovacoes[x])
 
     # Parâmetros e cálculo para reprovações por disciplina
-    periodomin = Versaocurso.objects.using('sca').get(id=aluno.versaocurso.id).qtdperiodominimo
+    periodomin = Versaocurso.objects.using('sca').get(
+                            id=aluno.versaocurso.id).qtdperiodominimo
     if periodomin < 8:
         reprovacoeslaranja = reprovacoes_faixa_laranja_demais_cursos()
         reprovacoesvermelha = reprovacoes_faixa_vermelha_demais_cursos()
@@ -369,11 +377,11 @@ def vida_academica(id_aluno):
     formulavermelha = formula_faixa_vermelha()
     periodos = periodos - trancamentos
     N = periodomin / 2
-    if periodos < eval(formulainiciallaranja): # 2 * N:
+    if periodos < eval(formulainiciallaranja):      # 2 * N:
         integralizacaot = 0
-    elif periodos <= eval(formulafinallaranja): #4 * N - 4:
+    elif periodos <= eval(formulafinallaranja):     # 4 * N - 4:
         integralizacaot = 1
-    elif periodos <= eval(formulavermelha): # 4 * N - 3:
+    elif periodos <= eval(formulavermelha):         # 4 * N - 3:
         integralizacaot = 2
     else:
         integralizacaot = 3
