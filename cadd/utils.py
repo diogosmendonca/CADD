@@ -6,6 +6,11 @@ from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
                     Itemhistoricoescolar, Disciplinasoriginais, \
                     Blocoequivalencia, Disciplinasequivalentes, Versaocurso
 
+PARAMS_ID = 1
+ROLE_PROFESSOR = 'ROLE_PROFESSOR'
+ROLE_ALUNO = 'ROLE_ALUNO'
+ROLE_SECAD = 'ROLE_SECAD'
+
 # Funções úteis
 # Função para se saber o tipo do usuário logado
 def tipo_usuario(matricula, registro):
@@ -19,13 +24,13 @@ def tipo_usuario(matricula, registro):
     # Caso seja realizado um get na tabela N:N o resultado já sai para a tabela
     # apropriada. Nesse caso, necessitou saber quais são as ids das roles do SCA
     idProfProfile = UserProfile.objects.using('sca').get(
-                        type__iexact='ROLE_PROFESSOR'
+                        type__iexact=ROLE_PROFESSOR
                     )
     idAlunoProfile = UserProfile.objects.using('sca').get(
-                        type__iexact='ROLE_ALUNO'
+                        type__iexact=ROLE_ALUNO
                     )
     idAdminProfile = UserProfile.objects.using('sca').get(
-                        type__iexact='ROLE_SECAD'
+                        type__iexact=ROLE_SECAD
                     )
     # Caso seu perfil no SCA seja de role SECAD e não seja para registro...
     if registro == 0:
@@ -55,7 +60,7 @@ def reprovacoes_faixa_laranja_cursos_8_periodos():
     """
 
     reprovacoes = 2
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         reprovacoes = registros.reprovacurso8periodoslaranja
 
@@ -69,7 +74,7 @@ def reprovacoes_faixa_vermelha_cursos_8_periodos():
     """
 
     reprovacoes = 3
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         reprovacoes = registros.reprovacurso8periodosvermelha
 
@@ -83,7 +88,7 @@ def reprovacoes_faixa_laranja_demais_cursos():
     """
 
     reprovacoes = 1
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         reprovacoes = registros.reprovademaiscursoslaranja
 
@@ -97,7 +102,7 @@ def reprovacoes_faixa_vermelha_demais_cursos():
     """
 
     reprovacoes = 2
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         reprovacoes = registros.reprovademaiscursosvermelha
 
@@ -111,7 +116,7 @@ def formula_inicial_faixa_laranja():
     """
 
     formula = '2 * N'
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         formula = registros.qtdperiodosiniciallaranja
 
@@ -125,7 +130,7 @@ def formula_final_faixa_laranja():
     """
 
     formula = '2 * N'
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         formula = registros.qtdperiodosfinallaranja
 
@@ -138,7 +143,7 @@ def formula_faixa_vermelha():
     """
 
     formula = '4 * N - 3'
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         formula = registros.qtdperiodosvermelha
 
@@ -151,7 +156,7 @@ def min_creditos_preta():
     """
 
     creditos = 20
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         creditos = registros.mincreditosporperiodopreta
 
@@ -164,7 +169,7 @@ def max_creditos():
     """
 
     creditos = 28
-    registros = Parametros.objects.get(pk=1)
+    registros = Parametros.objects.get(pk=PARAMS_ID)
     if registros != 0:
         creditos = registros.maxcreditosporperiodo
 
