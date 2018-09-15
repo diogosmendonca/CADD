@@ -101,8 +101,9 @@ DATABASES = {
         'NAME': 'cadddb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.2', # celular
-#        'HOST': '192.168.1.4', # wifi
+        #IP do HOST de Desenvolvimento
+        'HOST': '192.168.0.10',
+        #Porta do mysql no Host de Desenvolvimento
         'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
@@ -114,8 +115,9 @@ DATABASES = {
         'NAME': 'scadb',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '172.20.10.2', # celular
-#        'HOST': '192.168.1.4', # wifi
+        #IP do HOST de Desenvolvimento
+        'HOST': '192.168.0.10',
+        #Porta do mysql no Host de Desenvolvimento
         'PORT': '3311',
         'OPTIONS': {
             'sql_mode': 'traditional',
