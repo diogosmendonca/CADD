@@ -102,7 +102,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'root',
         #IP do HOST de Desenvolvimento
-        'HOST': '192.168.0.10',
+        'HOST': '127.0.0.1',
         #Porta do mysql no Host de Desenvolvimento
         'PORT': '3311',
         'OPTIONS': {
@@ -116,7 +116,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'root',
         #IP do HOST de Desenvolvimento
-        'HOST': '192.168.0.10',
+        'HOST': '127.0.0.1',
         #Porta do mysql no Host de Desenvolvimento
         'PORT': '3311',
         'OPTIONS': {

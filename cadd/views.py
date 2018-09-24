@@ -1,9 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
 # Paginação
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
+
+# Exceptions
+from django.core.exceptions import ObjectDoesNotExist
 
 # Models e Forms
 from .forms import ParametrosForm, ComissaoForm, MembroForm, HorarioForm, \
@@ -74,7 +78,6 @@ def editar_parametros(request):
                         'ativoConfiguracoes': True
                     })
 
-
 # Comissões de apoio
 @login_required
 def nova_comissao(request):
@@ -129,42 +132,46 @@ def excluir_comissao(request, id_comissao):
     """
     Função para a exclusão de uma comissão de apoio
     """
-
-    comissao = Comissao.objects.get(id=id_comissao)
     try:
-        comissao.delete()
-        messages.success(request, 'A exclusão foi realizada!')
-    except:
-        messages.error(request, 'A exclusão não foi realizada! Para isso, ' + \
-                        'exclua primeiramente seus membros.')
-
-    return redirect('cadd:lista_comissoes')
+        comissao = Comissao.objects.get(id=id_comissao)
+    except ObjectDoesNotExist:
+        messages.error(request, 'A comissão informada não existe!')
+    else:
+        try:
+            comissao.delete()
+        except:
+            messages.error(request, 'Não foi possível excluir a Comissão!')
+        else:
+            messages.success(request, 'A exclusão foi realizada!')
+    finally:
+        return redirect('cadd:lista_comissoes')
 
 @login_required
 def editar_comissao(request, id_comissao):
     """
     Função para a edição de uma comissão de apoio
     """
-
-    comissao = get_object_or_404(Comissao, id=id_comissao)
-    if request.method == 'POST':
-        form = ComissaoForm(request.POST, instance=comissao)
-        if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, 'Comissão salva com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e o ' + \
-                        'salvamento não foi realizado!')
-            return redirect('cadd:lista_comissoes')
+    try:
+        comissao = Comissao.objects.get(id=id_comissao)
+    except ObjectDoesNotExist:
+        messages.error(request, 'A comissão informada não existe!')
     else:
-        form = ComissaoForm(instance=comissao)
-
-    return render(request, 'cadd/nova_comissao.html', {
-                        'form': form,
-                        'ativoComissoes': True
-                    })
-
+        if request.method == 'POST':
+            form = ComissaoForm(request.POST, instance=comissao)
+            if form.is_valid():
+                try:
+                    form.save()
+                    messages.success(request, 'Comissão salva com sucesso!')
+                except:
+                    messages.error(request, 'Houve algum problema técnico e o ' + \
+                        'salvamento não foi realizado!')
+                    return redirect('cadd:lista_comissoes')
+        else:
+            form = ComissaoForm(instance=comissao)
+        return render(request, 'cadd/nova_comissao.html', {
+            'form': form,
+            'ativoComissoes': True
+        })
 
 # Membros das Comissões de apoio
 @login_required
@@ -172,25 +179,27 @@ def novo_membro(request, id_comissao):
     """
     Função para a criação de uma novo membro de uma comissão de apoio
     """
-
-    if request.method == 'POST':
-        form = MembroForm(request.POST)
-        if form.is_valid():
-            comissao = Comissao.objects.get(id=id_comissao)
-            f = form.save(commit=False)
-            f.comissao = comissao
-            f.ativo = True
-            try:
-                form.save()
-                messages.success(request, 'Membro salvo com sucesso!')
-            except:
-                messages.error(request, 'Houve algum problema técnico e o ' + \
-                        'salvamento não foi realizado!')
-            return redirect('cadd:lista_membros', id_comissao)
+    try:
+        comissao = Comissao.objects.get(id=id_comissao)
+    except ObjectDoesNotExist:
+        messages.error(request, 'A comissão informada não existe!')
     else:
-        form = MembroForm()
-
-    return render(request, 'cadd/novo_membro.html', {
+        if request.method == 'POST':
+            form = MembroForm(request.POST)
+            if form.is_valid():
+                f = form.save(commit=False)
+                f.comissao = comissao
+                f.ativo = True
+                try:
+                    form.save()
+                    messages.success(request, 'Membro salvo com sucesso!')
+                except:
+                    messages.error(request, 'Houve algum problema técnico e o ' + \
+                            'salvamento não foi realizado!')
+                return redirect('cadd:lista_membros', id_comissao)
+        else:
+            form = MembroForm()
+        return render(request, 'cadd/novo_membro.html', {
                         'form': form,
                         'id_comissao': id_comissao,
                         'ativoComissoes': True
@@ -201,23 +210,27 @@ def lista_membros(request, id_comissao):
     """
     Função para a listagem dos membros cadastrados de uma comissões de apoio
     """
+    try:
+        comissao = Comissao.objects.get(id__exact=id_comissao)
+    except ObjectDoesNotExist:
+        messages.error(request, 'A comissão informada não existe!')
+    else:
+        usuario = Perfil.objects.get(user=request.user.id)
+        linhas = linhas_por_pagina(usuario.idusuario)
+        membros_list = Membro.objects.all().filter(comissao=id_comissao)
+        paginator = Paginator(membros_list, linhas) # Paginação
+        page = request.GET.get('page')
+        membros = paginator.get_page(page)
 
-    usuario = Perfil.objects.get(user=request.user.id)
-    linhas = linhas_por_pagina(usuario.idusuario)
-    membros_list = Membro.objects.all().filter(comissao=id_comissao)
-    paginator = Paginator(membros_list, linhas) # Paginação
-    page = request.GET.get('page')
-    membros = paginator.get_page(page)
-    # objeto comissão anteriormente requisitado
-    comissao = Comissao.objects.get(id__exact=id_comissao)
 
-    return render(request, 'cadd/lista_membros.html', {
-                        'membros': membros,
-                        'id_comissao': id_comissao,
-                        'comissao': comissao,
-                        'ativoComissoes': True,
-                        'copiabotoes': membros_list.count() >= 10 and linhas >= 10
-                    })
+    # NÃO ESQUECER DE CORRIGIR ERRO AO RECEBER COMISSÃO INEXISTENTE  
+        return render(request, 'cadd/lista_membros.html', {
+                            'membros': membros,
+                            'id_comissao': id_comissao,
+                            'comissao': comissao,
+                            'ativoComissoes': True,
+                            'copiabotoes': membros_list.count() >= 10 and linhas >= 10
+                        })
 
 @login_required
 def excluir_membro(request, id_membro, id_comissao):
