@@ -29,13 +29,14 @@
 	color: #fff;
 	text-shadow: 3px 3px #000;
 }
-.usuario-texto
+.tipo-usuario
 {
 	font-family: Consolas;
 	font-size: 14pt;
 	font-weight: bold;
 	color: #fff;
 	text-shadow: 2px 2px #000;
+	text-transform: uppercase;
 }
 .usuario-autenticado
 {

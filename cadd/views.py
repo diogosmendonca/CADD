@@ -223,7 +223,7 @@ def lista_membros(request, id_comissao):
         membros = paginator.get_page(page)
 
 
-    # NÃO ESQUECER DE CORRIGIR ERRO AO RECEBER COMISSÃO INEXISTENTE  
+    # NÃO ESQUECER DE CORRIGIR ERRO AO RECEBER COMISSÃO INEXISTENTE
         return render(request, 'cadd/lista_membros.html', {
                             'membros': membros,
                             'id_comissao': id_comissao,
@@ -237,17 +237,16 @@ def excluir_membro(request, id_membro, id_comissao):
     """
     Função para a desativação de um membro de uma comissão de apoio
     """
-
-    membro = Membro.objects.get(id=id_membro)
-    membro.ativo = False
     try:
+        comissao = Comissao.objects.get(id=id_comissao)
+        membro = Membro.objects.get(id=id_membro)
+        membro.ativo = False
         membro.save()
         messages.success(request, 'Membro desativado com sucesso!')
-    except:
-        messages.error(request, 'Houve algum problema técnico e o ' + \
-                'desativamento não foi realizado!')
-
-    return redirect('cadd:lista_membros', id_comissao)
+    except ObjectDoesNotExist:
+        messages.error(request, 'Um ou mais parâmetros informado não existe!')
+    else:
+        return redirect('cadd:lista_membros', id_comissao)
 
 @login_required
 def editar_membro(request, id_membro, id_comissao):

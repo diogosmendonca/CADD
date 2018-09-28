@@ -10,10 +10,10 @@
 
     <title>Sistema de Apoio às CADDs</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Link para o arquivo de CSS do Bootstrap -->
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
+    <!-- Link para o arquivo de CSS do Projeto -->
     <link href="{% static 'css/sacadd.css' %}" rel="stylesheet">
 
     <!-- Custom scripts for this template -->
@@ -49,12 +49,12 @@
       <div class="header-content">
         <div class="row justify-content-between">
           <div class="col-6">
-            <h1 class="titulo-sistema">SISTEMA de APOIO às CADDs</h1>
+            <h1 class="titulo-sistema">SISTEMA DE APOIO ÀS CADDs</h1>
           </div>
           <div class="col-5">
             <div class="row">
               <div class="col-12">
-                <span class="usuario-texto">{% if user.is_authenticated %}{{ tipo }} {% endif %}</span>
+                <span class="usuario-texto">{% if user.is_authenticated %} {{ tipo }} {% endif %}</span>
                 <span class="usuario-autenticado" onclick="mostrarPerfilModal()">{% if user.is_authenticated %}{{ user.username }}{% endif %}</span><br />
                 <a href="{% url 'accounts:usuario_perfil' %}"><span class="logout">Meu Perfil</span></a>
                 <a href="{% url 'accounts:usuario_logout' %}"><img src="{% static 'img/logout.svg' %}" width="30px" class="logout-icon"><span class="logout">SAIR</span></a>
