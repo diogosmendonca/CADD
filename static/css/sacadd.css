@@ -1166,3 +1166,10 @@ table tbody tr td:first-child
 	font-family: Consolas;
 	font-weight: bold;
 }
+
+.cabecalho-tabela-previas
+{
+	border: 1px solid #006bb3;
+	color: #006bb3;
+	margin: 50px;
+}

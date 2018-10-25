@@ -6,12 +6,12 @@
   <div class="row">
     <span class="titulo-pagina">&lt;&lt; Plano de Estudos Atual &gt;&gt;</span>
   </div>
-  <!--  <b>A Lecionar: </b>{{ podeLecionarnoPeriodo }}<br> -->
+  <!--  <b>A Lecionar: </b>{{ disciplinas_pendentesnoPeriodo }}<br> -->
   <div class="row">
     <div class="col-4">
       <div class="row">
         <div class="col-11 cabecalho-quadros">
-          <span>Prévia de Horários {{ proxperiodo }}</span>
+          <span>Prévia de Horários < {{ proximoPeriodo }} ></span>
         </div>
       </div>
       <div class="row">
@@ -25,7 +25,7 @@
             </div>
             <div id="segcard" class="collapse show" aria-labelledby="headingSegundaFeira" data-parent="#accordion">
               <div class="card-body" id="seg">
-                {% for d in podeLecionar %}
+                {% for d in disciplinas_pendentes %}
                 {% if d.diasemana == 1 %}
                 <div class="row disciplina-previa" id="{{ d.disciplina.codigo }}{{ d.inicio|time:'Hi' }}">
                   <div class="col-10 disciplina-previa-detalhes">
@@ -71,7 +71,7 @@
             </div>
             <div id="tercard" class="collapse" aria-labelledby="headingTercaFeira" data-parent="#accordion">
               <div class="card-body" id="ter">
-                {% for d in podeLecionar %}
+                {% for d in disciplinas_pendentes %}
                 {% if d.diasemana == 2 %}
                 <div class="row disciplina-previa" id="{{ d.disciplina.codigo }}{{ d.inicio|time:'Hi' }}">
                   <div class="col-10 disciplina-previa-detalhes">
@@ -117,7 +117,7 @@
             </div>
             <div id="quacard" class="collapse" aria-labelledby="headingQuartaFeira" data-parent="#accordion">
               <div class="card-body" id="qua">
-                {% for d in podeLecionar %}
+                {% for d in disciplinas_pendentes %}
                 {% if d.diasemana == 3 %}
                 <div class="row disciplina-previa" id="{{ d.disciplina.codigo }}{{ d.inicio|time:'Hi' }}">
                   <div class="col-10 disciplina-previa-detalhes">
@@ -163,7 +163,7 @@
             </div>
             <div id="quicard" class="collapse" aria-labelledby="headingQuintaFeira" data-parent="#accordion">
               <div class="card-body" id="qui">
-                {% for d in podeLecionar %}
+                {% for d in disciplinas_pendentes %}
                 {% if d.diasemana == 4 %}
                 <div class="row disciplina-previa" id="{{ d.disciplina.codigo }}{{ d.inicio|time:'Hi' }}">
                   <div class="col-10 disciplina-previa-detalhes">
@@ -209,7 +209,7 @@
             </div>
             <div id="sexcard" class="collapse" aria-labelledby="headingSextaFeira" data-parent="#accordion">
               <div class="card-body" id="sex">
-                {% for d in podeLecionar %}
+                {% for d in disciplinas_pendentes %}
                 {% if d.diasemana == 5 %}
                 <div class="row disciplina-previa" id="{{ d.disciplina.codigo }}{{ d.inicio|time:'Hi' }}">
                   <div class="col-10 disciplina-previa-detalhes">
@@ -255,7 +255,7 @@
             </div>
             <div id="outros" class="collapse" aria-labelledby="headingOutros" data-parent="#accordion">
               <div class="card-body" id="out">
-                {% for d in podeLecionar %}
+                {% for d in disciplinas_pendentes %}
                 {% if d.diasemana == 7 or d.diasemana == 8 %}
                 <div class="row disciplina-previa" id="{{ d.disciplina.codigo }}{{ d.inicio|time:'Hi' }}">
                   <div class="col-10 disciplina-previa-detalhes">
@@ -298,7 +298,7 @@
     <div class="col-8">
       <div class="row">
         <div class="col-11 cabecalho-disciplinas">
-          <span>Plano de Estudos para {{ proxperiodo }}</span>
+          <span>Plano de Estudos para {{ proximoPeriodo }}</span>
         </div>
       </div>
       <div class="row">
@@ -457,7 +457,7 @@
                   <div>
                     <span id="texto-disciplinas-sem-horario" onclick="exibirDisciplinasSemHorario()"> Disciplinas sem horário:</span>
                     <!--<span id="numero-disciplinas-sem-horario"> (06)</span> -->
-                  </div>
+          </div>
                   <div id="disciplinas-sem-horario"></div>
                   <form class="" action="" method="post">
                     {% csrf_token %}

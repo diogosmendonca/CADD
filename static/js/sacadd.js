@@ -62,6 +62,9 @@ function addDisciplina(e){
   countTemposAula = (Number(tempoDeAulaEmMinutos)/Number(50));
   countTemposAula = Math.round(countTemposAula);
 
+  
+  
+  
   if (tempoDeAulaEmMinutos == Number(50)) {
     if (verificarConflito(ajustarHorario(horaInicio, celulaDestino), idDisciplinaCardBody, countTemposAula)) {
       alert("Não é possível incluir esta disciplina em seu plano de estudos pois a mesma está apresentando conflito de horário com outra disciplina já adicionada ao plano.");
@@ -83,7 +86,6 @@ function addDisciplina(e){
     }
   }
 }
-
 function removeDisciplina(e){
   var idDisciplina = e.target.parentNode.id;
   var idCardBody = e.target.parentNode.parentNode.id;
