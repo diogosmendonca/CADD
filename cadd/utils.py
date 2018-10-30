@@ -1,6 +1,9 @@
 from datetime import datetime
 import os
 
+from django.core.checks import messages
+from django.http import request
+
 from .models import Parametros, Perfil
 from sca.models import Users, UserProfile, Useruserprofile, Aluno, Curso, \
     Itemhistoricoescolar, Disciplinasoriginais, \
@@ -291,25 +294,38 @@ def vida_academica(id_aluno):
     TODO: Falta filtrar o item por ano e periodo nos itens de historico
     """
 
-    # Variáveis
-
+    # Recupera e armazena o aluno correspondente ao identificador passado no parâmetro
     aluno = Aluno.objects.using('sca').get(id=id_aluno)
-    # nome_aluno = aluno.nome
 
-    t_aprovadas = []
-    t_equivalentes = []
-    t_original = []
-    t_reprovacoes = []
-    t_reprovadas = []
-    t_discreprovadas = []
-    periodo = -1
-    periodos = 0
-    trancamentos = 0
+    # Armazena o nome do aluno
+    nome_aluno = aluno.nome
+
+    # Armazena a lista das disciplinas já cumpridas pelo aluno, essas podem ter uma das situações abaixo
+    # (APROVADO, ISENTO_POR_TRANSFERENCIA, APROVEITAMENTO_CREDITOS, ISENTO, MATRICULA, APROVADO_SEM_NOTA)
+    disciplinas_concluidas = []
+
+    periodos_trancamento_total = []
+    total_periodos_trancados = 0
+
+    disciplinas_reprovadas = []
+    total_reprovacoes_disc = []
+    disc_rep_str_nome_codigo = []
+
+    # t_equivalentes = []
+    # t_original = []
+
+    periodos_cursados = []
+    total_periodos_cursados = 0
+
     maxreprovacoes = 0
-    reprovacoest = 0
-    integralizacaot = 0
-    numcriticidade = 0
-    cargaeletivas = 0
+    faixa_reprovacoes = 0
+    faixa_integralizacao = 0
+    faixa_criticidade = 0
+
+    # Somatório da carga horária das disciplinas eletivas
+    # Esta variável inicia zerada e vai sendo incrementada
+    carga_horaria_eletivas = 0
+
     mincreditos = 0
     maxcreditos = 28
 
@@ -319,33 +335,45 @@ def vida_academica(id_aluno):
     )
 
     for i in historico:
-        disciplina_id = i.disciplina.id
 
-        # Verificação dos períodos cursados
-        if periodo != h.periodo:
-            periodo = h.periodo
-            periodos = periodos + 1
+        id_disciplina = i.disciplina.id
+
+        # Verificação do total de períodos cursados
+
+        p_ano = i.ano
+        p_periodo = i.periodo
+        p = str(p_ano) + "." + str(p_periodo)
+
+        if p not in periodos_cursados:
+            periodos_cursados.append(p)
+
+        total_periodos_cursados = len(periodos_cursados)
 
         # Verificação das disciplinas cursadas, matriculadas e aprovadas
-        if h.situacao in (0, 4, 7, 8, 9, 10, 12):
-            t_aprovadas.append(disc)
-            # Verifica se a disciplina é optativa e calcula a carga horária
-            # O campo optativa é do tipo bit
-            if h.disciplina.optativa == b'\x01':
-                cargaeletivas += h.disciplina.cargahoraria
-            # Verificação das disciplinas equivalentes (original -> equivalente)
-            original = Disciplinasoriginais.objects.using('sca').filter(
-                disciplinasoriginais=disc
+        if i.situacao in (0, 4, 7, 8, 9, 10, 12):
+            disciplinas_concluidas.append(id_disciplina)
+
+            # Verifica se a disciplina é optativa e se positivo extrai a carga horária da mesma
+            # O campo optativa no banco de dados é do tipo bit
+            if i.disciplina.optativa == b'\x01':
+                carga_horaria_eletivas += i.disciplina.cargahoraria
+
+            # TODO: Equivalência de disciplinas
+            # Verifica se a disciplina iterada está presente na tabela de disciplinas originais
+            """original = Disciplinasoriginais.objects.using('sca').filter(
+                disciplinasoriginais=id_disciplina
             )
+
             bloco = Blocoequivalencia.objects.using('sca').filter(id__in=original)
             t_equivalentes = list(Disciplinasequivalentes.objects.using(
                 'sca').filter(bloco__in=bloco).values_list(
                 'disciplinasequivalentes', flat=True)
             )
-            t_aprovadas.extend(t_equivalentes)
+            disciplinas_concluidas.extend(t_equivalentes)
+
             # Verificação das disciplinas equivalentes (equivalente -> original)
             t_equivalentes = Disciplinasequivalentes.objects.using(
-                'sca').filter(disciplinasequivalentes=disc)
+                'sca').filter(disciplinasequivalentes=id_disciplina)
             bloco = Blocoequivalencia.objects.using('sca').filter(
                 id__in=t_equivalentes
             )
@@ -353,83 +381,105 @@ def vida_academica(id_aluno):
                 bloco__in=bloco).values_list(
                 'disciplinasoriginais', flat=True)
             )
-            t_aprovadas.extend(t_original)
+            disciplinas_concluidas.extend(t_original)
+            """
 
         # Verificação das disciplinas reprovadas e reprovações
-        elif h.situacao in (1, 2, 11):
+        elif i.situacao in (1, 2, 11):
             try:
-                t_reprovacoes[t_reprovadas.index(disc)] = \
-                    t_reprovacoes[t_reprovadas.index(disc)] + 1
+                total_reprovacoes_disc[disciplinas_reprovadas.index(id_disciplina)] += 1
+
             except:
-                t_reprovadas.append(disc)
-                t_discreprovadas.append(h.disciplina.nome + " (" +
-                                        h.disciplina.codigo + ")")
-                t_reprovacoes.append(1)
+                disciplinas_reprovadas.append(id_disciplina)
+                disc_rep_str_nome_codigo.append(i.disciplina.nome + " (" + i.disciplina.codigo + ")")
+                total_reprovacoes_disc.append(1)
 
-        # Verificação dos trancamentos totais
-        elif h.situacao == 6:
-            trancamentos = trancamentos + 1
+        # Verifica se a disciplina iterada possui situação de TRANCAMENTO_TOTAL
+        # Armazena um dicionário com as disciplinas e suas respectivas situações
+        elif i.situacao == 6:
+            if p not in periodos_trancamento_total:
+                periodos_trancamento_total.append(p)
 
-    # Ordenação das disciplinas
-    t_aprovadas.sort()
+            total_periodos_trancados = len(periodos_trancamento_total)
 
-    # Visualização das disciplinas reprovadas e qtd de reprovações
-    for x in range(len(t_discreprovadas)):
-        t_discreprovadas[x] = t_discreprovadas[x] + " - " + str(t_reprovacoes[x])
+
+    # Ordenação da lista das disciplinas não pendentes
+    disciplinas_concluidas.sort()
+
+    # Verifica as disciplinas reprovadas e quantas vezes reprovou cada uma
+    for x in range(len(disc_rep_str_nome_codigo)):
+        disc_rep_str_nome_codigo[x] = disc_rep_str_nome_codigo[x] + " - " + str(total_reprovacoes_disc[x])
+
+    # CÁLCULOS PARA DEFINIÇÃO DA FAIXA DE CRITICIDADE
+
+    qtd_periodos_min = Versaocurso.objects.using('sca').get(
+        id=aluno.versaocurso.id).qtdperiodominimo
 
     # Parâmetros e cálculo para reprovações por disciplina
-    periodomin = Versaocurso.objects.using('sca').get(
-        id=aluno.versaocurso.id).qtdperiodominimo
-    if periodomin < 8:
-        reprovacoeslaranja = reprovacoes_faixa_laranja_demais_cursos()
-        reprovacoesvermelha = reprovacoes_faixa_vermelha_demais_cursos()
+
+    if qtd_periodos_min < 8:
+        min_reprovacoes_faixa_laranja = reprovacoes_faixa_laranja_demais_cursos()
+        min_reprovacoes_faixa_vermelha = reprovacoes_faixa_vermelha_demais_cursos()
     else:
-        reprovacoeslaranja = reprovacoes_faixa_laranja_cursos_8_periodos()
-        reprovacoesvermelha = reprovacoes_faixa_vermelha_cursos_8_periodos()
-    if len(t_reprovacoes) != 0:
-        maxreprovacoes = max(t_reprovacoes)
-    if maxreprovacoes < reprovacoeslaranja:
-        reprovacoest = 0
-    elif maxreprovacoes >= reprovacoeslaranja and maxreprovacoes < reprovacoesvermelha:
-        reprovacoest = 1
-    elif maxreprovacoes == reprovacoesvermelha:
-        reprovacoest = 2
+        min_reprovacoes_faixa_laranja = reprovacoes_faixa_laranja_cursos_8_periodos()
+        min_reprovacoes_faixa_vermelha = reprovacoes_faixa_vermelha_cursos_8_periodos()
+
+    if len(total_reprovacoes_disc) != 0:
+        max_reprovacoes = max(total_reprovacoes_disc)
+
+    if max_reprovacoes < min_reprovacoes_faixa_laranja:
+        faixa_reprovacoes = 0
+    elif min_reprovacoes_faixa_laranja <= max_reprovacoes < min_reprovacoes_faixa_vermelha:
+        faixa_reprovacoes = 1
+    elif max_reprovacoes == min_reprovacoes_faixa_vermelha:
+        faixa_reprovacoes = 2
     else:
-        reprovacoest = 3
+        faixa_reprovacoes = 3
 
     # Parâmetros e cálculo para integralização
-    formulainiciallaranja = formula_inicial_faixa_laranja()
-    formulafinallaranja = formula_final_faixa_laranja()
-    formulavermelha = formula_faixa_vermelha()
-    periodos = periodos - trancamentos
-    N = periodomin / 2
-    if periodos < eval(formulainiciallaranja):  # 2 * N:
-        integralizacaot = 0
-    elif periodos <= eval(formulafinallaranja):  # 4 * N - 4:
-        integralizacaot = 1
-    elif periodos <= eval(formulavermelha):  # 4 * N - 3:
-        integralizacaot = 2
+    min_integralizacao_laranja = formula_inicial_faixa_laranja()
+    max_integralizacao_laranja = formula_final_faixa_laranja()
+    integralizacao_vermelha = formula_faixa_vermelha()
+
+    # TODO: Ajustar a variável para descrever os trancamentos totais realizados
+    total_periodos_cursados -= total_periodos_trancados
+
+    N = qtd_periodos_min / 2
+    if total_periodos_cursados < eval(min_integralizacao_laranja):  # 2 * N:
+        faixa_integralizacao = 0
+    elif total_periodos_cursados <= eval(max_integralizacao_laranja):  # 4 * N - 4:
+        faixa_integralizacao = 1
+    elif total_periodos_cursados <= eval(integralizacao_vermelha):  # 4 * N - 3:
+        faixa_integralizacao = 2
     else:
-        integralizacaot = 3
+        faixa_integralizacao = 3
 
-    # Verificação dos máximo de créditos por semana que o aluno poder cursar
-    # no período
-    numcriticidade = max(reprovacoest, integralizacaot)
-    if numcriticidade == 3:
-        mincreditos = min_creditos_preta()
-    maxcreditos = max_creditos()
+    faixa_criticidade = max(faixa_reprovacoes, faixa_integralizacao)
 
-    if numcriticidade == 0:
+    if faixa_criticidade == 0:
         criticidade = 'AZUL'
-    elif numcriticidade == 1:
+    elif faixa_criticidade == 1:
         criticidade = 'LARANJA'
-    elif numcriticidade == 2:
+    elif faixa_criticidade == 2:
         criticidade = 'VERMELHA'
     else:
         criticidade = 'PRETA'
 
-    retorno = t_aprovadas, t_reprovacoes, t_reprovadas, t_discreprovadas, \
-              criticidade, mincreditos, maxcreditos, periodos, nomeAluno, \
-              trancamentos, cargaeletivas
+    if faixa_criticidade == 3:
+        mincreditos = min_creditos_preta()
+
+    maxcreditos = max_creditos()
+
+    retorno = disciplinas_concluidas, \
+              total_reprovacoes_disc, \
+              disciplinas_reprovadas, \
+              disc_rep_str_nome_codigo, \
+              criticidade, \
+              mincreditos, \
+              maxcreditos, \
+              total_periodos_cursados, \
+              nome_aluno, \
+              total_periodos_trancados, \
+              carga_horaria_eletivas
 
     return retorno

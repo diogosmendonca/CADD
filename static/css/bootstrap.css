@@ -3874,7 +3874,7 @@ tbody.collapse.show {
 }
 
 .nav-tabs .nav-link {
-  border: 1px solid transparent;nav-pills
+  border: 1px solid transparent;nav-pills;
 }
 
 .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
