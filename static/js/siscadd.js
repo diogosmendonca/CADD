@@ -51,39 +51,23 @@ function addDisciplina(e){
     return 0;
   }
 
+
+
   horaInicioTextoPlanoSemPontos = horaInicio.split(":");
   horaInicioTextoPlanoSemPontos = horaInicioTextoPlanoSemPontos[0]+horaInicioTextoPlanoSemPontos[1];
   horaInicioTextoPlanoSemPontosCopia = horaInicioTextoPlanoSemPontos;
 
   tempoDeAulaEmMinutos = Number(horaToMinutos(horaTermino)) - Number(horaToMinutos(horaInicio));
-  celulaDestino = String(idDisciplinaCardBody+horaInicioTextoPlanoSemPontos);
+  //celulaDestino = String(idDisciplinaCardBody+horaInicioTextoPlanoSemPontos);
+  celulaDestino = "tb_" + String(idDisciplinaCardBody);
+
   disciplinaDivObject = document.getElementById(codigoDisciplina);
 
-  countTemposAula = (Number(tempoDeAulaEmMinutos)/Number(50));
-  countTemposAula = Math.round(countTemposAula);
-
-  if (tempoDeAulaEmMinutos == Number(50)) {
-    if (verificarConflito(ajustarHorario(horaInicio, celulaDestino), idDisciplinaCardBody, countTemposAula)) {
-      alert("Não é possível incluir esta disciplina em seu plano de estudos pois a mesma está apresentando conflito de horário com outra disciplina já adicionada ao plano.");
-    }
-    else{
-      prepararTabela(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino), countTemposAula);
-      prepararDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
-      moverDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
-    }
-  }
-  else{
-    if (verificarConflito(ajustarHorario(horaInicio, celulaDestino), idDisciplinaCardBody, countTemposAula)) {
-      alert("Não é possível incluir esta disciplina em seu plano de estudos pois a mesma está apresentando conflito de horário com outra disciplina já adicionada ao plano.");
-    }
-    else{
-      prepararTabela(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino), countTemposAula);
-      prepararDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
-      moverDisciplina(disciplinaDivObject, ajustarHorario(horaInicio, celulaDestino));
-    }
-  }
-}
-
+  //countTemposAula = (Number(tempoDeAulaEmMinutos)/Number(50));
+  //countTemposAula = Math.round(countTemposAula);
+  moverDisciplina(disciplinaDivObject, celulaDestino);
+  prepararDisciplina(disciplinaDivObject, celulaDestino);
+}/*
 function removeDisciplina(e){
   var idDisciplina = e.target.parentNode.id;
   var idCardBody = e.target.parentNode.parentNode.id;
@@ -93,7 +77,7 @@ function removeDisciplina(e){
   document.getElementById(idCardBody).appendChild(
   document.getElementById(idDisciplina));
 }
-
+*/
 function exibirDisciplinasSemHorario() {
   var x = document.getElementById('disciplinas-sem-horario');
   if (x.style.display === 'none') {
@@ -107,7 +91,7 @@ function prepararDisciplinaSemHorario(disciplinaDivObject){
   disciplinaDivObject.classList.remove("disciplina-previa");
   disciplinaDivObject.classList.add("disciplina-previa-sem-horario");
 }
-
+/*
 function verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula){
   var CelulaDestino = document.getElementById(celulaDestino);
   // alert("Cheguei em 01");
@@ -146,7 +130,7 @@ function verificarConflito(celulaDestino, idDisciplinaCardBody, countTemposAula)
     }
   }
 }
-
+/*
 function verificarExistencia(celulaDestino){
   if(document.getElementById(celulaDestino)){
     return 1;
@@ -182,7 +166,7 @@ function incrementarTempoEmHora(hhmm){
   /*************************/
   /*Definição do Incremento*/
   /*************************/
-  var incremento;
+  /*var incremento;
 
   switch(hhmm) {
     case "0850":
@@ -208,7 +192,7 @@ function incrementarTempoEmHora(hhmm){
   }
   /***********************/
 
-  b = hhmm.slice(0,2);
+ /* b = hhmm.slice(0,2);
   c = hhmm.slice(2,4);
   b = Number(b);
   c = Number(c);
@@ -225,12 +209,11 @@ function incrementarTempoEmHora(hhmm){
   }
   return (String(b)+(c));
 }
-
+*/
 function prepararDisciplina(disciplinaDivObject, celulaDestino){
   disciplinaDivObject.classList.remove("disciplina-previa");
   disciplinaDivObject.classList.add("disciplina-previa-tabela");
 }
-
 function horaToMinutos(hhmm){
   x = hhmm.split(":");
   y = x[0];
@@ -244,6 +227,7 @@ function moverDisciplina(disciplinaDivObject, celulaDestino){
   document.getElementById('discip').value += ((document.getElementById('discip').value!="") ? "_" : "") + idDisciplina;
 }
 
+/*
 function ajustarHorario(horaInicio, celulaDestino){
   horaInicio = horaToMinutos(horaInicio);
   if (horaInicio < 475) {
@@ -349,3 +333,4 @@ function ajustarHorario(horaInicio, celulaDestino){
     return celulaDestino;
   }
 }
+*/

@@ -3,6 +3,64 @@
  *Versão 1.0
  */
 
+
+/*##### PERFIL DO ALUNO #####*/
+
+/*### LISTAR PLANO ###*/
+
+/*### MONTAR PLANO ###*/
+
+.disciplina-previa
+{
+	background-color: #FFFFFF;
+	border-radius: 1px;
+	border: 1px solid #000000;
+    margin: 1px;
+	padding: 1px;
+}
+.disciplina-previa-detalhes
+{
+	padding: 5px;
+	background-color: #FFFFFF;
+    border-radius: 1px;
+}
+.disciplina-previa-add
+{
+	border-left: 1px solid #000000;
+    cursor: pointer;
+    background-color: #4de055;
+}
+
+
+
+
+.div-calendario-disciplinas
+{
+    margin: 5px;
+}
+
+.div-calendario-disciplinas-cabecalho
+{
+    border-bottom: 1px solid #cccccc;
+    margin: 0;
+}
+.div-calendario-disciplinas-cabecalho-itens
+{
+    border-right: 1px solid #cccccc;
+}
+.div-calendario-disciplinas-corpo
+{
+    border-bottom: 1px solid #cccccc;
+    margin: 0;
+}
+.div-calendario-disciplinas-corpo-itens
+{
+    border-right: 1px solid #cccccc;
+}
+
+
+
+
 /***********************/
 /* Escopo: Todo Site   */
 /* Bloco:	Cabeçalho    */
@@ -10,7 +68,7 @@
 
 .header
 {
-	margin: 30px 0px 0px 0px;
+	margin: 30px 0 0 0;
 	padding: 30px 10px;
 	border-top: 1px solid #000;
 	border-bottom: 1px solid #000;
@@ -19,11 +77,10 @@
 .header-content
 {
 	width: 90%;
-	margin:0px auto;
 }
 .titulo-sistema
 {
-	font-family: Consolas;
+    font-family: Consolas, sans-serif;
 	font-size: 28pt;
 	font-weight: bold;
 	color: #fff;
@@ -31,7 +88,7 @@
 }
 .tipo-usuario
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
 	color: #fff;
@@ -40,7 +97,7 @@
 }
 .usuario-autenticado
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
 	color: #b3ecff;
@@ -52,7 +109,7 @@
 }
 .logout{
 	margin-left: 5px;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 14pt;
 	color: #fff;
 	text-shadow: 2px 2px #000;
@@ -71,7 +128,7 @@
 .navbar-content
 {
 	width: 90%;
-	margin: 0px auto;
+	margin: 0 auto;
 	padding-right: 100px;
 }
 
@@ -82,7 +139,7 @@
 
 .titulo-pagina
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: 300;
 	font-size: 18pt;
 	text-decoration: none;
@@ -97,7 +154,7 @@ html, body
 .main-content
 {
 	width: 90%;
-	margin: 0px auto;
+	margin: 0 auto;
 	min-height:100%;
   position:relative;
 }
@@ -106,11 +163,10 @@ html, body
 
 .botao-padrao
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	width: auto;
 	height: 38px;
-	border: none;
-	margin: 0px 5px 10px 0px;
+	margin: 0 5px 10px 0;
 	border: 1px solid #000;
 	border-radius: 2px;
 	box-shadow: 2px 2px #000;
@@ -197,15 +253,15 @@ footer
 	position:relative;
     bottom:0;
     width:100%;
-	margin: 10px 0px;
+	margin: 10px 0;
 	padding: 10px;
 	background-color: #3366ff;
 }
 footer p
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 12pt;
-	font-weight: none;
+	font-weight: normal;
 	color: #fff;
 	text-shadow: 1px 1px #000;
 }
@@ -217,12 +273,12 @@ footer p
 
 .titulo-sistema-login
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 28pt;
 	font-weight: bold;
 	color: #fff;
 	text-shadow: 3px 3px #000;
-	margin: 0px auto;
+	margin: 0 auto;
 	width: 45%;
 	min-width: 40%;
 	max-width: 50%;
@@ -231,7 +287,7 @@ footer p
 {
 	width: 450px;
 	margin: 100px auto;
-	padding: 0px auto;
+	padding: 0 auto;
 	font-weight: bold;
 }
 
@@ -243,8 +299,8 @@ footer p
 .background-div
 {
 	width: 450px;
-	margin: 0px auto;
-	padding: 0px auto;
+	margin: 0 auto;
+	padding: 0 auto;
 }
 .background-image
 {
@@ -272,18 +328,18 @@ footer p
 }
 .total-cadds-label
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 18px;
 	font-weight: bolder;
-	margin: 20px 0px 0px 10px;
+	margin: 20px 0 0 10px;
 }
 .total-cadds-value
 {
 	color: #006bb3;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 20px;
 	font-weight: bolder;
-	margin: 20px 0px 0px 10px;
+	margin: 20px 0 0 10px;
 }
 
 /**********************************************/
@@ -293,24 +349,24 @@ footer p
 
 .bloco-central
 {
-	margin: 0px;
-	padding: 0px;
-	display: ;
+	margin: 0;
+	padding: 0;
+	/*display: ;*/
 }
 .bloco-central-cabecalho
 {
 	background-color: #006bb3;
 	color: #fff;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
-	margin: 0px;
+	margin: 0;
 	padding: 10px 30px;
 	border: 1px solid #000;
 }
 .bloco-central-lista
 {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	height: 450px;
 	border: 1px solid #000;
 	overflow-y: auto;
@@ -329,51 +385,51 @@ footer p
 .nome-comissao-label
 {
 	font-size: 13pt;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 }
 .nome-comissao
 {
-	font-family: Consolas;
-	font-weight: none;
+	font-family: Consolas, sans-serif;
+	font-weight: normal;
 }
 .descricao-comissao-label
 {
 	font-size: 13pt;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 }
 .descricao-comissao
 {
-	font-family: Consolas;
-	font-weight: none;
+	font-family: Consolas, sans-serif;
+	font-weight: normal;
 }
 .responsavel-comissao-label
 {
 	font-size: 13pt;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 }
 .responsavel-comissao
 {
-	font-family: Consolas;
-	font-weight: none;
+	font-family: Consolas, sans-serif;
+	font-weight: normal;
 }
 .modal-title
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 18pt;
 	font-weight: bold;
 }
 .label-nome-cadd-criada
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
 .label-nome-cadd
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -393,13 +449,13 @@ footer p
 }
 .label-descricao-cadd-criada
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
 .label-descricao-cadd
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -419,7 +475,7 @@ footer p
 }
 .titulo-membros-cadd
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -435,7 +491,7 @@ footer p
 }
 .label-nome-membro-edit
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -445,11 +501,11 @@ footer p
 	height: 35px;
 	border-radius: 8px;
 	border:1px solid #ccc;
-	padding: 0px 10px;
+	padding: 0 10px;
 }
 .label-portaria-edit
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -459,11 +515,11 @@ footer p
 	height: 35px;
 	border-radius: 8px;
 	border:1px solid #ccc;
-	padding: 0px 10px;
+	padding: 0 10px;
 }
 .label-presidente-edit
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -473,7 +529,7 @@ footer p
 }
 .label-ativo-edit
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -489,8 +545,8 @@ footer p
 
 .menu-vertical-direita
 {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 }
 
 /**********************************************/
@@ -505,18 +561,18 @@ footer p
 }
 .total-reunioes-label
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 18px;
 	font-weight: bolder;
-	margin: 20px 0px 0px 10px;
+	margin: 20px 0 0 10px;
 }
 .total-reunioes-value
 {
 	color: #006bb3;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 20px;
 	font-weight: bolder;
-	margin: 20px 0px 0px 10px;
+	margin: 20px 0 0 10px;
 }
 
 /*************************************************/
@@ -538,28 +594,28 @@ footer p
 .data-reunioes-label
 {
 	font-size: 13pt;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 }
 .data-reunioes
 {
-	font-family: Consolas;
-	font-weight: none;
+	font-family: Consolas, sans-serif;
+	font-weight: normal;
 }
 .hora-reunioes-label
 {
 	font-size: 13pt;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 }
 .hora-reunioes
 {
-	font-family: Consolas;
-	font-weight: none;
+	font-family: Consolas, sans-serif;
+	font-weight: normal;
 }
 .label-data-reuniao
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -570,7 +626,7 @@ footer p
 }
 .label-hora-reuniao
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -582,7 +638,7 @@ footer p
 .titulo-alunos-convocados
 {
 	margin-top: 20px;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 }
@@ -598,7 +654,7 @@ footer p
 	text-align: center;
 	font-weight: bold;
 	font-size: 12pt;
-	margin: 0px 5px;
+	margin: 0 5px;
 	padding: 10px 17%;
 }
 .cabecalho-quadros
@@ -608,7 +664,7 @@ footer p
 	text-align: center;
 	font-weight: bold;
 	font-size: 12pt;
-	margin: 0px 0px;
+	margin: 0 0;
 	padding: 10px 17%;
 }
 .quadro li
@@ -618,10 +674,9 @@ footer p
 .quadro-disciplinas
 {
 	border: 1px solid #ccc;
-	background-color:;
 	color: #000;
 	font-weight: bold;
-	margin: 0px 5px;
+	margin: 0 5px;
 	padding: 5px;
 }
 .tipo_disciplina
@@ -630,7 +685,7 @@ footer p
 	text-align: center;
 	font-weight: bold;
 	font-size: 10pt;
-	margin: 0px auto 10px;
+	margin: 0 auto 10px;
 	color: #00F;
 }
 .receptor-disciplina
@@ -641,7 +696,7 @@ footer p
 	background-color: #9fb;
 	border: 1px dotted #000;
 	padding: 5px;
-	margin: 3px 30px 1px 0px;
+	margin: 3px 30px 1px 0;
 	font-size: 10pt;
 	text-align: center;
 	border-radius: 5px;
@@ -649,8 +704,8 @@ footer p
 .item_disc_periodo
 {
 	background-color:#ebf0fa;
-	padding: 0px 20px;
-	margin: 3px 30px 0px 0px;
+	padding: 0 20px;
+	margin: 3px 30px 0 0;
 }
 .item_disc_periodo_concluido
 {
@@ -664,8 +719,8 @@ footer p
 }
 .item_disc_disciplinas
 {
-	padding: 0px 5px;
-	margin:3px 30px 0px 0px;
+	padding: 0 5px;
+	margin:3px 30px 0 0;
 	font-size: 10pt;
 	text-align: center;
 }
@@ -703,8 +758,8 @@ footer p
   	position: relative;
   	width: 100%;
   	min-height: 1px;
-  	padding-right: 0px;
-  	padding-left: 0px;
+  	padding-right: 0;
+  	padding-left: 0;
   	-webkit-box-flex: 0;
   	-ms-flex: 0 0 91.666667%;
   	flex: 0 0 91.666667%;
@@ -712,7 +767,7 @@ footer p
 }
 .collapseList
 {
-	padding: 0px 10px;
+	padding: 0 10px;
 	width: 100%;
 	height: 200px;
 }
@@ -728,18 +783,8 @@ footer p
 /************* QUADRO DA PRÉVIA DE HORÁRIOS *********************/
 /****************************************************************/
 
-.disciplina-previa
-{
-	background-color: #000;
-	border-radius: 1px;
-	margin: 1px;
-	padding: 1px;
-}
-.disciplina-previa-detalhes
-{
-	padding: 5px 5px;
-	background-color: #FFF;
-}
+
+
 .disciplina-previa-label-codigo
 {
 	color: #0056B3;
@@ -760,8 +805,8 @@ footer p
 }
 .disciplina-previa-nome
 {
-	font-weight: normal;
-	font-size: 9pt;
+	font-weight: bold;
+	font-size: 8pt;
 }
 .disciplina-previa-label-professor
 {
@@ -782,8 +827,9 @@ footer p
 }
 .disciplina-previa-horario-inicio
 {
-	font-weight: normal;
-	font-size: 9pt;
+	font-weight: bold;
+	font-size: 8pt;
+    color: rgba(255, 51, 51, 1)
 }
 .disciplina-previa-label-termino
 {
@@ -793,8 +839,9 @@ footer p
 }
 .disciplina-previa-horario-termino
 {
-	font-weight: normal;
-	font-size: 9pt;
+	font-weight: bold;
+	font-size: 8pt;
+    color: rgba(255, 51, 51, 1)
 }
 .disciplina-previa-label-desc
 {
@@ -831,14 +878,6 @@ footer p
 	display: none;
 }
 
-/******************/
-
-.disciplina-previa-add
-{
-	background-color: #00E676;
-	border-left: 1px solid #000;
-	cursor: pointer;
-}
 
 /************************/
 
@@ -920,7 +959,7 @@ table tbody tr td .detalhes-nao-exibir-calendario-plano
 
 table
 {
-	font-family:Consolas;
+    font-family: Consolas, sans-serif;
 	width: 100%;
 	border-spacing: 0;
 	border-collapse: separate;
@@ -981,14 +1020,14 @@ table tbody tr td:first-child
 	text-align: left;
 }
 #texto-disciplinas-sem-horario{
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 11pt;
 	color: #1565C0;
 	text-decoration: underline;
 	cursor: pointer;
 }
 #numero-disciplinas-sem-horario{
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 11pt;
 	color: #F00;
 }
@@ -1008,8 +1047,8 @@ table tbody tr td:first-child
 	background-color: #cfc;
 }
 #salvar-previa{
-	margin: 20px 0px;
-	padding: 0px;
+	margin: 20px 0;
+	padding: 0;
 }
 #salvar-previa button{
 	font-weight: bold;
@@ -1045,7 +1084,7 @@ table tbody tr td:first-child
 }
 .reunioes-titulo
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 	color: #006bb3;
@@ -1070,7 +1109,7 @@ table tbody tr td:first-child
 .criticidade-titulo
 {
 	margin: 100px;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 	color: #000;
@@ -1078,7 +1117,7 @@ table tbody tr td:first-child
 .criticidade-status
 {
 	color: #000;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
 }
@@ -1091,7 +1130,7 @@ table tbody tr td:first-child
 .tabela-lista-comissoes
 {
 	width: 85%;
-	margin: 0px auto;
+	margin: 0 auto;
 }
 .alinhamento-central
 {
@@ -1108,9 +1147,9 @@ table tbody tr td:first-child
 }
 .faixa-criticidade-iframe-avaliacao
 {
-	margin: 0px 20px 0px 0px;
+	margin: 0 20px 0 0;
 	padding: 15px;
-	border-radius: 0px;
+	border-radius: 0;
 	border: 1px solid #000;
 	width: 80%;
 }
@@ -1118,7 +1157,7 @@ table tbody tr td:first-child
 {
 	border: 1px solid #ccc;
 	border-radius: 3px;
-	margin: 5px 0px;
+	margin: 5px 0;
 	padding: 10px;
 }
 .titulo-avaliacao
@@ -1133,13 +1172,13 @@ table tbody tr td:first-child
 .lista-comissoes-pagina-inicial
 {
 	border: 1px solid #ccc;
-	margin: 0px 10px 20px;
+	margin: 0 10px 20px;
 	padding: 10px;
 	border-radius: 5px;
 }
 .comissoes-titulo
 {
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 	font-size: 14pt;
 	color: #006bb3;
@@ -1163,6 +1202,17 @@ table tbody tr td:first-child
 	border-radius: 10px;
 	color: #006bb3;
 	font-size: 14pt;
-	font-family: Consolas;
+	font-family: Consolas, sans-serif;
 	font-weight: bold;
 }
+
+.cabecalho-tabela-previas
+{
+	border: 1px solid #006bb3;
+	color: #006bb3;
+	margin: 50px;
+}
+
+
+
+

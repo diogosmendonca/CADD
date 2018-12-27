@@ -485,7 +485,7 @@ class Itemhistoricoescolar(models.Model):
         10 MATRICULA
         11 REPROVADO_SEM_NOTA
         12 APROVADO_SEM_NOTA
-        13 REAPROVADO_COM_DEPENDENCIA
+        13 REPROVADO_COM_DEPENDENCIA
     """
 
     id = models.BigAutoField(
